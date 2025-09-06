@@ -7,3 +7,7 @@
   --background: #fff;
   --text: #f8f8f8;
 }
+
+body {
+  font-family: 'Inter', sans-serif;
+}
