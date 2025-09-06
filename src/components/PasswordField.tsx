@@ -4,9 +4,11 @@ import { LuEye, LuEyeOff } from "react-icons/lu";
 export default function PasswordField({
   value,
   onChange,
+  error,
 }: {
   value: string;
-  onChange: (newValue: string) => void;
+  onChange: (newValue: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }) {
   const [show, setShow] = useState(false);
 
@@ -17,11 +19,16 @@ export default function PasswordField({
       </label>
       <div className="relative">
         <input
+          id="password"
           value={value}
           placeholder="Enter your Password"
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChange(e)}
           type={show ? "text" : "password"}
-          className="border-(--contrast) rounded-xl px-4 py-2 border outline-none focus:border-(--primary) transition-all duration-300 ease-in-out text-md lg:text-lg w-full pr-10"
+          className={`border-(--contrast) rounded-xl px-4 py-3 border outline-none ${
+            error
+              ? "border-red-300 focus:border-red-500 focus:ring-red-500/30"
+              : "focus:border-(--primary)"
+          } transition-all duration-300 ease-in-out text-sm w-full pr-10 `}
         />
         <button
           type="button"
@@ -29,7 +36,7 @@ export default function PasswordField({
           onClick={() => setShow(!show)}
           tabIndex={-1}
         >
-          {show ? <LuEyeOff /> : <LuEye />}
+          {show ? <LuEyeOff size={20} /> : <LuEye size={20} />}
         </button>
       </div>
     </div>
