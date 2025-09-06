@@ -11,3 +11,8 @@
 body {
   font-family: 'Inter', sans-serif;
 }
+
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear {
+  display: none;
+}
