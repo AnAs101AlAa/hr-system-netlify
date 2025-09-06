@@ -1,6 +1,7 @@
+import { LoginPage } from "./pages";
 
+const routes: { path: string; Component: React.FC }[] = [
+  { path: "/login", Component: LoginPage },
+];
 
-const routes : { path: string; Component: React.FC }[] = [
-]
-
-export default routes
+export default routes;
