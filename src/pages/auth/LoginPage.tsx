@@ -15,7 +15,6 @@ const LoginPage = () => {
     Partial<Record<keyof LoginFormData, string>>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [loading, setLoading] = useState(false);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { id, value } = e.target;
