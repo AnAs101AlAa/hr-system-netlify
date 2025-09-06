@@ -1,17 +1,16 @@
 import tccd_logo from "@/assets/TCCD_logo.svg";
 import { useState } from "react";
 import { loginSchema, type LoginFormData } from "@/schemas/authSchemas";
-import { LuEye, LuEyeOff } from "react-icons/lu";
-
 import { z } from "zod";
 import { loginRequest } from "@/endpoints/auth";
+import InputField from "@/components/InputField";
+import PasswordField from "@/components/PasswordField";
 
 const LoginPage = () => {
   const [loginForm, setLoginForm] = useState<LoginFormData>({
     email: "",
     password: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<
     Partial<Record<keyof LoginFormData, string>>
   >({});
@@ -90,23 +89,13 @@ const LoginPage = () => {
               <h2 className="text-[#5E6064] text-center font-bold">
                 Login to your account
               </h2>
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
-              </label>
-              <input
+              <InputField
+                error={errors.email}
                 id="email"
-                type="email"
-                required
                 value={loginForm.email}
+                label="Email"
                 onChange={handleInputChange}
-                className={`w-full rounded-xl border bg-white px-4 py-3 text-sm outline-none ring-0 transition
-                           focus:ring-2 ${
-                             errors.email
-                               ? "border-red-300 focus:border-red-500 focus:ring-red-500/30"
-                               : "border-neutral-200 focus:border-(--secondary) focus:ring-(--secondary)/30"
-                           }`}
                 placeholder="Enter your email"
-                autoComplete="email"
               />
               {errors.email && (
                 <p className="text-sm text-red-600">{errors.email}</p>
@@ -115,34 +104,11 @@ const LoginPage = () => {
 
             {/* Password */}
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={loginForm.password}
-                  onChange={handleInputChange}
-                  className={`w-full rounded-xl border bg-white px-4 py-3 pr-12 text-sm outline-none ring-0 transition
-                             focus:ring-2 ${
-                               errors.password
-                                 ? "border-red-300 focus:border-red-500 focus:ring-red-500/30"
-                                 : "border-neutral-200 focus:border-(--secondary) focus:ring-(--secondary)/30"
-                             }`}
-                  placeholder="Enter your password"
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((s) => !s)}
-                  className="absolute inset-y-0 cursor-pointer right-0 mr-2 grid place-items-center rounded-lg px-2 text-xs text-neutral-600 hover:text-neutral-800"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <LuEyeOff size={20} /> : <LuEye size={20} />}
-                </button>
-              </div>
+              <PasswordField
+                value={loginForm.password}
+                error={errors.password}
+                onChange={handleInputChange}
+              />
               {errors.password && (
                 <p className="text-sm text-red-600">{errors.password}</p>
               )}
