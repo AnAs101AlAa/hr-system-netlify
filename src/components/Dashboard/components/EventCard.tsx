@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCalendarAlt } from 'react-icons/fa';
-import Button from '../../Button';
-import { ButtonTypes, ButtonWidths } from '../../../constants/presets';
-import type { Event } from '../../../types/event';
+import Button from '@/components/generics/Button';
+import { ButtonTypes, ButtonWidths } from '@/constants/presets';
+import type { Event } from '@/types/event';
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     const { id, title, startTime, endTime } = event;
