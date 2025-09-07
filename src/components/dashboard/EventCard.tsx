@@ -5,7 +5,7 @@ import Button from '@/components/generics/Button';
 import { ButtonTypes, ButtonWidths } from '@/constants/presets';
 import type { Event } from '@/types/event';
 
-const EventCard: React.FC<{ event: Event }> = ({ event }) => {
+const EventCard: React.FC<{ event: Omit<Event, "attendees">}> = ({ event }) => {
     const { id, title, startTime, endTime } = event;
     const navigate = useNavigate();
     

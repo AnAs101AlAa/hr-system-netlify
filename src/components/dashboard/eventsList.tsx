@@ -2,7 +2,7 @@ import type { Event } from "@/types/event";
 import EventCard from "./EventCard";
 
 interface EventsListProps {
-  events: Event[];
+  events: Omit<Event, "attendees">[];
 }
 
 const EventsList = ({ events }: EventsListProps) => {
