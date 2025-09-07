@@ -2,8 +2,8 @@ import { MdQrCodeScanner, MdEvent } from "react-icons/md";
 
 const ActionCards = () => {
   return (
-    <div className="flex flex-row justify-between gap-2 mx-auto">
-      <div className="flex-1 h-[110px] sm:h-[140px] md:h-[180px] bg-white border border-dashboard-card-border shadow-md rounded-[16px] flex flex-col items-center justify-center gap-1 p-2 cursor-pointer">
+    <div className="flex flex-row justify-between gap-5 mx-auto">
+      <div className="flex-1 h-[100px] sm:h-[120px] md:h-[150px] bg-white border border-dashboard-card-border shadow-md rounded-[16px] flex flex-col items-center justify-center gap-1 p-2 cursor-pointer">
         <div className="text-dashboard-icon text-[30px] sm:text-[35px] md:text-[38px]">
           <MdQrCodeScanner />
         </div>
@@ -12,7 +12,7 @@ const ActionCards = () => {
         </div>
       </div>
 
-      <div className="flex-1 h-[110px] sm:h-[140px] md:h-[180px] bg-white border border-dashboard-card-border shadow-md rounded-[16px] flex flex-col items-center justify-center gap-1 p-2 cursor-pointer">
+      <div className="flex-1 h-[100px] sm:h-[120px] md:h-[150px] bg-white border border-dashboard-card-border shadow-md rounded-[16px] flex flex-col items-center justify-center gap-1 p-2 cursor-pointer">
         <div className="text-dashboard-icon text-[30px] sm:text-[35px] md:text-[38px]">
           <MdEvent />
         </div>
