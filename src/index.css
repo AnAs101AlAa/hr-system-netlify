@@ -14,23 +14,21 @@
   --color-pagination-active: #295e7e;
   --color-pagination-disabled: rgba(41, 94, 126, 0.31);
   --color-pagination-text: #87888b;
+  --color-primary: #cd3a38;
+  --color-secondary: #295e7e;
+  --color-contrast: #E0E3E7;
+  --color-contrast: #272727;
+  --color-background: #fff;
+  --color-text: #f8f8f8;
+  --color-muted-primary: #E9AAA9;
+  --color-muted-secondary: #BABDC4;
+  --color-active-tab-bg: #f6f5f2;
+  --color-active-tab-text: #ea4c59;
+  --color-inactive-tab-text: #6b7280;
+  --color-label: #b3b3b3;
 }
 
 :root {
-  /* Original Variables */
-  --primary: #cd3a38;
-  --secondary: #295e7e;
-  --contrast: #E0E3E7;
-  --contrast: #272727;
-  --background: #fff;
-  --text: #f8f8f8;
-  --muted-primary: #E9AAA9;
-  --muted-secondary: #BABDC4;
-  --active-tab-bg: #f6f5f2;
-  --active-tab-text: #ea4c59;
-  --inactive-tab-text: #6b7280;
-  --label: #b3b3b3;
-
   /* Font Variables */
   --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -62,4 +60,3 @@ input[type=password]::-ms-reveal,
 input[type=password]::-ms-clear {
   display: none;
 }
->>>>>>>>> Temporary merge branch 2

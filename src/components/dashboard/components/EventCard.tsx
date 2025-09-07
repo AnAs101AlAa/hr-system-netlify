@@ -27,7 +27,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     return (
         <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4">
             <div className="flex items-center gap-3">
-                <FaCalendarAlt className="text-[var(--primary)] text-lg" />
+                <FaCalendarAlt className="text-primary text-lg" />
                 <h3 className="font-bold text-gray-800 text-lg">{title}</h3>
             </div>
             

@@ -1,5 +1,5 @@
 import { api } from "../axiosInstance";
-import type { User } from "../../types/user";
+import type { User } from "@/types/user";
 
 const USER_API_URL = api.defaults.baseURL + "/users/";
 

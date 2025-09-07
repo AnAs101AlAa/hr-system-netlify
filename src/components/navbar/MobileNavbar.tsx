@@ -1,4 +1,4 @@
-import { NAV_ITEMS } from "../../constants";
+import { NAV_ITEMS } from "@/constants";
 import { IoQrCodeOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -12,8 +12,8 @@ const MobileNavbar = () => {
         <Link
           className={`${
             pathname === to
-              ? "text-[var(--primary)]"
-              : "text-[var(--secondary)]"
+              ? "text-primary"
+              : "text-secondary"
           } inline-flex flex-col items-center gap-1`}
           key={title}
           to={to}
@@ -22,8 +22,8 @@ const MobileNavbar = () => {
           <span
             className={`${
               pathname === to
-                ? "text-[var(--muted-primary)]"
-                : "text-[var(--muted-secondary)]"
+                ? "text-muted-primary"
+                : "text-muted-secondary"
             } text-xs`}
           >
             {title}
@@ -31,7 +31,7 @@ const MobileNavbar = () => {
         </Link>
       ))}
 
-      <button className="absolute left-1/2 -translate-x-1/2 top-[-1.25rem] bg-(--primary) p-2.5 rounded-full">
+      <button className="absolute left-1/2 -translate-x-1/2 top-[-1.25rem] bg-primary p-2.5 rounded-full">
         <span className="w-fit h-fit rounded-full border border-[#FEFEFE75] text-white p-2 block">
           <IoQrCodeOutline size={25} />
         </span>

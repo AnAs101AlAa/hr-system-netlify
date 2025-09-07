@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { WelcomeCard, ActionCards, Pagination, EventsList } from "./components";
-import DashboardLayout from "./DashboardLayout";
+import { WelcomeCard, ActionCards, Pagination, EventsList } from "@/components/dashboard/components";
+import WithNavbar from "@/components/hoc/WithNavbar";
 
 const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -76,7 +76,7 @@ const Dashboard = () => {
   };
 
   return (
-    <DashboardLayout>
+    <WithNavbar>
       <div className="mx-4 md:mx-6 lg:mx-8 flex flex-col md:items-center">
         <div className="md:w-3/5 lg:w-2/3 xl:w-3/5 space-y-4 md:space-y-5 lg:space-y-6">
           <WelcomeCard />
@@ -95,7 +95,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </WithNavbar>
   );
 };
 
