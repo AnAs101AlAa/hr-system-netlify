@@ -52,14 +52,13 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="mx-4 md:flex md:gap-6">
-
+    <div className="mx-4 md:gap-6 flex flex-col md:items-center">
       <div className="md:w-3/5 space-y-4">
         <WelcomeCard />
         <ActionCards />
       </div>
 
-      <div className="md:w-2/5 space-y-4 md:block">
+      <div className="md:w-3/5 space-y-4 md:block">
         <div className="mt-10">
           <Pagination
             currentPage={currentPage}

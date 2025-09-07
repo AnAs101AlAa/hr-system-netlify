@@ -1,5 +1,4 @@
 import type { Event } from "../../../types/event";
-import { MdEvent } from "react-icons/md";
 
 interface EventsListProps {
   events: Event[];
