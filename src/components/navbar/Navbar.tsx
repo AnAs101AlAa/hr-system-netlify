@@ -32,8 +32,8 @@ const Navbar = () => {
                 outline-none ring-0 focus-visible:ring-2 focus-visible:ring-[var(--primary)]/35
                 ${
                   active
-                    ? "bg-[var(--chip-bg,#f6f5f2)] text-[var(--primary,#ea4c59)] shadow-inner"
-                    : "text-[var(--muted,#6b7280)] hover:bg-zinc-100/80 hover:text-[var(--primary,#ea4c59)]"
+                    ? "bg-[var(--chip-bg,--active-tab-bg)] text-[var(--primary,--active-tab-text)] shadow-inner"
+                    : "text-[var(--muted,--inactive-tab-text)] hover:bg-zinc-100/80 hover:text-[var(--primary,#ea4c59)]"
                 }
               `}
             >

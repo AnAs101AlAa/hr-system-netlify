@@ -6,6 +6,9 @@
   --contrast: #272727;
   --background: #fff;
   --text: #f8f8f8;
-  --muted-primary:#E9AAA9;
-  --muted-secondary:#BABDC4;
+  --muted-primary: #E9AAA9;
+  --muted-secondary: #BABDC4;
+  --active-tab-bg: #f6f5f2;
+  --active-tab-text: #ea4c59;
+  --inactive-tab-text: #6b7280;
 }
