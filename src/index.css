@@ -1,9 +1,27 @@
 @import "tailwindcss";
 
+@theme {
+  --color-dashboard-welcome-bg: #295e7e2e;
+  --color-dashboard-border: #f9f8f8;
+  --color-dashboard-card-border: #fafafa;
+  --color-dashboard-welcome-text: #9e999b;
+  --color-dashboard-user-name: #5c595e;
+  --color-dashboard-description: #a49ea1;
+  --color-dashboard-heading: #5c595e;
+  --color-dashboard-card-text: #8a8c8e;
+  --color-dashboard-icon: #ef4444;
+  --color-dashboard-event-time: #9e999b;
+  --color-pagination-active: #295e7e;
+  --color-pagination-disabled: rgba(41, 94, 126, 0.31);
+  --color-pagination-text: #87888b;
+}
+
 :root {
-  --primary: #CD3A38;
-  --secondary: #295E7E;
+  /* Original Variables */
+  --primary: #cd3a38;
+  --secondary: #295e7e;
   --contrast: #E0E3E7;
+  --contrast: #272727;
   --background: #fff;
   --text: #f8f8f8;
   --muted-primary: #E9AAA9;
@@ -12,7 +30,15 @@
   --active-tab-text: #ea4c59;
   --inactive-tab-text: #6b7280;
   --label: #b3b3b3;
+
+  /* Font Variables */
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --color-black: #060606;
+  --font-tag: 10px;
+  --font-tag-large: 1rem;
 }
+
 
 /* Shimmer Animation */
 @keyframes shimmer {
