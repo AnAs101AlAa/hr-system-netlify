@@ -17,15 +17,15 @@ const Pagination = ({
   const isLastPage = currentPage === totalPages;
 
   return (
-    <div className="relative h-[120px] sm:h-[130px] md:h-[140px] lg:h-[150px] mx-auto mb-4 sm:mb-5 md:mb-6">
-      <div className="h-full w-full relative">
-        <div className="absolute top-4 sm:top-5 md:top-6 left-4 sm:left-5 md:left-6">
+    <div className="relative mx-auto my-8 sm:my-9 md:my-10">
+      <div className="h-full w-full relative gap-6 flex flex-col ">
+        <div className="">
           <h3 className="text-dashboard-heading font-bold text-[18px] sm:text-[22px] md:text-[25px] lg:text-[28px]">
             Upcoming Events
           </h3>
         </div>
 
-        <div className="absolute bottom-6 sm:bottom-7 md:bottom-8 lg:bottom-10 left-4 sm:left-5 md:left-6 right-4 sm:right-5 md:right-6 flex justify-center gap-5 md:gap-10 items-center">
+        <div className="flex justify-center gap-5 md:gap-10 items-center">
           <button
             className={`w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px] lg:w-[24px] lg:h-[24px] flex items-center justify-center rounded cursor-pointer transition-all duration-200 hover:scale-110 ${
               isFirstPage
@@ -64,6 +64,7 @@ const Pagination = ({
             />
           </button>
         </div>
+        <hr className="border-t-2 border-gray-200 -mt-2" />
       </div>
     </div>
   );

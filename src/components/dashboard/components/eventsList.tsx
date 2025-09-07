@@ -8,9 +8,9 @@ interface EventsListProps {
 const EventsList = ({ events }: EventsListProps) => {
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-[1%] gap-y-4">
       {events.map((event) => (
-        <div className="w-full md:w-[48%]" key={event.id}>
+        <div className="w-full md:w-[49.5%]" key={event.id}>
           <EventCard event={event} />
         </div>
       ))}
