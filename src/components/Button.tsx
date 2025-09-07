@@ -17,16 +17,16 @@ export default function Button({buttonText, onClick, type, disabled = false, loa
         primary: "bg-[var(--primary)] text-[var(--text)] border-[var(--primary)]",
         secondary: "bg-[var(--secondary)] text-[var(--text)] border-[var(--secondary)]",
         tertiary: "bg-[var(--contrast)] text-[var(--text)] border-[var(--contrast)]",
-        danger: "bg-red-600 text-white border-red-600",
-        ghost: "bg-gray-100 text-[var(--contrast)] border-[var(--contrast)]"
+        danger: "border-(--primary) text-(--primary)",
+        ghost: "bg-gray-100 text-[var(--secondary)] border-[var(--secondary)]"
     }
 
     const hoverStyles : Record<ButtonTypes, string> = {
         primary: "hover:bg-[var(--background)] hover:border-[var(--primary)] hover:text-[var(--primary)]",
         secondary: "hover:bg-[var(--background)] hover:border-[var(--secondary)] hover:text-[var(--secondary)]",
         tertiary: "hover:bg-[var(--background)] hover:border-[var(--tertiary)] hover:text-[var(--tertiary)]",
-        danger: "hover:bg-red-700 hover:border-red-700",
-        ghost: "hover:brightness-110"
+        danger: "hover:bg-(--primary) hover:text-[var(--text)]",
+        ghost: "hover:bg-(--secondary)/30"
     }
 
     const disabledStyles = "opacity-50";
