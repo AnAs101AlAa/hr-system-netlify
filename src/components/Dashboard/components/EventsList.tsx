@@ -1,19 +1,22 @@
-
 import type { Event } from "../../../types/event";
+import { MdEvent } from "react-icons/md";
 
 interface EventsListProps {
   events: Event[];
 }
 
 const EventsList = ({ events }: EventsListProps) => {
+
   return (
-    <div className="space-y-3">
+    <div className="flex flex-wrap gap-3">
       {events.map((event) => (
         <div
           key={event.id}
-          className="bg-white border border-dashboard-card-border shadow-md rounded-[16px] p-4"
+          className="w-full lg:w-[calc(50%-6px)] bg-white border border-dashboard-card-border shadow-md rounded-[16px] p-4"
         >
-          card
+          <div className="flex items-center gap-3">
+            card
+          </div>
         </div>
       ))}
     </div>
