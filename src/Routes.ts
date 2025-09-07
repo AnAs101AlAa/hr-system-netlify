@@ -1,6 +1,7 @@
+import Dashboard from "./components/Dashboard";
 
+const routes: { path: string; Component: React.FC }[] = [
+  { path: "/", Component: Dashboard },
+];
 
-const routes : { path: string; Component: React.FC }[] = [
-]
-
-export default routes
+export default routes;
