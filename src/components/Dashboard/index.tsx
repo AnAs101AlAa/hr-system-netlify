@@ -3,9 +3,8 @@ import { WelcomeCard, ActionCards, Pagination, EventsList } from "./components";
 
 const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 3;
+  const eventsPerPage = 4; 
 
-  // Mock data for upcoming events
   const upcomingEvents = [
     {
       id: 1,
@@ -37,7 +36,31 @@ const Dashboard = () => {
       startTime: "2024-10-01T14:00:00",
       endTime: "2024-10-01T15:00:00",
     },
+    {
+      id: 6,
+      title: "Design Review",
+      startTime: "2024-10-02T10:00:00",
+      endTime: "2024-10-02T11:00:00",
+    },
+    {
+      id: 7,
+      title: "Sprint Planning",
+      startTime: "2024-10-02T14:00:00",
+      endTime: "2024-10-02T16:00:00",
+    },
+    {
+      id: 8,
+      title: "Stakeholder Meeting",
+      startTime: "2024-10-03T09:00:00",
+      endTime: "2024-10-03T10:30:00",
+    },
   ];
+
+  const totalPages = Math.ceil(upcomingEvents.length / eventsPerPage);
+
+  const startIndex = (currentPage - 1) * eventsPerPage;
+  const endIndex = startIndex + eventsPerPage;
+  const currentEvents = upcomingEvents.slice(startIndex, endIndex);
 
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -66,7 +89,7 @@ const Dashboard = () => {
             onPrevious={handlePrevious}
             onNext={handleNext}
           />
-          <EventsList events={upcomingEvents} />
+          <EventsList events={currentEvents} />
         </div>
       </div>
     </div>
