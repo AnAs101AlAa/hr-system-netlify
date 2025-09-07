@@ -5,6 +5,7 @@ import { z } from "zod";
 import InputField from "@/components/InputField";
 import PasswordField from "@/components/PasswordField";
 import Button from "@/components/Button";
+import DropdownMenu from "@/components/ui/dropDownMenu";
 import { login } from "@/queries/Users";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@/utils";
@@ -15,9 +16,21 @@ const LoginPage = () => {
     password: "",
   });
   const [errors, setErrors] = useState<
-    Partial<Record<keyof LoginFormData, string>>
+  Partial<Record<keyof LoginFormData, string>>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Sample departments for testing the dropdown
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("");
+  const departmentOptions = [
+    { value: "hr", label: "Human Resources" },
+    { value: "it", label: "Information Technology" },
+    { value: "finance", label: "Finance" },
+    { value: "marketing", label: "Marketing" },
+    { value: "operations", label: "Operations" },
+    { value: "legal", label: "Legal Department" },
+  ];
+  //will be removed later
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { id, value } = e.target;
@@ -104,6 +117,19 @@ const LoginPage = () => {
               )}
             </div>
 
+            {/* Department Dropdown - Test Component */}
+            <div className="space-y-2">
+              <DropdownMenu
+                id="department"
+                label="Department (Optional)"
+                placeholder="Select your department"
+                options={departmentOptions}
+                value={selectedDepartment}
+                onChange={setSelectedDepartment}
+              />
+            </div>
+            {/*will be removed later*/}
+
             {/* Password */}
             <div className="space-y-2">
               <PasswordField
@@ -131,6 +157,7 @@ const LoginPage = () => {
           </footer>
         </section>
       </form>
+     
     </main>
   );
 };
