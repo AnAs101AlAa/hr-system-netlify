@@ -1,13 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { IoChevronDown } from "react-icons/io5";
-import Button from "../Button";
-import { ButtonTypes, ButtonWidths } from "../../constants/presets";
-
-export interface DropdownOption {
-  value: string;
-  label: string;
-  disabled?: boolean;
-}
+import Button from "./Button";
+import { ButtonTypes, ButtonWidths } from "@/constants/presets";
+import type { DropdownOption } from "@/constants/presets";
 
 interface DropdownMenuProps {
   label?: string;
@@ -74,7 +69,7 @@ export default function DropdownMenu({
           <Button
             buttonText={selectedOption ? selectedOption.label : placeholder}
             onClick={() => !disabled && setIsOpen(!isOpen)}
-            type={ButtonTypes.GHOST}
+            type={ButtonTypes.BASIC}
             disabled={disabled}
             width={ButtonWidths.FULL}
           />
