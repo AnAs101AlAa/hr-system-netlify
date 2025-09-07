@@ -3,7 +3,7 @@ import { WelcomeCard, ActionCards, Pagination, EventsList } from "./components";
 
 const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = 4; 
+  const eventsPerPage = 4;
 
   const upcomingEvents = [
     {
@@ -75,14 +75,14 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="mx-4 md:gap-6 flex flex-col md:items-center">
-      <div className="md:w-3/5 space-y-4">
+    <div className="mx-4 md:mx-6 lg:mx-8 md:gap-6 lg:gap-8 flex flex-col md:items-center">
+      <div className="md:w-3/5 lg:w-2/3 xl:w-3/5 space-y-4 md:space-y-5 lg:space-y-6">
         <WelcomeCard />
         <ActionCards />
       </div>
 
-      <div className="md:w-3/5 space-y-4 md:block">
-        <div className="mt-10">
+      <div className="md:w-3/5 lg:w-2/3 xl:w-3/5 space-y-4 md:space-y-5 lg:space-y-6 md:block">
+        <div className="mt-10 md:mt-12 lg:mt-14">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
