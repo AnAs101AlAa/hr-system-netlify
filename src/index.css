@@ -11,4 +11,19 @@
   --active-tab-bg: #f6f5f2;
   --active-tab-text: #ea4c59;
   --inactive-tab-text: #6b7280;
+  --label: #b3b3b3;
+}
+
+/* Shimmer Animation */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
 }
