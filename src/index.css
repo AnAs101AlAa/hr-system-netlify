@@ -3,7 +3,7 @@
 :root {
   --primary: #CD3A38;
   --secondary: #295E7E;
-  --contrast: #272727;
+  --contrast: #E0E3E7;
   --background: #fff;
   --text: #f8f8f8;
   --muted-primary: #E9AAA9;
@@ -26,4 +26,13 @@
 
 .animate-shimmer {
   animation: shimmer 2s infinite;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear {
+  display: none;
 }
