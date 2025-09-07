@@ -88,7 +88,7 @@ const LoginPage = () => {
           <div className="space-y-5 mt-5">
             {/* Email */}
             <div className="space-y-2">
-              <h2 className="text-[#5E6064] text-center font-bold">
+              <h2 className="text-[#5E6064] text-center font-bold mb-5">
                 Login to your account
               </h2>
               <InputField
