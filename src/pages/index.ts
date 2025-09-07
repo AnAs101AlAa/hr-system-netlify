@@ -1,4 +1,4 @@
+import LoginPage from "./auth/LoginPage";
 import HomePage from "./homePage";
 
-
-export {HomePage};
+export { LoginPage, HomePage };

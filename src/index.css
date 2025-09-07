@@ -17,12 +17,16 @@
 }
 
 :root {
-  /* Original Variables */
-  --primary: #cd3a38;
-  --secondary: #295e7e;
-  --contrast: #272727;
+  --primary: #CD3A38;
+  --secondary: #295E7E;
+  --contrast: #E0E3E7;
   --background: #fff;
   --text: #f8f8f8;
+  --muted-primary: #E9AAA9;
+  --muted-secondary: #BABDC4;
+  --active-tab-bg: #f6f5f2;
+  --active-tab-text: #ea4c59;
+  --inactive-tab-text: #6b7280;
   --label: #b3b3b3;
 
   /* Font Variables */
@@ -46,4 +50,13 @@
 
 .animate-shimmer {
   animation: shimmer 2s infinite;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear {
+  display: none;
 }
