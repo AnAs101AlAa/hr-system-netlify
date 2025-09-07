@@ -5,7 +5,6 @@ import { z } from "zod";
 import InputField from "@/components/generics/InputField";
 import PasswordField from "@/components/generics/PasswordField";
 import Button from "@/components/generics/Button";
-import DropdownMenu from "@/components/generics/dropDownMenu";
 import { login } from "@/queries/Users";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@/utils";
@@ -20,18 +19,6 @@ const LoginPage = () => {
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Sample departments for testing the dropdown
-  const [selectedDepartment, setSelectedDepartment] = useState<string>("");
-  const departmentOptions = [
-    { value: "hr", label: "Human Resources" },
-    { value: "it", label: "Information Technology" },
-    { value: "finance", label: "Finance" },
-    { value: "marketing", label: "Marketing" },
-    { value: "operations", label: "Operations" },
-    { value: "legal", label: "Legal Department" },
-  ];
-  //will be removed later
-
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { id, value } = e.target;
     setLoginForm((prev) => ({ ...prev, [id]: value }));
@@ -116,19 +103,6 @@ const LoginPage = () => {
                 <p className="text-sm text-red-600">{errors.email}</p>
               )}
             </div>
-
-            {/* Department Dropdown - Test Component */}
-            <div className="space-y-2">
-              <DropdownMenu
-                id="department"
-                label="Department (Optional)"
-                placeholder="Select your department"
-                options={departmentOptions}
-                value={selectedDepartment}
-                onChange={setSelectedDepartment}
-              />
-            </div>
-            {/*will be removed later*/}
 
             {/* Password */}
             <div className="space-y-2">
