@@ -3,7 +3,8 @@ export const ButtonTypes = {
     SECONDARY: "secondary",
     TERTIARY: "tertiary",
     DANGER: "danger",
-    GHOST: "ghost"
+    GHOST: "ghost",
+    BASIC: "basic"
 } as const;
 
 export type ButtonTypes = typeof ButtonTypes[keyof typeof ButtonTypes];
@@ -18,3 +19,9 @@ export const ButtonWidths = {
 } as const;
 
 export type ButtonWidths = typeof ButtonWidths[keyof typeof ButtonWidths];
+
+export interface DropdownOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
