@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { login, logout, session } from "./userApi";
 import { useDispatch } from "react-redux";
-import { setUser, logout as logoutAction } from "../../redux/slices/authSlice";
+import { setUser, logout as logoutAction } from "@/redux/slices/authSlice";
 
 export const userKeys = {
   all: ["user"] as const,

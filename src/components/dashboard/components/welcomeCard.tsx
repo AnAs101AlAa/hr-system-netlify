@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
-import type { RootState } from "../../../redux/store/store";
+import type { RootState } from "@/redux/store/store";
+import LazyImageLoader from "@/components/generics/LazyImageLoader";
 
 const WelcomeCard = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -8,16 +9,18 @@ const WelcomeCard = () => {
     <div className="mt-10 mb-4 w-auto bg-dashboard-welcome-bg border border-dashboard-border rounded-[7px] box-border px-6 py-4 relative overflow-hidden">
       <div className="flex flex-row items-center gap-4 mb-3">
         <div
-          className="w-[70px] h-[70px] bg-gray-300 rounded-full flex-shrink-0  sm:w-[80px] sm:h-[80px] md:w-[90px] md:h-[90px] lg:w-[100px] lg:h-[100px] xl:w-[110px] xl:h-[110px]flex items-center justify-center
+          className="w-[70px] h-[70px] bg-gray-300 rounded-full flex-shrink-0  sm:w-[80px] sm:h-[80px] md:w-[90px] md:h-[90px] lg:w-[100px] lg:h-[100px] xl:w-[110px] xl:h-[110px] flex items-center justify-center
         overflow-hidden"
         >
-          <img
+          <LazyImageLoader
             src={
               user?.photoUrl ||
               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLn1_EIWe4MQKAqinzLYerlpzm0pyawzZbYg&s"
             }
             alt="User Avatar"
-            className="w-full h-full rounded-full object-cover"
+            className="rounded-full"
+            width="100%"
+            height="100%"
           />
         </div>
         <div className="flex flex-col justify-center flex-1 gap-1">

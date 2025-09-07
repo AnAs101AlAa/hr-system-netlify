@@ -1,4 +1,4 @@
-import { ButtonTypes, ButtonWidths } from "../../constants/presets";
+import { ButtonTypes, ButtonWidths } from "@/constants/presets";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 interface ButtonProps {
@@ -14,21 +14,21 @@ export default function Button({buttonText, onClick, type, disabled = false, loa
     const isDisabled = disabled || loading;
     
     const stylePresets : Record<ButtonTypes, string> = {
-        primary: "bg-[var(--primary)] text-[var(--text)] border-[var(--primary)]",
-        secondary: "bg-[var(--secondary)] text-[var(--text)] border-[var(--secondary)]",
-        tertiary: "bg-[var(--contrast)] text-[var(--text)] border-[var(--contrast)]",
-        danger: "border-(--primary) text-(--primary)",
-        ghost: "text-[var(--secondary)] border-[var(--secondary)]",
-        basic: "border-[var(--contrast)]"
+        primary: "bg-primary text-text border-primary",
+        secondary: "bg-secondary text-text border-secondary",
+        tertiary: "bg-contrast text-text border-contrast",
+        danger: "border-primary text-primary",
+        ghost: "text-secondary border-secondary",
+        basic: "border-contrast"
     }
 
     const hoverStyles : Record<ButtonTypes, string> = {
-        primary: "hover:bg-[var(--background)] hover:border-[var(--primary)] hover:text-[var(--primary)]",
-        secondary: "hover:bg-[var(--background)] hover:border-[var(--secondary)] hover:text-[var(--secondary)]",
-        tertiary: "hover:bg-[var(--background)] hover:border-[var(--tertiary)] hover:text-[var(--tertiary)]",
-        danger: "hover:bg-(--primary) hover:text-[var(--text)]",
-        ghost: "hover:bg-(--secondary)/30",
-        basic: "hover:bg-(--contrast)/30",
+        primary: "hover:bg-background hover:border-primary hover:text-primary",
+        secondary: "hover:bg-background hover:border-secondary hover:text-secondary",
+        tertiary: "hover:bg-background hover:border-tertiary hover:text-tertiary",
+        danger: "hover:bg-primary hover:text-text",
+        ghost: "hover:bg-secondary/30",
+        basic: "hover:bg-contrast/30",
     }
 
     const disabledStyles = "opacity-50";
