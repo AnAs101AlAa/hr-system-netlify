@@ -18,7 +18,7 @@ const Pagination = ({
 
   return (
     <div className="relative h-[120px] sm:h-[130px] md:h-[140px] lg:h-[150px] mx-auto mb-4 sm:mb-5 md:mb-6">
-      <div className="h-full w-full bg-white border border-dashboard-card-border shadow-lg rounded-[16px] sm:rounded-[18px] md:rounded-[20px] relative">
+      <div className="h-full w-full relative">
         <div className="absolute top-4 sm:top-5 md:top-6 left-4 sm:left-5 md:left-6">
           <h3 className="text-dashboard-heading font-bold text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px]">
             Upcoming Events
