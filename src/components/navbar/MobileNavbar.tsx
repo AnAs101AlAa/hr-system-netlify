@@ -7,7 +7,7 @@ const MobileNavbar = () => {
   const { pathname } = useLocation();
 
   return (
-    <nav className="w-full relative flex justify-center gap-[65%] items-center px-5 h-16 border border-[#000]/13 rounded-t-3xl">
+    <nav className="w-full bg-white relative flex justify-center gap-[65%] items-center px-5 h-16 border border-[#000]/13 rounded-t-3xl">
       {NAV_ITEMS.map(({ icon: Icon, to, title }) => (
         <Link
           className={`${

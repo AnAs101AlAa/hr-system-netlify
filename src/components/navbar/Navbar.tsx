@@ -1,6 +1,6 @@
-import { NAV_ITEMS } from "@/constants";
+import { NAV_ITEMS } from "../../constants";
 import { NavLink, useLocation } from "react-router-dom";
-import logo from "@/assets/TCCD_logo.svg";
+import logo from "../../assets/TCCD_logo.svg";
 
 const Navbar = () => {
   const { pathname } = useLocation();
@@ -29,7 +29,7 @@ const Navbar = () => {
                 group flex-1 text-center rounded-full px-2.5 py-1.5
                 text-sm font-semibold
                 transition-all duration-150
-                outline-none ring-0 focus-visible:ring-2 focus-visible:ring-primary/35
+                outline-none ring-0 focus-visible:ring-2 focus-visible:ring-[var(--primary)]/35
                 ${
                   active
                     ? "bg-[var(--chip-bg,--active-tab-bg)] text-[var(--primary,--active-tab-text)] shadow-inner"
