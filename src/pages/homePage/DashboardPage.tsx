@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { WelcomeCard, ActionCards, Pagination, EventsList } from "@/components/dashboard/components";
+import { WelcomeCard, ActionCards, Pagination, EventsList } from "@/components/dashboard";
 import WithNavbar from "@/components/hoc/WithNavbar";
 
 const Dashboard = () => {
