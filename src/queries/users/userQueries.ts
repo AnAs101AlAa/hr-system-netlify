@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { login, logout, session } from "./userApi";
+import { UserApi } from "./userApi";
 import { useDispatch } from "react-redux";
 import { setUser, logout as logoutAction } from "@/redux/slices/authSlice";
+import toast from "react-hot-toast";
+import { getErrorMessage } from "@/utils";
 
 export const userKeys = {
   all: ["user"] as const,
@@ -10,20 +12,25 @@ export const userKeys = {
   logout: () => [...userKeys.all, "logout"] as const,
 };
 
+const userApiInstance = new UserApi();
+
 // Login mutation
 export const useLogin = () => {
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
 
   return useMutation({
-    mutationFn: login,
+    mutationFn: (credentials: Parameters<typeof userApiInstance.login>[0]) => 
+      userApiInstance.login(credentials),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: userKeys.session() });
       dispatch(setUser(data.user ?? data)); //Depending on The API response :(
-      console.log("Login successful");
+      toast.success("Login successful! Welcome back!");
     },
-    onError: () => {
-        console.log("Login failed");
+    onError: (error) => {
+      const errorMessage = getErrorMessage(error);
+      toast.error(`Login failed: ${errorMessage}`);
+      console.error("Login failed:", error);
     },
   });
 };
@@ -34,14 +41,16 @@ export const useLogout = () => {
   const dispatch = useDispatch();
 
   return useMutation({
-    mutationFn: logout,
+    mutationFn: () => userApiInstance.logout(),
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: userKeys.session() });
       dispatch(logoutAction());
-      console.log("Logout successful");
+      toast.success("Logged out successfully!");
     },
-    onError: () => {
-      console.log("Logout failed");
+    onError: (error) => {
+      const errorMessage = getErrorMessage(error);
+      toast.error(`Logout failed: ${errorMessage}`);
+      console.error("Logout failed:", error);
     },
   });
 };
@@ -49,7 +58,7 @@ export const useLogout = () => {
 export const useSession = () => {
   return useQuery({
     queryKey: userKeys.session(),
-    queryFn: session,
+    queryFn: () => userApiInstance.session(),
     staleTime: 1000 * 60 * 5,
   });
 };
