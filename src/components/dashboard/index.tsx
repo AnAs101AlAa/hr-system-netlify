@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { WelcomeCard, ActionCards, Pagination, EventsList } from "./components";
+import DashboardLayout from "./DashboardLayout";
 
 const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,24 +76,26 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="mx-4 md:mx-6 lg:mx-8 flex flex-col md:items-center">
-      <div className="md:w-3/5 lg:w-2/3 xl:w-3/5 space-y-4 md:space-y-5 lg:space-y-6">
-        <WelcomeCard />
-        <ActionCards />
-      </div>
+    <DashboardLayout>
+      <div className="mx-4 md:mx-6 lg:mx-8 flex flex-col md:items-center">
+        <div className="md:w-3/5 lg:w-2/3 xl:w-3/5 space-y-4 md:space-y-5 lg:space-y-6">
+          <WelcomeCard />
+          <ActionCards />
+        </div>
 
-      <div className="md:w-3/5 lg:w-2/3 xl:w-3/5 space-y-4 md:space-y-5 lg:space-y-6 md:block">
-        <div className="mt-3 md:mt-4 lg:mt-5">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPrevious={handlePrevious}
-            onNext={handleNext}
-          />
-          <EventsList events={currentEvents} />
+        <div className="md:w-3/5 lg:w-2/3 xl:w-3/5 space-y-4 md:space-y-5 lg:space-y-6 md:block">
+          <div className="mt-3 md:mt-4 lg:mt-5">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPrevious={handlePrevious}
+              onNext={handleNext}
+            />
+            <EventsList events={currentEvents} />
+          </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
