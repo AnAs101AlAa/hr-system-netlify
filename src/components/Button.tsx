@@ -18,15 +18,15 @@ export default function Button({buttonText, onClick, type, disabled = false, loa
         secondary: "bg-[var(--secondary)] text-[var(--text)] border-[var(--secondary)]",
         tertiary: "bg-[var(--contrast)] text-[var(--text)] border-[var(--contrast)]",
         danger: "bg-red-600 text-white border-red-600",
-        ghost: "bg-transparent text-[var(--contrast)] border-[var(--contrast)]"
+        ghost: "bg-gray-100 text-[var(--contrast)] border-[var(--contrast)]"
     }
 
     const hoverStyles : Record<ButtonTypes, string> = {
-        primary: "hover:bg-[var(--contrast)] hover:border-[var(--contrast)]",
-        secondary: "hover:bg-[var(--contrast)] hover:border-[var(--contrast)]",
-        tertiary: "hover:bg-[var(--primary)] hover:border-[var(--primary)]",
+        primary: "hover:bg-[var(--background)] hover:border-[var(--primary)] hover:text-[var(--primary)]",
+        secondary: "hover:bg-[var(--background)] hover:border-[var(--secondary)] hover:text-[var(--secondary)]",
+        tertiary: "hover:bg-[var(--background)] hover:border-[var(--tertiary)] hover:text-[var(--tertiary)]",
         danger: "hover:bg-red-700 hover:border-red-700",
-        ghost: "hover:bg-[var(--contrast)] hover:text-[var(--text)]"
+        ghost: "hover:brightness-110"
     }
 
     const disabledStyles = "opacity-50";
