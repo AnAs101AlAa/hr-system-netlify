@@ -17,9 +17,11 @@
 }
 
 :root {
-  --primary: #CD3A38;
-  --secondary: #295E7E;
+  /* Original Variables */
+  --primary: #cd3a38;
+  --secondary: #295e7e;
   --contrast: #E0E3E7;
+  --contrast: #272727;
   --background: #fff;
   --text: #f8f8f8;
   --muted-primary: #E9AAA9;
@@ -60,3 +62,4 @@ input[type=password]::-ms-reveal,
 input[type=password]::-ms-clear {
   display: none;
 }
+>>>>>>>>> Temporary merge branch 2

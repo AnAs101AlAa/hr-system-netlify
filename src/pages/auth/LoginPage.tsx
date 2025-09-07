@@ -2,9 +2,9 @@ import tccd_logo from "@/assets/TCCD_logo.svg";
 import { useState } from "react";
 import { loginSchema, type LoginFormData } from "@/schemas/authSchemas";
 import { z } from "zod";
-import InputField from "@/components/InputField";
-import PasswordField from "@/components/PasswordField";
-import Button from "@/components/Button";
+import InputField from "@/components/generics/InputField";
+import PasswordField from "@/components/generics/PasswordField";
+import Button from "@/components/generics/Button";
 import { login } from "@/queries/Users";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@/utils";
@@ -15,10 +15,10 @@ const LoginPage = () => {
     password: "",
   });
   const [errors, setErrors] = useState<
-    Partial<Record<keyof LoginFormData, string>>
+  Partial<Record<keyof LoginFormData, string>>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { id, value } = e.target;
     setLoginForm((prev) => ({ ...prev, [id]: value }));
@@ -131,6 +131,7 @@ const LoginPage = () => {
           </footer>
         </section>
       </form>
+     
     </main>
   );
 };

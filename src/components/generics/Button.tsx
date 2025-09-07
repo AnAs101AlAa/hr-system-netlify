@@ -1,4 +1,4 @@
-import { ButtonTypes, ButtonWidths } from "../constants/presets";
+import { ButtonTypes, ButtonWidths } from "../../constants/presets";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 interface ButtonProps {
@@ -18,7 +18,8 @@ export default function Button({buttonText, onClick, type, disabled = false, loa
         secondary: "bg-[var(--secondary)] text-[var(--text)] border-[var(--secondary)]",
         tertiary: "bg-[var(--contrast)] text-[var(--text)] border-[var(--contrast)]",
         danger: "border-(--primary) text-(--primary)",
-        ghost: "bg-gray-100 text-[var(--secondary)] border-[var(--secondary)]"
+        ghost: "text-[var(--secondary)] border-[var(--secondary)]",
+        basic: "border-[var(--contrast)]"
     }
 
     const hoverStyles : Record<ButtonTypes, string> = {
@@ -26,7 +27,8 @@ export default function Button({buttonText, onClick, type, disabled = false, loa
         secondary: "hover:bg-[var(--background)] hover:border-[var(--secondary)] hover:text-[var(--secondary)]",
         tertiary: "hover:bg-[var(--background)] hover:border-[var(--tertiary)] hover:text-[var(--tertiary)]",
         danger: "hover:bg-(--primary) hover:text-[var(--text)]",
-        ghost: "hover:bg-(--secondary)/30"
+        ghost: "hover:bg-(--secondary)/30",
+        basic: "hover:bg-(--contrast)/30",
     }
 
     const disabledStyles = "opacity-50";
