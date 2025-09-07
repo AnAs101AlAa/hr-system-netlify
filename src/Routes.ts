@@ -1,7 +1,7 @@
-import Dashboard from "./components/Dashboard";
+import { HomePage } from "./pages";
 
 const routes: { path: string; Component: React.FC }[] = [
-  { path: "/", Component: Dashboard },
+  { path: "/", Component: HomePage },
 ];
 
 export default routes;
