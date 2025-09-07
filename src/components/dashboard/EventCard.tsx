@@ -40,7 +40,7 @@ const EventCard: React.FC<{ event: Omit<Event, "attendees">}> = ({ event }) => {
                         {/* you can later adjust the onClick for the detail and scanQR however you want */}
                         <Button
                             buttonText="Details"
-                            onClick={() => navigate(`/details/${id}`)}
+                            onClick={() => navigate(`/events/${id}`)}
                             type={ButtonTypes.SECONDARY}
                             width={ButtonWidths.AUTO}
                         />

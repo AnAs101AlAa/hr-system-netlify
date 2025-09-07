@@ -22,7 +22,29 @@ const formatPhone = (phone: string | undefined | null): string => {
 
   const cleaned = phone.replace(/\D/g, "");
 
-  if (cleaned.length === 10) {
+  if (cleaned.length === 13 && cleaned.startsWith("20")) {
+    return `+20 ${cleaned.slice(3, 5)} ${cleaned.slice(5, 9)} ${cleaned.slice(
+      9
+    )}`;
+  } else if (cleaned.length === 12 && cleaned.startsWith("20")) {
+    return `+20 ${cleaned.slice(2, 4)} ${cleaned.slice(4, 8)} ${cleaned.slice(
+      8
+    )}`;
+  } else if (
+    cleaned.length === 11 &&
+    (cleaned.startsWith("01") ||
+      cleaned.startsWith("10") ||
+      cleaned.startsWith("11") ||
+      cleaned.startsWith("12") ||
+      cleaned.startsWith("15"))
+  ) {
+    return `+20 ${cleaned.slice(1, 3)} ${cleaned.slice(3, 7)} ${cleaned.slice(
+      7
+    )}`;
+  }
+
+  // US phone numbers (original logic)
+  else if (cleaned.length === 10) {
     return `+1 (${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(
       6
     )}`;
