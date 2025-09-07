@@ -3,23 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { FaCalendarAlt } from 'react-icons/fa';
 import Button from '@/components/generics/Button';
 import { ButtonTypes, ButtonWidths } from '@/constants/presets';
+import formatDateTime from '@/utils/dateFormater';
 import type { Event } from '@/types/event';
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     const { id, title, startTime, endTime } = event;
     const navigate = useNavigate();
-    
-    // Format date helper function
-    const formatDateTime = (date: Date) => {
-        return date.toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        });
-    };
     
     // if event in the past, only show "Details" button, else show both "Details" and "Scan QR" buttons
     const isPastEvent = new Date(endTime) < new Date();
@@ -32,8 +21,8 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
             </div>
             
             <div className="flex flex-col text-sm text-gray-500 ">
-                <span>Start: {formatDateTime(startTime)}</span>
-                <span>End: {formatDateTime(endTime)}</span>
+                <span>Start: {formatDateTime(startTime, "full")}</span>
+                <span>End: {formatDateTime(endTime, "full")}</span>
             </div>
 
             <div className="flex justify-end items-center gap-3 mt-1">
