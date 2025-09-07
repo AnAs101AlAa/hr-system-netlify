@@ -11,7 +11,9 @@ const MobileNavbar = () => {
       {NAV_ITEMS.map(({ icon: Icon, to, title }) => (
         <Link
           className={`${
-            pathname === to ? "text-(--primary)" : "text-(--secondary)"
+            pathname === to
+              ? "text-[var(--primary)]"
+              : "text-[var(--secondary)]"
           } inline-flex flex-col items-center gap-1`}
           key={title}
           to={to}
@@ -19,7 +21,9 @@ const MobileNavbar = () => {
           <Icon size={24} />
           <span
             className={`${
-              pathname === to ? "text-[#E9AAA9]" : "text-[#BABDC4]"
+              pathname === to
+                ? "text-[var(--muted-primary)]"
+                : "text-[var(--muted-secondary)]"
             } text-xs`}
           >
             {title}
