@@ -82,7 +82,7 @@ const EventDetails = () => {
   return (
     <WithNavbar>
       <div className="min-h-screen bg-background p-4">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <EventDetailsHeader onBack={handleBack} />
           <EventInformation event={event} />
           <AttendeesList attendees={event.attendees || []} />

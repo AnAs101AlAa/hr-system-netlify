@@ -20,22 +20,22 @@ const AttendeesTable = ({ attendees }: AttendeesTableProps) => {
               className="w-42 min-w-42 px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
               Phone
             </th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
               Team
             </th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
               Status
             </th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
               Arrival
             </th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
               Leaving
             </th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
               Late Arrival Reason
             </th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
               Early Leaving Reason
             </th>
           </tr>
@@ -50,7 +50,7 @@ const AttendeesTable = ({ attendees }: AttendeesTableProps) => {
                 className="hover:bg-gray-50 transition-colors"
               >
                 <td className="px-4 py-4">
-                  <div className="font-medium text-dashboard-card-text">
+                  <div className="font-medium text-dashboard-card-text whitespace-nowrap">
                     {attendee.name || "N/A"}
                   </div>
                 </td>

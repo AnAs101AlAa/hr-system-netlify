@@ -4,7 +4,7 @@ import { HiOutlineCalendarDays } from "react-icons/hi2";
 
 export const NAV_ITEMS: { to: string; icon: IconType; title: string }[] = [
   {
-    to: "/dashboard",
+    to: "/",
     icon: BiHomeAlt,
     title: "Home",
   },
