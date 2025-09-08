@@ -7,7 +7,7 @@ const WithNavbar = ({ children }: { children: React.ReactNode }) => {
       <div className="md:block hidden fixed top-6 w-full z-40">
         <Navbar />
       </div>
-      <main className="pb-20 md:pb-0 md:pt-16">{children}</main>
+      <main className="pb-20 md:pb-0 md:pt-20">{children}</main>
       <footer className="md:hidden block fixed bottom-0 w-full">
         <MobileNavbar />
       </footer>

@@ -5,7 +5,7 @@ import { z } from "zod";
 import InputField from "@/components/generics/InputField";
 import PasswordField from "@/components/generics/PasswordField";
 import Button from "@/components/generics/Button";
-import { login } from "@/queries/Users";
+import { useLogin } from "@/queries/users/userQueries";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@/utils";
 
@@ -18,6 +18,7 @@ const LoginPage = () => {
   Partial<Record<keyof LoginFormData, string>>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { mutateAsync: login } = useLogin();
   
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { id, value } = e.target;
