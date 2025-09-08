@@ -8,7 +8,7 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
   const getStatusStyles = () => {
     switch (status) {
       case "arrived":
-        return "bg-contrast text-white border-contrast";
+        return "bg-green-500 text-white border-green-500";
       case "absent":
         return "bg-primary text-white border-primary";
       case "left":
