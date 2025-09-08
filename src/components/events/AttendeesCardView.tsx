@@ -17,14 +17,19 @@ const AttendeesCardView = ({ attendees }: AttendeesCardViewProps) => {
                 <h4 className="font-medium text-dashboard-card-text">
                   {attendee.name || "N/A"}
                 </h4>
-                <p className="text-sm text-dashboard-description">
-                  {attendee.team || "N/A"}
-                </p>
               </div>
               <StatusBadge status={attendee.status} />
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="font-medium text-dashboard-heading">
+                  Team:
+                </span>
+                <p className="text-dashboard-card-text">
+                  {attendee.team || "N/A"}
+                </p>
+              </div>
               <div>
                 <span className="font-medium text-dashboard-heading">
                   Phone:
@@ -33,12 +38,23 @@ const AttendeesCardView = ({ attendees }: AttendeesCardViewProps) => {
                   {format(attendee.phone, "phone")}
                 </p>
               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="font-medium text-dashboard-heading">
                   Arrival:
                 </span>
-                <p className="text-dashboard-card-text">
+                <p className="text-dashboard-card-text text-[13px]">
                   {format(attendee.arrivalTime, "hour")}
+                </p>
+              </div>
+              <div>
+                <span className="font-medium text-dashboard-heading">
+                  Leaving:
+                </span>
+                <p className="text-dashboard-card-text text-[13px]">
+                  {format(attendee.departureTime, "hour")}
                 </p>
               </div>
             </div>
@@ -46,18 +62,18 @@ const AttendeesCardView = ({ attendees }: AttendeesCardViewProps) => {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="font-medium text-dashboard-heading">
-                  Leaving:
+                  Late Arrival Reason:
                 </span>
                 <p className="text-dashboard-card-text">
-                  {format(attendee.departureTime, "hour")}
+                  {attendee.lateArrivalReason || "N/A"}
                 </p>
               </div>
               <div>
                 <span className="font-medium text-dashboard-heading">
-                  Reason:
+                  Early Leaving Reason:
                 </span>
                 <p className="text-dashboard-card-text">
-                  {attendee.notes || "N/A"}
+                  {attendee.earlyLeavingReason || "N/A"}
                 </p>
               </div>
             </div>

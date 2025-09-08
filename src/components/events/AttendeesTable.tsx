@@ -16,7 +16,8 @@ const AttendeesTable = ({ attendees }: AttendeesTableProps) => {
             <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
               Name
             </th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+            <th
+              className="w-42 min-w-42 px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
               Phone
             </th>
             <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
@@ -32,7 +33,10 @@ const AttendeesTable = ({ attendees }: AttendeesTableProps) => {
               Leaving
             </th>
             <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
-              Reason
+              Late Arrival Reason
+            </th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+              Early Leaving Reason
             </th>
           </tr>
         </thead>
@@ -50,8 +54,11 @@ const AttendeesTable = ({ attendees }: AttendeesTableProps) => {
                     {attendee.name || "N/A"}
                   </div>
                 </td>
-                <td className="px-4 py-4">
-                  <div className="text-sm text-dashboard-card-text">
+                <td
+                  className="w-32 min-w-32 px-4 py-4"
+                  style={{ width: "8rem", minWidth: "8rem" }}
+                >
+                  <div className="text-sm text-dashboard-card-text font-mono">
                     {format(attendee.phone, "phone")}
                   </div>
                 </td>
@@ -74,15 +81,24 @@ const AttendeesTable = ({ attendees }: AttendeesTableProps) => {
                   </div>
                 </td>
                 <td className="px-4 py-4">
-                  <div className="text-sm text-dashboard-card-text max-w-xs truncate">
-                    {attendee.notes || "N/A"}
+                  <div className="text-sm text-dashboard-card-text">
+                    <p className="break-words leading-relaxed">
+                      {attendee.lateArrivalReason || "N/A"}
+                    </p>
+                  </div>
+                </td>
+                <td className="px-4 py-4">
+                  <div className="text-sm text-dashboard-card-text">
+                    <p className="break-words leading-relaxed">
+                      {attendee.earlyLeavingReason || "N/A"}
+                    </p>
                   </div>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={7} className="px-4 py-8 text-center">
+              <td colSpan={8} className="px-4 py-8 text-center">
                 <div className="text-dashboard-description">
                   <p className="text-lg font-medium">No attendees found</p>
                   <p className="text-sm">

@@ -31,17 +31,16 @@ const EventDetails = () => {
         status: "arrived" as const,
         arrivalTime: new Date("2023-10-15T09:05:00"),
         departureTime: new Date("2023-10-15T16:55:00"),
-        notes: "On time",
+        lateArrivalReason: "Traffic jam",
       },
       {
         id: 2,
         name: "Jane Smith",
-        phone: "01552851443", 
+        phone: "01552851443",
         team: "Sales",
         role: "Representative",
         email: "jane.smith@company.com",
         status: "absent" as const,
-        notes: "Sick leave",
       },
       {
         id: 3,
@@ -53,7 +52,8 @@ const EventDetails = () => {
         status: "left" as const,
         arrivalTime: new Date("2023-10-15T09:15:00"),
         departureTime: new Date("2023-10-15T12:00:00"),
-        notes: "Left early for personal reasons",
+        lateArrivalReason: "Doctor appointment",
+        earlyLeavingReason: "Personal family emergency",
       },
     ],
   };
@@ -81,13 +81,13 @@ const EventDetails = () => {
 
   return (
     <WithNavbar>
-        <div className="min-h-screen bg-background p-4">
-        <div className="max-w-4xl mx-auto">
-            <EventDetailsHeader onBack={handleBack} />
-            <EventInformation event={event} />
-            <AttendeesList attendees={event.attendees || []} />
+      <div className="min-h-screen bg-background p-4">
+        <div className="max-w-5xl mx-auto">
+          <EventDetailsHeader onBack={handleBack} />
+          <EventInformation event={event} />
+          <AttendeesList attendees={event.attendees || []} />
         </div>
-        </div>
+      </div>
     </WithNavbar>
   );
 };
