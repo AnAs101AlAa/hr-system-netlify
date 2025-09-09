@@ -12,7 +12,8 @@ export const eventKeys = {
   pastEvents: () => [...eventKeys.all, "past"] as const,
   eventTypes: () => [...eventKeys.all, "types"] as const,
   eventsByType: (type: string) => [...eventKeys.all, "byType", type] as const,
-  searchPastEvents: (query: string) => [...eventKeys.all, "searchPast", query] as const,
+  searchPastEvents: (query: string) =>
+    [...eventKeys.all, "searchPast", query] as const,
 };
 
 // Hook to fetch event by ID
