@@ -90,6 +90,7 @@ const Dashboard = () => {
               totalPages={totalPages}
               onPrevious={handlePrevious}
               onNext={handleNext}
+              title="Upcoming Events"
             />
             <EventsList events={currentEvents} />
           </div>
