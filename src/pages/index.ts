@@ -3,5 +3,6 @@ import HomePage from "./homePage/DashboardPage";
 import EventDetails from "./events/event-details/EventDetails";
 import PastEventsPage from "./events/past_events/PastEventsPage";
 import FormView from "./forms/FormView";
+import FormSubmissionPage from "./forms/FormSubmissionPage";
 
-export { LoginPage, HomePage, EventDetails, PastEventsPage, FormView };
+export { LoginPage, HomePage, EventDetails, PastEventsPage, FormView, FormSubmissionPage };
