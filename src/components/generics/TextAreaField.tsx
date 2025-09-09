@@ -52,8 +52,8 @@ export default function TextAreaField({
         } transition-all duration-300 ease-in-out text-sm`}
       />
       {maxLength && (
-        <p className="text-[12px] md:text-[13px] lg:text-[14px] p-1">
-          Character Limit: {value.length}/{maxLength}
+        <p className="text-[9px] md:text-[10px] lg:text-[11px] p-1 text-inactive-tab-text">
+          {value.length}/{maxLength}
         </p>
       )}
     </div>
