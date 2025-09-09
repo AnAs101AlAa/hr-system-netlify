@@ -85,24 +85,26 @@ const PastEventsPage = () => {
   };
   return (
     <WithNavbar>
-      <section className="flex flex-col items-center min-h-screen">
+      <section className="flex flex-col min-h-screen mb-3">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-6 sm:space-y-8 md:space-y-10">
-            <div className="mt-4 sm:mt-6 md:mt-8 lg:mt-10">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalFilteredPages}
-                onPrevious={handlePrevious}
-                onNext={handleNext}
-                title="Past Events"
-              />
+            <div>
+              <div className="-mt-2 sm:-mt-5 md:-mt-6">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalFilteredPages}
+                  onPrevious={handlePrevious}
+                  onNext={handleNext}
+                  title="Past Events"
+                />
+              </div>
               <div className="flex lg:flex-row flex-col lg:justify-between items-center lg:gap-4 lg:mb-0 mb-4 w-full">
                 <SearchField
                   value={searchTerm}
                   onChange={setSearchTerm}
                   placeholder="Search past events..."
                 />
-                <div className="w-full lg:w-64">
+                <div className="w-full lg:w-64 lg:-mt-6">
                   <DropdownMenu
                     placeholder="Filter by event type"
                     options={eventTypeOptions}
