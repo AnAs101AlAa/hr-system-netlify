@@ -132,9 +132,6 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
                     </div>
                 )}
 
-                <div className="mt-2 text-xs text-gray-400">
-                    Debug: Errors count: {errors.length}, Answer length: {answer.length}, Is mandatory: {question.isMandatory.toString()}
-                </div>
             </div>
         </div>
     );
