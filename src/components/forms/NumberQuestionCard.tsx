@@ -101,22 +101,6 @@ const NumberQuestionCard: React.FC<NumberQuestionCardProps> = ({
                             <FaAsterisk className="text-red-500 text-xs" />
                         )}
                     </h3>
-
-                    <div className="mt-2 text-xs text-gray-500 space-y-1">
-                        {question.minValue !== undefined && question.maxValue !== undefined && (
-                            <div>Range: {question.minValue} - {question.maxValue}</div>
-                        )}
-                        {question.minValue !== undefined && question.maxValue === undefined && (
-                            <div>Minimum: {question.minValue}</div>
-                        )}
-                        {question.minValue === undefined && question.maxValue !== undefined && (
-                            <div>Maximum: {question.maxValue}</div>
-                        )}
-                        {question.isInteger && <div>Must be a whole number</div>}
-                        {question.decimalPlaces !== undefined && !question.isInteger && (
-                            <div>Maximum {question.decimalPlaces} decimal places</div>
-                        )}
-                    </div>
                 </div>
             </div>
 

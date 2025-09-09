@@ -7,12 +7,6 @@ export interface EssayQuestion {
   id: number;
   type: "Essay";
   question: string;
-  isEmail?: boolean;
-  preventSmallLetters?: boolean;
-  preventCapitalLetters?: boolean;
-  preventSpecialChars?: boolean;
-  preventNumbers?: boolean;
-  minLength?: number;
   maxLength?: number;
   isMandatory: boolean;
 }

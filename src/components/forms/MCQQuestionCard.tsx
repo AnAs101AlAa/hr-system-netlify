@@ -87,10 +87,6 @@ const MCQQuestionCard: React.FC<MCQQuestionCardProps> = ({
                             <FaAsterisk className="text-red-500 text-xs" />
                         )}
                     </h3>
-
-                    <div className="mt-1 text-xs text-gray-500">
-                        {question.isMultipleChoice ? 'Select one or more options' : 'Select one option'}
-                    </div>
                 </div>
             </div>
 

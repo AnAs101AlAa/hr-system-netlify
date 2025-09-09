@@ -10,13 +10,15 @@ interface EssayQuestionCardProps {
     onAnswerChange: (answer: Answer) => void;
     onErrorChange?: (questionId: number, hasError: boolean) => void;
     initialValue?: string;
+    showErrors?: boolean;
 }
 
 const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
     question,
     onAnswerChange,
     onErrorChange,
-    initialValue
+    initialValue,
+    showErrors = false
 }) => {
     const [answer, setAnswer] = useState<string>(initialValue || '');
     const [errors, setErrors] = useState<string[]>([]);
@@ -37,8 +39,23 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
     }, [answer, JSON.stringify(question)]);
 
     useEffect(() => {
-        validateQuestion();
-    }, [validateQuestion]);
+        if (showErrors) {
+            validateQuestion();
+        } else {
+            try {
+                const schema = createEssayValidationSchema(question);
+                schema.parse(answer.trim());
+                if (onErrorChange) {
+                    onErrorChange(question.id, false);
+                }
+            } catch (error: any) {
+                if (onErrorChange) {
+                    onErrorChange(question.id, true);
+                }
+            }
+            setErrors([]);
+        }
+    }, [validateQuestion, showErrors]);
 
     useEffect(() => {
         if (onErrorChange) {
@@ -54,24 +71,10 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
             qid: question.id,
             answer: value.trim(),
         });
-
-        try {
-            const schema = createEssayValidationSchema(question);
-            schema.parse(value.trim());
-            setErrors([]);
-        } catch (error: any) {
-            console.log('Essay validation error in handler:', error);
-            if (error.issues) {
-                setErrors(error.issues.map((issue: any) => issue.message));
-            } else if (error.message) {
-                setErrors([error.message]);
-            }
-        }
     };
 
     const renderAnswerField = () => {
-        const isTextArea = (question.maxLength && question.maxLength > 100) ||
-            (!question.maxLength && !question.isEmail);
+        const isTextArea = (question.maxLength && question.maxLength > 100) || !question.maxLength;
 
         if (isTextArea) {
             return (
@@ -94,7 +97,7 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
                     label=""
                     id={`question-${question.id}`}
                     value={answer}
-                    placeholder={question.isEmail ? "Enter your email address..." : "Enter your answer..."}
+                    placeholder="Enter your answer..."
                     onChange={handleChange}
                     error={errors.length > 0 ? errors[0] : undefined}
                 />
@@ -113,36 +116,13 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
                             <FaAsterisk className="text-red-500 text-xs" />
                         )}
                     </h3>
-
-                    <div className="mt-2 text-xs text-gray-500 space-y-1">
-                        {question.minLength && question.maxLength && (
-                            <div>Length: {question.minLength}-{question.maxLength} characters</div>
-                        )}
-                        {question.minLength && !question.maxLength && (
-                            <div>Minimum: {question.minLength} characters</div>
-                        )}
-                        {!question.minLength && question.maxLength && (
-                            <div>Maximum: {question.maxLength} characters</div>
-                        )}
-                        {question.isEmail && <div>Must be a valid email address</div>}
-                        {(question.preventSmallLetters || question.preventCapitalLetters ||
-                            question.preventSpecialChars || question.preventNumbers) && (
-                                <div className="flex flex-wrap gap-1">
-                                    Restrictions:
-                                    {question.preventSmallLetters && <span className="bg-red-100 text-red-700 px-1 rounded">No lowercase</span>}
-                                    {question.preventCapitalLetters && <span className="bg-red-100 text-red-700 px-1 rounded">No uppercase</span>}
-                                    {question.preventSpecialChars && <span className="bg-red-100 text-red-700 px-1 rounded">No special chars</span>}
-                                    {question.preventNumbers && <span className="bg-red-100 text-red-700 px-1 rounded">No numbers</span>}
-                                </div>
-                            )}
-                    </div>
                 </div>
             </div>
 
             <div className="ml-8">
                 {renderAnswerField()}
 
-                {errors.length > 0 && (
+                {showErrors && errors.length > 0 && (
                     <div className="mt-2 space-y-1">
                         {errors.map((error, index) => (
                             <div key={index} className="text-red-500 text-sm font-medium">

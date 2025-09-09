@@ -78,15 +78,6 @@ const DateQuestionCard: React.FC<DateQuestionCardProps> = ({
                             <FaAsterisk className="text-red-500 text-xs" />
                         )}
                     </h3>
-
-                    <div className="mt-2 text-xs text-gray-500 space-y-1">
-                        {question.minDate && (
-                            <div>Minimum date: {question.minDate}</div>
-                        )}
-                        {question.maxDate && (
-                            <div>Maximum date: {question.maxDate}</div>
-                        )}
-                    </div>
                 </div>
             </div>
 

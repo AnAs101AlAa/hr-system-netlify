@@ -21,12 +21,6 @@ export const numberAnswerSchema = z.object({
 });
 
 export const createEssayValidationSchema = (question: {
-  isEmail?: boolean;
-  preventSmallLetters?: boolean;
-  preventCapitalLetters?: boolean;
-  preventSpecialChars?: boolean;
-  preventNumbers?: boolean;
-  minLength?: number;
   maxLength?: number;
   isMandatory: boolean;
 }) => {
@@ -36,44 +30,8 @@ export const createEssayValidationSchema = (question: {
     schema = schema.min(1, "This field is required");
   }
 
-  if (question.isEmail) {
-    schema = schema.email("Please enter a valid email address");
-  }
-
-  if (question.minLength) {
-    schema = schema.min(question.minLength, `Minimum ${question.minLength} characters required`);
-  }
-
   if (question.maxLength) {
     schema = schema.max(question.maxLength, `Maximum ${question.maxLength} characters allowed`);
-  }
-
-  if (question.preventSmallLetters) {
-    schema = schema.refine(
-      (val) => !val || !/[a-z]/.test(val),
-      "Lowercase letters are not allowed"
-    );
-  }
-
-  if (question.preventCapitalLetters) {
-    schema = schema.refine(
-      (val) => !val || !/[A-Z]/.test(val),
-      "Uppercase letters are not allowed"
-    );
-  }
-
-  if (question.preventSpecialChars) {
-    schema = schema.refine(
-      (val) => !val || !/[^a-zA-Z0-9\s]/.test(val),
-      "Special characters are not allowed"
-    );
-  }
-
-  if (question.preventNumbers) {
-    schema = schema.refine(
-      (val) => !val || !/\d/.test(val),
-      "Numbers are not allowed"
-    );
   }
 
   return schema;

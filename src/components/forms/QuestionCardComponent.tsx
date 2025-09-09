@@ -10,13 +10,15 @@ interface QuestionCardComponentProps {
   onAnswerChange: (answer: Answer) => void;
   onErrorChange?: (questionId: number, hasError: boolean) => void;
   initialValue?: Answer;
+  showErrors?: boolean;
 }
 
 const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
   question,
   onAnswerChange,
   onErrorChange,
-  initialValue
+  initialValue,
+  showErrors = false
 }) => {
   if (question.type === 'Essay') {
     const essayInitialValue = initialValue && 'answer' in initialValue && typeof initialValue.answer === 'string'
@@ -29,6 +31,7 @@ const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
         onAnswerChange={onAnswerChange}
         onErrorChange={onErrorChange}
         initialValue={essayInitialValue}
+        showErrors={showErrors}
       />
     );
   }
