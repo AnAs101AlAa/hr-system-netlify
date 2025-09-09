@@ -4,7 +4,7 @@ import {
   EventInformation,
   AttendeesList,
   EventNotFound,
-} from "../../components/events";
+} from "@/components/events";
 import WithNavbar from "@/components/hoc/WithNavbar";
 
 const EventDetails = () => {
