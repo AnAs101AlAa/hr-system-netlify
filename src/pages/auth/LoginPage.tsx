@@ -60,7 +60,7 @@ const LoginPage = () => {
       await login(loginForm);
       toast.success("Welcome Back!");
       setTimeout(() => {
-        window.location.replace("/dashboard");
+        window.location.replace("/");
       }, 1000);
     } catch (error) {
       toast.error(getErrorMessage(error));
