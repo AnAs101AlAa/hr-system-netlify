@@ -104,7 +104,7 @@ const NumberQuestionCard: React.FC<NumberQuestionCardProps> = ({
                 </div>
             </div>
 
-            <div className="ml-8">
+            <div>
                 <NumberField
                     label=""
                     id={`question-${question.id}`}

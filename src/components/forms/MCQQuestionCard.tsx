@@ -90,7 +90,7 @@ const MCQQuestionCard: React.FC<MCQQuestionCardProps> = ({
                 </div>
             </div>
 
-            <div className="ml-8">
+            <div>
                 <div className="space-y-3">
                     {question.choices.map((choice) => (
                         <label

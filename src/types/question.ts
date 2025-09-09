@@ -33,10 +33,7 @@ export interface NumberQuestion {
   id: number;
   type: "Number";
   question: string;
-  minValue?: number;
-  maxValue?: number;
   isInteger?: boolean; 
-  decimalPlaces?: number; 
   isMandatory: boolean;
 }
 

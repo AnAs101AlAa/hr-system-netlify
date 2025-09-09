@@ -119,7 +119,7 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
                 </div>
             </div>
 
-            <div className="ml-8">
+            <div>
                 {renderAnswerField()}
 
                 {showErrors && errors.length > 0 && (

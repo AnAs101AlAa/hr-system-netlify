@@ -81,7 +81,7 @@ const DateQuestionCard: React.FC<DateQuestionCardProps> = ({
                 </div>
             </div>
 
-            <div className="ml-8">
+            <div>
                 <div>
                     <DatePicker
                         label=""

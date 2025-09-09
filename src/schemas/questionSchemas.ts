@@ -82,70 +82,24 @@ export const createDateValidationSchema = (question: {
 };
 
 export const createNumberValidationSchema = (question: {
-  minValue?: number;
-  maxValue?: number;
   isInteger?: boolean;
-  decimalPlaces?: number;
   isMandatory: boolean;
 }) => {
   if (question.isMandatory) {
     let schema = z.number();
 
-    if (question.minValue !== undefined) {
-      schema = schema.min(question.minValue, `Value must be at least ${question.minValue}`);
-    }
-
-    if (question.maxValue !== undefined) {
-      schema = schema.max(question.maxValue, `Value must be at most ${question.maxValue}`);
-    }
-
     if (question.isInteger) {
       schema = schema.int("Value must be a whole number");
-    }
-
-    if (question.decimalPlaces !== undefined && !question.isInteger) {
-      schema = schema.refine(
-        (val) => {
-          const decimalCount = (val.toString().split('.')[1] || '').length;
-          return decimalCount <= question.decimalPlaces!;
-        },
-        `Maximum ${question.decimalPlaces} decimal places allowed`
-      );
     }
 
     return schema;
   } else {
     let schema = z.number().optional();
 
-    if (question.minValue !== undefined) {
-      schema = schema.refine(
-        (val) => val === undefined || val >= question.minValue!,
-        `Value must be at least ${question.minValue}`
-      );
-    }
-
-    if (question.maxValue !== undefined) {
-      schema = schema.refine(
-        (val) => val === undefined || val <= question.maxValue!,
-        `Value must be at most ${question.maxValue}`
-      );
-    }
-
     if (question.isInteger) {
       schema = schema.refine(
         (val) => val === undefined || Number.isInteger(val),
         "Value must be a whole number"
-      );
-    }
-
-    if (question.decimalPlaces !== undefined && !question.isInteger) {
-      schema = schema.refine(
-        (val) => {
-          if (val === undefined) return true;
-          const decimalCount = (val.toString().split('.')[1] || '').length;
-          return decimalCount <= question.decimalPlaces!;
-        },
-        `Maximum ${question.decimalPlaces} decimal places allowed`
       );
     }
 
