@@ -8,28 +8,27 @@ const MobileNavbar = () => {
 
   return (
     <nav className="w-full bg-white relative flex justify-center gap-[65%] items-center px-5 h-16 border border-[#000]/13 rounded-t-3xl">
-      {NAV_ITEMS.map(({ icon: Icon, to, title }) => (
-        <Link
-          className={`${
-            pathname === to
-              ? "text-primary"
-              : "text-secondary"
-          } inline-flex flex-col items-center gap-1`}
-          key={title}
-          to={to}
-        >
-          <Icon size={24} />
-          <span
+      {NAV_ITEMS.map(({ icon: Icon, to, title }) => {
+        const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
+        return (
+          <Link
             className={`${
-              pathname === to
-                ? "text-muted-primary"
-                : "text-muted-secondary"
-            } text-xs`}
+              active ? "text-primary" : "text-secondary"
+            } inline-flex flex-col items-center gap-1`}
+            key={title}
+            to={to}
           >
-            {title}
-          </span>
-        </Link>
-      ))}
+            <Icon size={24} />
+            <span
+              className={`${
+                active ? "text-muted-primary" : "text-muted-secondary"
+              } text-xs`}
+            >
+              {title}
+            </span>
+          </Link>
+        );
+      })}
 
       <button className="absolute left-1/2 -translate-x-1/2 top-[-1.25rem] bg-primary p-2.5 rounded-full">
         <span className="w-fit h-fit rounded-full border border-[#FEFEFE75] text-white p-2 block">
