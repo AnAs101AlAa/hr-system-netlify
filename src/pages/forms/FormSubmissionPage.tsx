@@ -42,8 +42,7 @@ const FormSubmissionPage = () => {
                                 Thank You!
                             </h2>
                             <p className="text-[#636569] text-sm leading-relaxed">
-                                We truly appreciate you taking the time to fill out this form.
-                                Your participation means a lot to us and helps us serve you better.
+                                Your form has been successfully submitted. We appreciate your engagement to our community.
                             </p>
                             <p className="text-[#636569] text-xs mt-4">
                                 You can safely close this page now.
