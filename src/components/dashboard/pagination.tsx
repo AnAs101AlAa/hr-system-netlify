@@ -5,6 +5,7 @@ interface PaginationProps {
   totalPages: number;
   onPrevious: () => void;
   onNext: () => void;
+  title:string;
 }
 
 const Pagination = ({
@@ -12,6 +13,7 @@ const Pagination = ({
   totalPages,
   onPrevious,
   onNext,
+  title
 }: PaginationProps) => {
   const isFirstPage = currentPage === 1;
   const isLastPage = currentPage === totalPages;
@@ -21,7 +23,7 @@ const Pagination = ({
       <div className="h-full w-full relative gap-6 flex flex-col ">
         <div className="">
           <h3 className="text-dashboard-heading font-bold text-[18px] sm:text-[22px] md:text-[25px] lg:text-[28px]">
-            Upcoming Events
+            {title}
           </h3>
         </div>
 

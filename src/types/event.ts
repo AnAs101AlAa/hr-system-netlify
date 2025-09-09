@@ -8,9 +8,16 @@ export interface Attendee extends member {
   earlyLeavingReason?: string;
 }
 
+export interface EventType {
+  id: string;
+  label: string;
+  description?: string;
+}
+
 export interface Event {
   id: number;
   title: string;
+  type: string;
   startTime: Date;
   endTime: Date;
   attendees: Attendee[];

@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { WelcomeCard, ActionCards, Pagination, EventsList } from "@/components/dashboard";
+import {
+  WelcomeCard,
+  ActionCards,
+  Pagination,
+  EventsList,
+} from "@/components/dashboard";
 import WithNavbar from "@/components/hoc/WithNavbar";
 
 const Dashboard = () => {
@@ -10,48 +15,63 @@ const Dashboard = () => {
     {
       id: 1,
       title: "Team Meeting",
+      type: "meeting",
       startTime: new Date("2024-10-01T14:00:00"),
       endTime: new Date("2024-10-01T15:00:00"),
     },
     {
       id: 2,
       title: "Project Review",
+      type: "review",
+
       startTime: new Date("2024-10-01T14:00:00"),
       endTime: new Date("2024-10-01T15:00:00"),
     },
     {
       id: 3,
       title: "Training Session",
+      type: "session",
+
       startTime: new Date("2024-10-01T14:00:00"),
       endTime: new Date("2024-10-01T15:00:00"),
     },
     {
       id: 4,
       title: "Client Presentation",
+      type: "presentation",
+
       startTime: new Date("2024-10-01T14:00:00"),
       endTime: new Date("2024-10-01T15:00:00"),
     },
     {
       id: 5,
       title: "Code Review",
+      type: "review",
+
       startTime: new Date("2024-10-01T14:00:00"),
       endTime: new Date("2024-10-01T15:00:00"),
     },
     {
       id: 6,
       title: "Design Review",
+      type: "review",
+
       startTime: new Date("2024-10-02T10:00:00"),
       endTime: new Date("2024-10-02T11:00:00"),
     },
     {
       id: 7,
       title: "Sprint Planning",
+      type: "planning",
+
       startTime: new Date("2024-10-02T14:00:00"),
       endTime: new Date("2024-10-02T16:00:00"),
     },
     {
       id: 8,
       title: "Stakeholder Meeting",
+      type: "meeting",
+
       startTime: new Date("2024-10-03T09:00:00"),
       endTime: new Date("2024-10-03T10:30:00"),
     },
@@ -90,6 +110,7 @@ const Dashboard = () => {
               totalPages={totalPages}
               onPrevious={handlePrevious}
               onNext={handleNext}
+              title="Upcoming Events"
             />
             <EventsList events={currentEvents} />
           </div>

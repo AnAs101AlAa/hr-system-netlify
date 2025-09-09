@@ -1,10 +1,9 @@
-import { NAV_ITEMS } from "../../constants";
+import { NAV_ITEMS } from "@/constants";
 import { NavLink, useLocation } from "react-router-dom";
-import logo from "../../assets/TCCD_logo.svg";
+import logo from "@/assets/TCCD_logo.svg";
 
 const Navbar = () => {
   const { pathname } = useLocation();
-
   return (
     <header className="w-full flex justify-center px-3 py-3">
       <nav
@@ -19,7 +18,8 @@ const Navbar = () => {
       >
         {/* Tabs */}
         {NAV_ITEMS.map(({ to, title }) => {
-          const active = pathname === to;
+          const active =
+            to === "/" ? pathname === "/" : pathname.startsWith(to);
           return (
             <NavLink
               key={title}
@@ -29,11 +29,11 @@ const Navbar = () => {
                 group flex-1 text-center rounded-full px-2.5 py-1.5
                 text-sm font-semibold
                 transition-all duration-150
-                outline-none ring-0 focus-visible:ring-2 focus-visible:ring-[var(--primary)]/35
+                outline-none ring-0 focus-visible:ring-2 focus-visible:ring-primary/35
                 ${
                   active
-                    ? "bg-[var(--chip-bg,--active-tab-bg)] text-[var(--primary,--active-tab-text)] shadow-inner"
-                    : "text-[var(--muted,--inactive-tab-text)] hover:bg-zinc-100/80 hover:text-[var(--primary,#ea4c59)]"
+                    ? "bg-active-tab-bg text-active-tab-text shadow-inner"
+                    : "text-inactive-tab-text hover:bg-zinc-100/80 hover:text-primary"
                 }
               `}
             >
