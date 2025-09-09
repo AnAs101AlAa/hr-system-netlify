@@ -4,7 +4,6 @@ import logo from "@/assets/TCCD_logo.svg";
 
 const Navbar = () => {
   const { pathname } = useLocation();
-  console.log(pathname.startsWith("/events"));
   return (
     <header className="w-full flex justify-center px-3 py-3">
       <nav
