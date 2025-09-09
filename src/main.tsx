@@ -7,13 +7,24 @@ import "./index.css";
 import App from "./App.tsx";
 
 const queryClient = new QueryClient();
+async function enableMocking() {
+  if (process.env.NODE_ENV !== "development") {
+    return;
+  }
 
-createRoot(document.getElementById("root")!).render(
-  <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <StrictMode>
-        <App />
-      </StrictMode>
-    </QueryClientProvider>
-  </Provider>
-);
+  const { worker } = await import("./mocks/browser.ts");
+
+  return worker.start();
+}
+
+enableMocking().then(() => {
+  createRoot(document.getElementById("root")!).render(
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <StrictMode>
+          <App />
+        </StrictMode>
+      </QueryClientProvider>
+    </Provider>
+  );
+});
