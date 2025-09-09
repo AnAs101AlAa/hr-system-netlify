@@ -14,22 +14,12 @@ const PastEventsPage = () => {
   const { data: pastEvents = [], error: eventsError } = usePastEvents();
   const { data: eventTypes = [], error: typesError } = useEventTypes();
 
-  // Handle errors - errors are already displayed via toast in the query hooks
-  // but we could add additional error handling here if needed
-  useEffect(() => {
-    if (eventsError || typesError) {
-      // Additional error handling can be added here if needed
-      // The errorHandler utility already shows toast notifications
-      console.error('API Error:', { eventsError, typesError });
-    }
-  }, [eventsError, typesError]);
-
   // Transform event types for dropdown options
   const eventTypeOptions = useMemo(() => {
     const allEventsOption = { value: "", label: "All Events" };
-    const typeOptions = eventTypes.map(type => ({
+    const typeOptions = eventTypes.map((type) => ({
       value: type.id,
-      label: type.label
+      label: type.label,
     }));
     return [allEventsOption, ...typeOptions];
   }, [eventTypes]);
@@ -121,7 +111,7 @@ const PastEventsPage = () => {
                   />
                 </div>
               </div>
-              
+
               {/* Error state */}
               {(eventsError || typesError) && (
                 <div className="text-center py-8">
@@ -130,25 +120,31 @@ const PastEventsPage = () => {
                   </p>
                 </div>
               )}
-              
+
               {/* Empty state */}
-              {!eventsError && !typesError && currentEvents.length === 0 && pastEvents.length === 0 && (
-                <div className="text-center py-8">
-                  <p className="text-muted-secondary text-lg">
-                    No past events available.
-                  </p>
-                </div>
-              )}
-              
+              {!eventsError &&
+                !typesError &&
+                currentEvents.length === 0 &&
+                pastEvents.length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-muted-secondary text-lg">
+                      No past events available.
+                    </p>
+                  </div>
+                )}
+
               {/* No filtered results */}
-              {!eventsError && !typesError && currentEvents.length === 0 && pastEvents.length > 0 && (
-                <div className="text-center py-8">
-                  <p className="text-muted-secondary text-lg">
-                    No events found matching your search criteria.
-                  </p>
-                </div>
-              )}
-              
+              {!eventsError &&
+                !typesError &&
+                currentEvents.length === 0 &&
+                pastEvents.length > 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-muted-secondary text-lg">
+                      No events found matching your search criteria.
+                    </p>
+                  </div>
+                )}
+
               {/* Events list */}
               {!eventsError && !typesError && currentEvents.length > 0 && (
                 <EventsList events={currentEvents} />
