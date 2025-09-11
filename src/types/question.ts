@@ -38,4 +38,4 @@ export interface NumberQuestion {
 
 export type Question = EssayQuestion | MCQQuestion | DateQuestion | NumberQuestion;
 
-export type Answer = string | number;
+export type Answer = {qid: string, answer: string | number};

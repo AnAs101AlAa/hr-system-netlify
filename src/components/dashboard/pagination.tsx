@@ -5,7 +5,7 @@ interface PaginationProps {
   totalPages: number;
   onPrevious: () => void;
   onNext: () => void;
-  title:string;
+  title: string;
 }
 
 const Pagination = ({
@@ -13,7 +13,7 @@ const Pagination = ({
   totalPages,
   onPrevious,
   onNext,
-  title
+  title,
 }: PaginationProps) => {
   const isFirstPage = currentPage === 1;
   const isLastPage = currentPage === totalPages;

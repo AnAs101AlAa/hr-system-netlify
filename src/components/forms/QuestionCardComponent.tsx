@@ -7,7 +7,7 @@ import NumberQuestionCard from './NumberQuestionCard';
 
 interface QuestionCardComponentProps {
   question: Question;
-  onAnswerChange: (questionId: string, answer: Answer) => void;
+  onAnswerChange: (answer: Answer) => void;
   onErrorChange?: (questionId: string, hasError: boolean) => void;
   initialValue?: Answer;
   showErrors?: boolean;

@@ -6,7 +6,7 @@ import { createNumberValidationSchema } from '@/schemas/questionSchemas';
 
 interface NumberQuestionCardProps {
     question: NumberQuestion;
-    onAnswerChange: (questionId: string, answer: Answer) => void;
+    onAnswerChange: (answer: Answer) => void;
     onErrorChange?: (questionId: string, hasError: boolean) => void;
     initialValue?: number;
 }
@@ -60,7 +60,8 @@ const NumberQuestionCard: React.FC<NumberQuestionCardProps> = ({
 
         const numValue = value === '' ? 0 : Number(value);
         if (!isNaN(numValue)) {
-            onAnswerChange(question.id, {
+            onAnswerChange({
+                qid: question.id,
                 answer: numValue,
             });
         }
@@ -89,15 +90,15 @@ const NumberQuestionCard: React.FC<NumberQuestionCardProps> = ({
     };
     return (
         <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4">
-            <div className="flex items-start gap-3">
-                <FaQuestionCircle className="text-secondary text-lg mt-1 flex-shrink-0" />
-                <div className="flex-1">
-                    <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
+            <div className="flex items-start gap-1.5 md:gap-3">
+                <FaQuestionCircle className="text-secondary text-md md:text-lg mt-1 flex-shrink-0" />
+                <div className="flex-1 flex items-center justify-between">
+                    <h3 className="font-bold text-gray-800 text-[14px] md:text-[16px] lg:text-[18px] flex items-center gap-2">
                         {question.question}
-                        {question.isMandatory && (
-                            <FaAsterisk className="text-red-500 text-xs" />
-                        )}
                     </h3>
+                    {question.isMandatory && (
+                        <FaAsterisk className="text-primary text-xs" />
+                    )}
                 </div>
             </div>
 

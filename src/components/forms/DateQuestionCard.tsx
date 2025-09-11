@@ -6,7 +6,7 @@ import { createDateValidationSchema } from '@/schemas/questionSchemas';
 
 interface DateQuestionCardProps {
     question: DateQuestion;
-    onAnswerChange: (questionId: string, answer: Answer) => void;
+    onAnswerChange: (answer: Answer) => void;
     onErrorChange?: (questionId: string, hasError: boolean) => void;
     initialValue?: string;
 }
@@ -47,7 +47,8 @@ const DateQuestionCard: React.FC<DateQuestionCardProps> = ({
     const handleChange = (value: string) => {
         setAnswer(value);
 
-        onAnswerChange(question.id, {
+        onAnswerChange({
+            qid: question.id,
             answer: value,
         });
 
@@ -66,15 +67,15 @@ const DateQuestionCard: React.FC<DateQuestionCardProps> = ({
 
     return (
         <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4">
-            <div className="flex items-start gap-3">
-                <FaQuestionCircle className="text-secondary text-lg mt-1 flex-shrink-0" />
-                <div className="flex-1">
-                    <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
+            <div className="flex items-start gap-1.5 md:gap-3">
+                <FaQuestionCircle className="text-secondary text-md md:text-lg mt-1 flex-shrink-0" />
+                <div className="flex-1 flex items-center justify-between">
+                    <h3 className="font-bold text-gray-800 text-[14px] md:text-[16px] lg:text-[18px] flex items-center gap-2">
                         {question.question}
-                        {question.isMandatory && (
-                            <FaAsterisk className="text-red-500 text-xs" />
-                        )}
                     </h3>
+                    {question.isMandatory && (
+                        <FaAsterisk className="text-primary text-xs" />
+                    )}
                 </div>
             </div>
 
