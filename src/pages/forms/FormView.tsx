@@ -7,7 +7,7 @@ import {
 import type { Answer } from "@/types/question";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Button from "@/components/generics/Button";
 import FormLoadingComponent from "@/components/forms/Loading";
 import ErrorComponent from "@/components/generics/Error";
@@ -19,7 +19,7 @@ export default function FormView() {
 
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [questionErrors, setQuestionErrors] = useState<{
-    [questionId: number]: boolean;
+    [questionId: string]: boolean;
   }>({});
   const [showErrors, setShowErrors] = useState<boolean>(false);
 
@@ -58,6 +58,8 @@ export default function FormView() {
       return;
     }
 
+    console.log(answers);
+
     toast.promise(submitFormMutation.mutateAsync(), {
       loading: "Submitting...",
       success: "Your response has been submitted, Thank You!",
@@ -68,16 +70,16 @@ export default function FormView() {
 
   return (
     <WithNavbar>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-4 md:pb-10">
         {isFetching && <FormLoadingComponent />}
         {isError && <ErrorComponent title="Error Loading Form" message="We encountered an error while loading this form, Please try again later."/>}
         {formData && (
-          <div className="w-full md:w-3/4 lg:w-10/12 m-auto rounded-xl shadow-md p-5 flex flex-col gap-4">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary p-4">
+          <div className="w-[96%] md:w-3/4 lg:w-2/3 m-auto rounded-xl shadow-md p-5 flex flex-col gap-4 bg-slate-50">
+            <h1 className="text-3xl md:text-4xl font-bold text-primary pb-1 p-4">
               {formData.title}
             </h1>
             {formData.description && (
-              <p className="text-base md:text-lg lg:text-xl px-4 mb-6">
+              <p className="text-sm md:text-md lg:text-lg px-4 mb-6 text-inactive-tab-text">
                 {formData.description}
               </p>
             )}
@@ -91,20 +93,13 @@ export default function FormView() {
                 />
               </div>
             ))}
-            <div className="flex justify-end mt-8">
+            <div className="flex justify-center md:justify-end -mt-6 md:mt-8">
               <Button
                 buttonText="Submit"
                 type="primary"
                 onClick={handleSubmit}
               />
             </div>
-            {Object.values(questionErrors).some((hasError) => hasError) && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-red-700 text-sm font-medium">
-                  Please fix all validation errors before submitting the form.
-                </p>
-              </div>
-            )}
           </div>
         )}
       </div>

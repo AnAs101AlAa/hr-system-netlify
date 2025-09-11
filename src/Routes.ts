@@ -5,7 +5,7 @@ const routes: { path: string; Component: React.FC }[] = [
   { path: "/login", Component: LoginPage },
   { path: "/events/:id", Component: EventDetails },
   { path: "/events", Component: PastEventsPage },
-  { path: "/form/:formId", Component: FormView}
+  { path: "/form/:formId", Component: FormView},
   { path: "/form/finish", Component: FormSubmissionPage },
 ];
 
