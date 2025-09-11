@@ -1,4 +1,11 @@
-import { HomePage, LoginPage, EventDetails, PastEventsPage, FormSubmissionPage } from "./pages";
+import {
+  HomePage,
+  LoginPage,
+  EventDetails,
+  PastEventsPage,
+  FormSubmissionPage,
+  ScanQRPage,
+} from "./pages";
 
 const routes: { path: string; Component: React.FC }[] = [
   { path: "/", Component: HomePage },
@@ -6,6 +13,7 @@ const routes: { path: string; Component: React.FC }[] = [
   { path: "/events/:id", Component: EventDetails },
   { path: "/events", Component: PastEventsPage },
   { path: "/form/finish", Component: FormSubmissionPage },
+  { path: "/events/scan-qr", Component: ScanQRPage },
 ];
 
 export default routes;
