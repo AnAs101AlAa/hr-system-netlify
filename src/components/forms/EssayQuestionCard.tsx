@@ -66,9 +66,7 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
         const value = e.target.value;
         setAnswer(value);
 
-        onAnswerChange(question.id, {
-            answer: value.trim(),
-        });
+        onAnswerChange(value.trim() === '' ? question.id : value.trim(), value.trim());
     };
 
     const renderAnswerField = () => {

@@ -38,20 +38,4 @@ export interface NumberQuestion {
 
 export type Question = EssayQuestion | MCQQuestion | DateQuestion | NumberQuestion;
 
-export interface EssayAnswer {
-  answer: string;
-}
-
-export interface MCQAnswer {
-  answer: string;
-}
-
-export interface DateAnswer {
-  answer: string; 
-}
-
-export interface NumberAnswer {
-  answer: number;
-}
-
-export type Answer = EssayAnswer | MCQAnswer | DateAnswer | NumberAnswer;
+export type Answer = string | number;
