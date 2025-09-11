@@ -3,5 +3,6 @@ import HomePage from "./homePage/DashboardPage";
 import EventDetails from "./events/event-details/EventDetails";
 import PastEventsPage from "./events/past_events/PastEventsPage";
 import FormSubmissionPage from "./forms/FormSubmissionPage";
+import ScanQRPage from "./scan_qr/ScanQRPage";
 
-export { LoginPage, HomePage, EventDetails, PastEventsPage, FormSubmissionPage };
+export { LoginPage, HomePage, EventDetails, PastEventsPage, FormSubmissionPage,ScanQRPage };
