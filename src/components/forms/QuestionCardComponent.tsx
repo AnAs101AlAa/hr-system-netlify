@@ -7,8 +7,8 @@ import NumberQuestionCard from './NumberQuestionCard';
 
 interface QuestionCardComponentProps {
   question: Question;
-  onAnswerChange: (answer: Answer) => void;
-  onErrorChange?: (questionId: number, hasError: boolean) => void;
+  onAnswerChange: (questionId: string, answer: Answer) => void;
+  onErrorChange?: (questionId: string, hasError: boolean) => void;
   initialValue?: Answer;
   showErrors?: boolean;
 }
@@ -37,7 +37,7 @@ const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
   }
 
   if (question.type === 'MCQ') {
-    const mcqInitialValue = initialValue && 'answer' in initialValue && Array.isArray(initialValue.answer)
+    const mcqInitialValue = initialValue && 'answer' in initialValue && typeof initialValue.answer === 'string'
       ? initialValue.answer
       : undefined;
 

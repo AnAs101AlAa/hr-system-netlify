@@ -7,8 +7,8 @@ import { createEssayValidationSchema } from '@/schemas/questionSchemas';
 
 interface EssayQuestionCardProps {
     question: EssayQuestion;
-    onAnswerChange: (answer: Answer) => void;
-    onErrorChange?: (questionId: number, hasError: boolean) => void;
+    onAnswerChange: (questionId: string, answer: Answer) => void;
+    onErrorChange?: (questionId: string, hasError: boolean) => void;
     initialValue?: string;
     showErrors?: boolean;
 }
@@ -67,8 +67,7 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
         const value = e.target.value;
         setAnswer(value);
 
-        onAnswerChange({
-            qid: question.id,
+        onAnswerChange(question.id, {
             answer: value.trim(),
         });
     };
@@ -108,7 +107,7 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
     return (
         <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4">
             <div className="flex items-start gap-3">
-                <FaQuestionCircle className="text-primary text-lg mt-1 flex-shrink-0" />
+                <FaQuestionCircle className="text-secondary text-lg mt-1 flex-shrink-0" />
                 <div className="flex-1">
                     <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
                         {question.question}
