@@ -29,7 +29,6 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
             schema.parse(answer.trim());
             setErrors([]);
         } catch (error: any) {
-            console.log('Essay validation error:', error);
             if (error.issues) {
                 setErrors(error.issues.map((issue: any) => issue.message));
             } else if (error.message) {

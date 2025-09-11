@@ -36,7 +36,6 @@ const NumberQuestionCard: React.FC<NumberQuestionCardProps> = ({
 
             setErrors([]);
         } catch (error: any) {
-            console.log('Number validation error:', error);
             if (error.issues) {
                 setErrors(error.issues.map((issue: any) => issue.message));
             } else if (error.message) {
@@ -81,7 +80,6 @@ const NumberQuestionCard: React.FC<NumberQuestionCardProps> = ({
 
             setErrors([]);
         } catch (error: any) {
-            console.log('Number validation error in handler:', error);
             if (error.issues) {
                 setErrors(error.issues.map((issue: any) => issue.message));
             } else if (error.message) {

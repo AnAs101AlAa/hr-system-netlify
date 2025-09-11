@@ -26,7 +26,6 @@ const MCQQuestionCard: React.FC<MCQQuestionCardProps> = ({
             schema.parse(answer);
             setErrors([]);
         } catch (error: any) {
-            console.log('MCQ validation error:', error);
             if (error.issues) {
                 setErrors(error.issues.map((issue: any) => issue.message));
             } else if (error.message) {
@@ -57,7 +56,6 @@ const MCQQuestionCard: React.FC<MCQQuestionCardProps> = ({
             schema.parse(value);
             setErrors([]);
         } catch (error: any) {
-            console.log('MCQ validation error in handler:', error);
             if (error.issues) {
                 setErrors(error.issues.map((issue: any) => issue.message));
             } else if (error.message) {
