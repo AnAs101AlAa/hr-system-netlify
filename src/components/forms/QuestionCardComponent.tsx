@@ -7,8 +7,8 @@ import NumberQuestionCard from './NumberQuestionCard';
 
 interface QuestionCardComponentProps {
   question: Question;
-  onAnswerChange: (answer: Answer) => void;
-  onErrorChange?: (questionId: number, hasError: boolean) => void;
+  onAnswerChange: (questionId: string, answer: Answer) => void;
+  onErrorChange?: (questionId: string, hasError: boolean) => void;
   initialValue?: Answer;
   showErrors?: boolean;
 }
@@ -21,8 +21,8 @@ const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
   showErrors = false
 }) => {
   if (question.type === 'Essay') {
-    const essayInitialValue = initialValue && 'answer' in initialValue && typeof initialValue.answer === 'string'
-      ? initialValue.answer
+    const essayInitialValue = initialValue && typeof initialValue === 'string'
+      ? initialValue
       : undefined;
 
     return (
@@ -37,8 +37,8 @@ const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
   }
 
   if (question.type === 'MCQ') {
-    const mcqInitialValue = initialValue && 'answer' in initialValue && Array.isArray(initialValue.answer)
-      ? initialValue.answer
+    const mcqInitialValue = initialValue && typeof initialValue === 'string'
+      ? initialValue
       : undefined;
 
     return (
@@ -52,8 +52,8 @@ const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
   }
 
   if (question.type === 'Date') {
-    const dateInitialValue = initialValue && 'answer' in initialValue && typeof initialValue.answer === 'string'
-      ? initialValue.answer
+    const dateInitialValue = initialValue && typeof initialValue === 'string'
+      ? initialValue
       : undefined;
 
     return (
@@ -67,8 +67,8 @@ const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
   }
 
   if (question.type === 'Number') {
-    const numberInitialValue = initialValue && 'answer' in initialValue && typeof initialValue.answer === 'number'
-      ? initialValue.answer
+    const numberInitialValue = initialValue && typeof initialValue === 'number'
+      ? initialValue
       : undefined;
 
     return (

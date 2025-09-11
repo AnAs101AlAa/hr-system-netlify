@@ -1,10 +1,10 @@
 export interface Choice {
-  id: number;
+  id: string;
   content: string;
 }
 
 export interface EssayQuestion {
-  id: number;
+  id: string;
   type: "Essay";
   question: string;
   maxLength?: number;
@@ -12,16 +12,15 @@ export interface EssayQuestion {
 }
 
 export interface MCQQuestion {
-  id: number;
+  id: string;
   type: "MCQ";
   question: string;
   choices: Choice[];
   isMandatory: boolean;
-  isMultipleChoice: boolean;
 }
 
 export interface DateQuestion {
-  id: number;
+  id: string;
   type: "Date";
   question: string;
   minDate?: string; 
@@ -30,7 +29,7 @@ export interface DateQuestion {
 }
 
 export interface NumberQuestion {
-  id: number;
+  id: string;
   type: "Number";
   question: string;
   isInteger?: boolean; 
@@ -39,24 +38,4 @@ export interface NumberQuestion {
 
 export type Question = EssayQuestion | MCQQuestion | DateQuestion | NumberQuestion;
 
-export interface EssayAnswer {
-  qid: number;
-  answer: string;
-}
-
-export interface MCQAnswer {
-  qid: number;
-  answer: number[];
-}
-
-export interface DateAnswer {
-  qid: number;
-  answer: string; 
-}
-
-export interface NumberAnswer {
-  qid: number;
-  answer: number;
-}
-
-export type Answer = EssayAnswer | MCQAnswer | DateAnswer | NumberAnswer;
+export type Answer = string | number;
