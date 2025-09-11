@@ -149,7 +149,7 @@ const LoadingPage = () => {
 
                 <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
 
-                    <div className="relative mb-12">
+                    <div className="relative mb-5 md:mb-10">
                         <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-secondary to-primary opacity-30 blur-2xl animate-spin-slow scale-150"></div>
 
                         <div className="absolute inset-4 rounded-full bg-gradient-to-r from-secondary via-primary to-secondary opacity-40 blur-xl animate-pulse"></div>
@@ -158,10 +158,8 @@ const LoadingPage = () => {
                             <div className="relative">
                                 <img
                                     src={tccd_logo}
-                                    width={160}
-                                    height={160}
                                     alt="TCCD logo"
-                                    className="relative z-10 animate-logo-luxury drop-shadow-2xl"
+                                    className="relative z-10 animate-logo-luxury drop-shadow-2xl lg:w-[160px] md:w-[135px] w-[110px]"
                                 />
 
                                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent animate-rotate-slow opacity-60"></div>
@@ -169,12 +167,12 @@ const LoadingPage = () => {
                         </div>
                     </div>
 
-                    <div className="text-center mb-10">
-                        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient-shift mb-4">
+                    <div className="text-center mb-4">
+                        <h1 className="lg:text-3xl md:text-2xl text-xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient-shift mb-4">
                             Loading your experience...
                         </h1>
 
-                        <p className="text-dashboard-description text-lg font-medium opacity-80">
+                        <p className="text-dashboard-description lg:text-lg md:text-md text-sm font-medium opacity-80">
                             Please wait while we prepare everything for you
                         </p>
                     </div>
@@ -183,30 +181,7 @@ const LoadingPage = () => {
                         <div className="h-2 bg-muted-secondary/30 rounded-full overflow-hidden backdrop-blur-sm">
                             <div className="h-full bg-gradient-to-r from-primary via-secondary to-primary animate-progress-wave"></div>
                         </div>
-
-                        <div className="absolute -top-6 left-0 w-full flex justify-between dot-container">
-                            {[...Array(8)].map((_, i) => (
-                                <div
-                                    key={i}
-                                    className="dot w-3 h-3 bg-gradient-to-r from-primary to-secondary rounded-full opacity-60 animate-custom-bounce"
-                                />
-                            ))}
-                        </div>
                     </div>
-
-                    <div className="flex space-x-4 opacity-60">
-                        {[...Array(5)].map((_, i) => (
-                            <div
-                                key={i}
-                                className="w-4 h-4 border-2 border-primary rounded-full animate-ping"
-                                style={{
-                                    animationDelay: `${i * 0.3}s`,
-                                    animationDuration: '3s'
-                                }}
-                            />
-                        ))}
-                    </div>
-
                 </div>
 
                 <div className="absolute top-8 left-8 w-16 h-16 border-l-2 border-t-2 border-primary/30 rounded-tl-lg"></div>
