@@ -70,11 +70,11 @@ export default function FormView() {
 
   return (
     <WithNavbar>
-      <div className="min-h-screen bg-background pb-4 md:pb-10">
+      <div className="min-h-screen bg-background pt-4 pb-4 md:pb-10">
         {isFetching && <FormLoadingComponent />}
         {isError && <ErrorComponent title="Error Loading Form" message="We encountered an error while loading this form, Please try again later."/>}
         {formData && (
-          <div className="w-[96%] md:w-3/4 lg:w-2/3 m-auto rounded-xl shadow-md p-5 flex flex-col gap-4 bg-slate-50">
+          <div className="w-[92%] md:w-3/4 lg:w-2/3 m-auto rounded-xl shadow-md p-5 flex flex-col gap-4 bg-slate-50">
             <h1 className="text-3xl md:text-4xl font-bold text-primary pb-1 p-4">
               {formData.title}
             </h1>
