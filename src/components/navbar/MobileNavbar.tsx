@@ -1,6 +1,6 @@
 import { NAV_ITEMS } from "@/constants";
 import { IoQrCodeOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 const MobileNavbar = () => {
@@ -30,11 +30,11 @@ const MobileNavbar = () => {
         );
       })}
 
-      <button className="absolute left-1/2 -translate-x-1/2 top-[-1.25rem] bg-primary p-2.5 rounded-full">
+      <NavLink to={'/events/scan-qr'} className="absolute left-1/2 -translate-x-1/2 top-[-1.25rem] bg-primary p-2.5 rounded-full">
         <span className="w-fit h-fit rounded-full border border-[#FEFEFE75] text-white p-2 block">
           <IoQrCodeOutline size={25} />
         </span>
-      </button>
+      </NavLink>
     </nav>
   );
 };
