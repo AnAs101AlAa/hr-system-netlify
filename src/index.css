@@ -25,6 +25,8 @@
   --color-active-tab-text: #ea4c59;
   --color-inactive-tab-text: #6b7280;
   --color-label: #b3b3b3;
+  --color-error: #fb2c36;
+  --color-background-contrast: #e5e7eb;
 }
 
 :root {

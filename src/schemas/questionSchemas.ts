@@ -1,22 +1,18 @@
 import { z } from "zod";
 
 export const essayAnswerSchema = z.object({
-  qid: z.number(),
   answer: z.string(),
 });
 
 export const mcqAnswerSchema = z.object({
-  qid: z.number(),
-  answer: z.array(z.number()).min(1, "Please select at least one option"),
+  answer: z.string().min(1, "Please select an option"),
 });
 
 export const dateAnswerSchema = z.object({
-  qid: z.number(),
   answer: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format"),
 });
 
 export const numberAnswerSchema = z.object({
-  qid: z.number(),
   answer: z.number(),
 });
 
@@ -37,15 +33,11 @@ export const createEssayValidationSchema = (question: {
   return schema;
 };
 
-export const createMCQValidationSchema = (isMandatory: boolean, isMultipleChoice: boolean) => {
-  let schema = z.array(z.number());
+export const createMCQValidationSchema = (isMandatory: boolean) => {
+  let schema = z.string();
 
   if (isMandatory) {
-    schema = schema.min(1, "Please select at least one option");
-  }
-
-  if (!isMultipleChoice) {
-    schema = schema.max(1, "Please select only one option");
+    schema = schema.min(1, "Please select an option");
   }
 
   return schema;

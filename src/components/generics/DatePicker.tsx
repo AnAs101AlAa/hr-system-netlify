@@ -49,7 +49,7 @@ export default function DatePicker({
 
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
           <MdCalendarToday
-            className={`w-5 h-5 ${disabled ? "text-gray-400" : "text-primary"
+            className={`w-5 h-5 ${disabled ? "text-gray-400" : "text-secondary"
               }`}
           />
         </div>
