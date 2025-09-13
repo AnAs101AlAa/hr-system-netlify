@@ -4,6 +4,7 @@ export interface formPage {
     title: string;
     description?: string;
     questions: Question[];
+    toBranch?: { [questionId: number]: { assertOn: string, targetPage: number } };
 }
 
 export interface form { //Speculatory, to be finalized with backend

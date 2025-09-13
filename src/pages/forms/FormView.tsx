@@ -1,9 +1,6 @@
 import { QuestionCardComponent } from "@/components/forms";
 import WithNavbar from "@/components/hoc/WithNavbar";
-import {
-  useForm,
-  useSubmitForm,
-} from "@/queries/forms/formQueries";
+import { useForm, useSubmitForm } from "@/queries/forms/formQueries";
 import type { Answer } from "@/types/question";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
@@ -11,13 +8,15 @@ import { useState, useRef, useEffect } from "react";
 import Button from "@/components/generics/Button";
 import FormLoadingComponent from "@/components/forms/Loading";
 import ErrorComponent from "@/components/generics/Error";
-import type { formPage, QuestionCardHandle } from "@/types/form";
+import type { QuestionCardHandle } from "@/types/form";
+import { SUBMISSION_CATCHER } from "@/constants/formConstants";
 
 export default function FormView() {
   const { formId } = useParams();
   const ID = formId ? parseInt(formId, 10) : 0;
   const { data: formData, isFetching, isError } = useForm(ID);
   const [currentPage, setCurrentPage] = useState<number>(0);
+  const [pageHistory, setPageHistory] = useState<number[]>([0]);
 
   const [answers, setAnswers] = useState<Answer[]>([]);
   const questionRefs = useRef<(QuestionCardHandle | null)[]>([]);
@@ -32,29 +31,54 @@ export default function FormView() {
     });
   };
 
+  const handleBack = () => {
+    setPageHistory(prev => {
+      if (prev.length <= 1) return prev;
+      const newHistory = prev.slice(0, -1);
+      setCurrentPage(newHistory[newHistory.length - 1]);
+      return newHistory;
+    });
+  };
+
   const handlePageAdvance = () => {
     let hasErrors = false;
+    const answerArray: Answer[] = [];
     questionRefs.current.forEach((ref) => {
-      if(ref?.validate()) {
+      if (ref?.validate()) {
         hasErrors = true;
       }
-      setAnswers((prev) => {
-        const existingIndex = prev.findIndex((a) => a.qid === ref?.collect().qid);
+      if (ref) {
+        const collected = ref.collect();
+        const existingIndex = answerArray.findIndex((a: Answer) => a.qid === collected.qid);
         if (existingIndex >= 0) {
-          const updated = [...prev];
-          updated[existingIndex] = ref?.collect() as Answer;
-          return updated;
+          answerArray[existingIndex] = collected;
         } else {
-          return [...prev, ref?.collect() as Answer];
+          answerArray.push(collected);
         }
+      }
     });
-    });
+
+    setAnswers(answerArray);
 
     if (hasErrors) {
       return;
     } else if (formData && currentPage < formData.pages.length - 1) {
-
-      setCurrentPage((prev) => prev + 1);
+      const branch = formData.pages[currentPage].toBranch;
+      if(branch) {
+        const currentAnswer = answerArray.find(a => branch[a.qid]);
+        if(currentAnswer?.answer == branch[currentAnswer!.qid].assertOn) {
+          setCurrentPage(branch[currentAnswer!.qid].targetPage);
+          setPageHistory(prev => [...prev, branch[currentAnswer!.qid].targetPage]);
+          return;
+        } else {
+          setCurrentPage((prev) => prev + 1);
+          setPageHistory((prev) => [...prev, currentPage + 1]);
+          return;
+        }
+      } else {
+        setCurrentPage((prev) => prev + 1);
+        setPageHistory((prev) => [...prev, currentPage + 1]);
+      }
     } else {
       handleSubmit();
     }
@@ -71,7 +95,7 @@ export default function FormView() {
   };
 
   useEffect(() => {
-    if (!formData) return;
+    if (!formData || currentPage >= formData.pages.length) return;
     const questionsOnPage = formData.pages[currentPage].questions;
 
     questionsOnPage.forEach((question, qIndex) => {
@@ -88,6 +112,7 @@ export default function FormView() {
       <div className="min-h-screen pb-4 md:pb-10 md:pt-4">
         {isFetching && <FormLoadingComponent />}
         {isError && <ErrorComponent title="Error Loading Form" message="We encountered an error while loading this form, Please try again later."/>}
+
         {formData && (
           <div className="w-full md:w-2/3 lg:w-1/2 m-auto md:rounded-xl shadow-md p-5 flex flex-col gap-4 bg-background-primary">
             {/* Form Header */}
@@ -107,24 +132,37 @@ export default function FormView() {
             </div>
 
             {/* Form Pages & Questions */}
-            {[formData.pages[currentPage]].map((page: formPage, pageIndex: number) => (
-              <div className="flex flex-col gap-4" key={pageIndex}>
-                {/* Page Header */}
-                <div key={pageIndex} className="rounded-lg shadow-md bg-background">
+            {currentPage >= formData.pages.length ? (
+                <div className="rounded-lg shadow-md bg-background">
                   <div className="py-2 bg-primary mb-4 rounded-t-lg px-4">
                     <p className="text-[14px] md:text-[15px] lg:text-[16px] font-bold text-text">
-                      {page.title}
+                      {SUBMISSION_CATCHER.title}
                     </p>
                   </div>
-                  {formData.description && (
+                  {SUBMISSION_CATCHER.description && (
                     <p className="text-[13px] md:text-[14px] lg:text-[15px] mb-6 text-inactive-tab-text px-4">
-                      {formData.description}
+                      {SUBMISSION_CATCHER.description}
+                    </p>
+                  )}
+                </div>
+              ) : (
+              <div className="flex flex-col gap-4">
+                {/* Page Header */}
+                <div className="rounded-lg shadow-md bg-background">
+                  <div className="py-2 bg-primary mb-4 rounded-t-lg px-4">
+                    <p className="text-[14px] md:text-[15px] lg:text-[16px] font-bold text-text">
+                      {formData.pages[currentPage].title}
+                    </p>
+                  </div>
+                  {formData.pages[currentPage].description && (
+                    <p className="text-[13px] md:text-[14px] lg:text-[15px] mb-6 text-inactive-tab-text px-4">
+                      {formData.pages[currentPage].description}
                     </p>
                   )}
                 </div>
 
                 {/* Questions */}
-                {page.questions.map((question, qIndex) => (
+                {formData.pages[currentPage].questions.map((question: any, qIndex: number) => (
                   <div key={qIndex} className="w-full">
                     <QuestionCardComponent
                       ref={(el) => { questionRefs.current[question.id] = el; }}
@@ -133,39 +171,37 @@ export default function FormView() {
                   </div>
                 ))}
               </div>
-              ))}
-            <div className="flex justify-between gap-1.5 md:gap-3 -mt-3 md:mt-8">
-              <Button
-                buttonText="Clear"
-                type="ghost"
-                onClick={() => handleClear()}
-              />
-              <div className="flex-grow" />
-                {currentPage > 0 && (
-                  <Button
-                    buttonText="Back"
-                    type="secondary"
-                    onClick={() => {
-                      setCurrentPage((prev) => prev - 1);
-                    }}
-                  />
-                )}
-                {currentPage < formData.pages.length - 1 ? (
-                  <Button
-                    buttonText="Next"
-                    type="secondary"
-                    onClick={() => handlePageAdvance()}
-                  />
-                ) : (
-                  <Button
-                  buttonText="Submit"
-                  type="primary"
-                  onClick={handleSubmit}
-                />)}
-            </div>
-          </div>
         )}
+      <div className="flex justify-between gap-1.5 md:gap-3 -mt-3 md:mt-8">
+        <Button
+          buttonText="Clear"
+          type="ghost"
+          onClick={() => handleClear()}
+        />
+        <div className="flex-grow" />
+          {currentPage > 0 && (
+            <Button
+              buttonText="Back"
+              type="secondary"
+              onClick={() => handleBack()}
+            />
+          )}
+          {currentPage < formData.pages.length - 1 ? (
+            <Button
+              buttonText="Next"
+              type="secondary"
+              onClick={() => handlePageAdvance()}
+            />
+          ) : (
+            <Button
+            buttonText="Submit"
+            type="primary"
+            onClick={handleSubmit}
+          />)}
+        </div>
       </div>
+      )}
+    </div>
     </WithNavbar>
   );
 }

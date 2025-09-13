@@ -53,12 +53,12 @@ const NumberQuestionCard = forwardRef<QuestionCardHandle, NumberQuestionCardProp
         <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4">
             <div className="flex items-start gap-1.5 md:gap-3">
                 <FaQuestionCircle className="text-secondary text-md md:text-lg mt-1 flex-shrink-0" />
-                <div className="flex-1 flex items-center justify-between">
+                <div className="flex-1 flex items-center gap-1">
                     <h3 className="font-bold text-gray-800 text-[14px] md:text-[16px] lg:text-[18px] flex items-center gap-2">
                         {question.question}
                     </h3>
                     {question.isMandatory && (
-                        <FaAsterisk className="text-primary text-xs" />
+                        <FaAsterisk className="text-primary size-2" />
                     )}
                 </div>
             </div>
@@ -75,7 +75,7 @@ const NumberQuestionCard = forwardRef<QuestionCardHandle, NumberQuestionCardProp
                 {errors.length > 0 && (
                     <div className="mt-2 space-y-1">
                         {errors.map((error, index) => (
-                            <div key={index} className="text-primary text-[12px] md:text-[14px] lg:text-[16px] font-medium">
+                            <div key={index} className="text-primary text-[12px] md:text-[13px] lg:text-[14px] font-medium">
                                 {error}
                             </div>
                         ))}
