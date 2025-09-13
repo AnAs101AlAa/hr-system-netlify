@@ -1,22 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, forwardRef, useImperativeHandle  } from 'react';
 import { FaQuestionCircle, FaAsterisk } from 'react-icons/fa';
 import DatePicker from '@/components/generics/DatePicker';
-import type { DateQuestion, Answer } from '@/types/question';
+import type { DateQuestion } from '@/types/question';
 import { createDateValidationSchema } from '@/schemas/questionSchemas';
+import type { QuestionCardHandle } from '@/types/form';
 
 interface DateQuestionCardProps {
     question: DateQuestion;
-    onAnswerChange: (answer: Answer) => void;
-    onErrorChange?: (questionId: string, hasError: boolean) => void;
     initialValue?: string;
 }
 
-const DateQuestionCard: React.FC<DateQuestionCardProps> = ({
+const DateQuestionCard = forwardRef<QuestionCardHandle, DateQuestionCardProps>(({
     question,
-    onAnswerChange,
-    onErrorChange,
     initialValue
-}) => {
+}, ref) => {
     const [answer, setAnswer] = useState<string>(initialValue || '');
     const [errors, setErrors] = useState<string[]>([]);
 
@@ -25,46 +22,24 @@ const DateQuestionCard: React.FC<DateQuestionCardProps> = ({
             const schema = createDateValidationSchema(question);
             schema.parse(answer);
             setErrors([]);
+            return false;
         } catch (error: any) {
             if (error.issues) {
                 setErrors(error.issues.map((issue: any) => issue.message));
             } else if (error.message) {
                 setErrors([error.message]);
             }
+            return true;
         }
     }, [answer, JSON.stringify(question)]);
 
-    useEffect(() => {
-        validateQuestion();
-    }, [validateQuestion]);
 
-    useEffect(() => {
-        if (onErrorChange) {
-            onErrorChange(question.id, errors.length > 0);
-        }
-    }, [errors.length, question.id, onErrorChange]);
-
-    const handleChange = (value: string) => {
-        setAnswer(value);
-
-        onAnswerChange({
-            qid: question.id,
-            answer: value,
-        });
-
-        try {
-            const schema = createDateValidationSchema(question);
-            schema.parse(value);
-            setErrors([]);
-        } catch (error: any) {
-            if (error.issues) {
-                setErrors(error.issues.map((issue: any) => issue.message));
-            } else if (error.message) {
-                setErrors([error.message]);
-            }
-        }
-    };
-
+    useImperativeHandle(ref, () => ({
+      validate: validateQuestion,
+      collect: () => { return { qid: question.id, answer: answer } },
+      clear: () => setAnswer(''),
+      reassign: (ans) => { if (typeof ans.answer === 'string') setAnswer(ans.answer); }
+    }));
     return (
         <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4">
             <div className="flex items-start gap-1.5 md:gap-3">
@@ -80,21 +55,27 @@ const DateQuestionCard: React.FC<DateQuestionCardProps> = ({
             </div>
 
             <div>
-                <div>
-                    <DatePicker
-                        label=""
-                        id={`question-${question.id}`}
-                        value={answer}
-                        onChange={handleChange}
-                        error={errors.length > 0 ? errors[0] : undefined}
-                        minDate={question.minDate}
-                        maxDate={question.maxDate}
-                    />
-                </div>
+                <DatePicker
+                    label=""
+                    id={`question-${question.id}`}
+                    value={answer}
+                    onChange={(date) => setAnswer(date)}
+                    minDate={question.minDate}
+                    maxDate={question.maxDate}
+                />
 
+                {errors.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                        {errors.map((error, index) => (
+                            <div key={index} className="text-primary text-[12px] md:text-[14px] lg:text-[16px] font-medium">
+                                {error}
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
-};
+});
 
 export default DateQuestionCard;

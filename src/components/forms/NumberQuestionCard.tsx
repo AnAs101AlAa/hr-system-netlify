@@ -1,93 +1,54 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { FaQuestionCircle, FaAsterisk } from 'react-icons/fa';
 import NumberField from '@/components/generics/NumberField';
-import type { NumberQuestion, Answer } from '@/types/question';
+import type { NumberQuestion } from '@/types/question';
 import { createNumberValidationSchema } from '@/schemas/questionSchemas';
+import { forwardRef, useImperativeHandle } from "react";
+import type { QuestionCardHandle } from '@/types/form';
 
 interface NumberQuestionCardProps {
-    question: NumberQuestion;
-    onAnswerChange: (answer: Answer) => void;
-    onErrorChange?: (questionId: string, hasError: boolean) => void;
-    initialValue?: number;
+  question: NumberQuestion;
+  initialValue?: number;
 }
 
-const NumberQuestionCard: React.FC<NumberQuestionCardProps> = ({
-    question,
-    onAnswerChange,
-    onErrorChange,
-    initialValue
-}) => {
-    const [answer, setAnswer] = useState<string>(initialValue?.toString() || '');
+const NumberQuestionCard = forwardRef<QuestionCardHandle, NumberQuestionCardProps>(
+  ({ question, initialValue }, ref) => {
+    const [answer, setAnswer] = useState<string>(initialValue?.toString() || "");
     const [errors, setErrors] = useState<string[]>([]);
 
     const validateQuestion = useCallback(() => {
-        try {
-            const schema = createNumberValidationSchema(question);
-            const numValue = answer === '' ? undefined : Number(answer);
+      try {
+        const schema = createNumberValidationSchema(question);
+        const numValue = answer === "" ? undefined : Number(answer);
 
-            if (question.isMandatory && (answer === '' || isNaN(Number(answer)))) {
-                setErrors(['This field is required']);
-                return;
-            }
-
-            if (answer !== '' && !isNaN(Number(answer))) {
-                schema.parse(numValue);
-            }
-
-            setErrors([]);
-        } catch (error: any) {
-            if (error.issues) {
-                setErrors(error.issues.map((issue: any) => issue.message));
-            } else if (error.message) {
-                setErrors([error.message]);
-            }
-        }
-    }, [answer, JSON.stringify(question)]);
-
-    useEffect(() => {
-        validateQuestion();
-    }, [validateQuestion]);
-
-    useEffect(() => {
-        if (onErrorChange) {
-            onErrorChange(question.id, errors.length > 0);
-        }
-    }, [errors.length, question.id, onErrorChange]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setAnswer(value);
-
-        const numValue = value === '' ? 0 : Number(value);
-        if (!isNaN(numValue)) {
-            onAnswerChange({
-                qid: question.id,
-                answer: numValue,
-            });
+        if (question.isMandatory && (answer === "" || isNaN(Number(answer)))) {
+          setErrors(["This field is required"]);
+          return true;
         }
 
-        try {
-            const schema = createNumberValidationSchema(question);
-            const validateValue = value === '' ? undefined : Number(value);
-
-            if (question.isMandatory && (value === '' || isNaN(Number(value)))) {
-                setErrors(['This field is required']);
-                return;
-            }
-
-            if (value !== '' && !isNaN(Number(value))) {
-                schema.parse(validateValue);
-            }
-
-            setErrors([]);
-        } catch (error: any) {
-            if (error.issues) {
-                setErrors(error.issues.map((issue: any) => issue.message));
-            } else if (error.message) {
-                setErrors([error.message]);
-            }
+        if (answer !== "" && !isNaN(Number(answer))) {
+          schema.parse(numValue);
         }
-    };
+
+        setErrors([]);
+        return false;
+      } catch (error: any) {
+        if (error.issues) {
+          setErrors(error.issues.map((issue: any) => issue.message));
+        } else if (error.message) {
+          setErrors([error.message]);
+        }
+        return true;
+      }
+    }, [answer, question]);
+
+    useImperativeHandle(ref, () => ({
+      validate: validateQuestion,
+      collect: () => { return { qid: question.id, answer: Number(answer) } },
+      clear: () => setAnswer(''),
+      reassign: (ans) => { if (typeof ans.answer === 'number') setAnswer(ans.answer.toString()); }
+    }));
+
     return (
         <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4">
             <div className="flex items-start gap-1.5 md:gap-3">
@@ -108,13 +69,13 @@ const NumberQuestionCard: React.FC<NumberQuestionCardProps> = ({
                     id={`question-${question.id}`}
                     value={answer}
                     placeholder="Enter a number..."
-                    onChange={handleChange}
+                    onChange={(e) => setAnswer(e.target.value)}
                 />
 
                 {errors.length > 0 && (
                     <div className="mt-2 space-y-1">
                         {errors.map((error, index) => (
-                            <div key={index} className="text-red-500 text-sm font-medium">
+                            <div key={index} className="text-primary text-[12px] md:text-[14px] lg:text-[16px] font-medium">
                                 {error}
                             </div>
                         ))}
@@ -124,6 +85,7 @@ const NumberQuestionCard: React.FC<NumberQuestionCardProps> = ({
             </div>
         </div>
     );
-};
+  }
+);
 
 export default NumberQuestionCard;

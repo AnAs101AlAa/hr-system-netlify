@@ -1,25 +1,22 @@
-import React from 'react';
 import type { Question, Answer } from '@/types/question';
 import EssayQuestionCard from './EssayQuestionCard';
 import MCQQuestionCard from './MCQQuestionCard';
 import DateQuestionCard from './DateQuestionCard';
 import NumberQuestionCard from './NumberQuestionCard';
+import { forwardRef } from 'react';
+import type { QuestionCardHandle } from '@/types/form';
 
 interface QuestionCardComponentProps {
   question: Question;
-  onAnswerChange: (answer: Answer) => void;
-  onErrorChange?: (questionId: string, hasError: boolean) => void;
   initialValue?: Answer;
-  showErrors?: boolean;
 }
 
-const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
+const QuestionCardComponent = forwardRef<QuestionCardHandle, QuestionCardComponentProps>(({
   question,
-  onAnswerChange,
-  onErrorChange,
   initialValue,
-  showErrors = false
-}) => {
+}, ref) => {
+
+
   if (question.type === 'Essay') {
     const essayInitialValue = initialValue && typeof initialValue === 'string'
       ? initialValue
@@ -27,11 +24,9 @@ const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
 
     return (
       <EssayQuestionCard
+        ref={ref}
         question={question}
-        onAnswerChange={onAnswerChange}
-        onErrorChange={onErrorChange}
         initialValue={essayInitialValue}
-        showErrors={showErrors}
       />
     );
   }
@@ -43,9 +38,8 @@ const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
 
     return (
       <MCQQuestionCard
+        ref={ref}
         question={question}
-        onAnswerChange={onAnswerChange}
-        onErrorChange={onErrorChange}
         initialValue={mcqInitialValue}
       />
     );
@@ -58,9 +52,8 @@ const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
 
     return (
       <DateQuestionCard
+        ref={ref}
         question={question}
-        onAnswerChange={onAnswerChange}
-        onErrorChange={onErrorChange}
         initialValue={dateInitialValue}
       />
     );
@@ -73,15 +66,14 @@ const QuestionCardComponent: React.FC<QuestionCardComponentProps> = ({
 
     return (
       <NumberQuestionCard
+        ref={ref}
         question={question}
-        onAnswerChange={onAnswerChange}
-        onErrorChange={onErrorChange}
         initialValue={numberInitialValue}
       />
     );
   }
 
   return <div>Unsupported question type</div>;
-};
+});
 
 export default QuestionCardComponent;

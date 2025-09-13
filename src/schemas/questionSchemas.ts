@@ -33,15 +33,25 @@ export const createEssayValidationSchema = (question: {
   return schema;
 };
 
-export const createMCQValidationSchema = (isMandatory: boolean) => {
-  let schema = z.string();
-
-  if (isMandatory) {
-    schema = schema.min(1, "Please select an option");
+export const createMCQValidationSchema = (
+  isMandatory: boolean,
+  isMultiSelect: boolean
+) => {
+  if (!isMandatory) {
+    return z.union([z.string(), z.array(z.string())]).optional();
   }
 
-  return schema;
+  if (isMultiSelect) {
+    return z
+      .array(z.string())
+      .nonempty({ message: "Please select at least one option" });
+  }
+
+  return z
+    .string()
+    .min(1, { message: "Please select an option" });
 };
+
 
 export const createDateValidationSchema = (question: {
   minDate?: string;

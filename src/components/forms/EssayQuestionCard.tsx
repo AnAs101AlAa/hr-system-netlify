@@ -1,25 +1,20 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { FaQuestionCircle, FaAsterisk } from 'react-icons/fa';
 import InputField from '@/components/generics/InputField';
 import TextAreaField from '@/components/generics/TextAreaField';
-import type { EssayQuestion, Answer } from '@/types/question';
+import type { EssayQuestion } from '@/types/question';
 import { createEssayValidationSchema } from '@/schemas/questionSchemas';
+import type { QuestionCardHandle } from '@/types/form';
 
 interface EssayQuestionCardProps {
     question: EssayQuestion;
-    onAnswerChange: (answer: Answer) => void;
-    onErrorChange?: (questionId: string, hasError: boolean) => void;
     initialValue?: string;
-    showErrors?: boolean;
 }
 
-const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
+const EssayQuestionCard = forwardRef<QuestionCardHandle, EssayQuestionCardProps>(({
     question,
-    onAnswerChange,
-    onErrorChange,
     initialValue,
-    showErrors = false
-}) => {
+}, ref) => {
     const [answer, setAnswer] = useState<string>(initialValue || '');
     const [errors, setErrors] = useState<string[]>([]);
 
@@ -28,48 +23,28 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
             const schema = createEssayValidationSchema(question);
             schema.parse(answer.trim());
             setErrors([]);
+            return false;
         } catch (error: any) {
             if (error.issues) {
                 setErrors(error.issues.map((issue: any) => issue.message));
             } else if (error.message) {
                 setErrors([error.message]);
             }
+            return true;
         }
     }, [answer, JSON.stringify(question)]);
-
-    useEffect(() => {
-        if (showErrors) {
-            validateQuestion();
-        } else {
-            try {
-                const schema = createEssayValidationSchema(question);
-                schema.parse(answer.trim());
-                if (onErrorChange) {
-                    onErrorChange(question.id, false);
-                }
-            } catch (error: any) {
-                if (onErrorChange) {
-                    onErrorChange(question.id, true);
-                }
-            }
-            setErrors([]);
-        }
-    }, [validateQuestion, showErrors]);
-
-    useEffect(() => {
-        if (onErrorChange) {
-            onErrorChange(question.id, errors.length > 0);
-        }
-    }, [errors.length, question.id, onErrorChange]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const value = e.target.value;
         setAnswer(value);
-        onAnswerChange({
-            qid: question.id,
-            answer: value,
-        });
     };
+
+    useImperativeHandle(ref, () => ({
+      validate: validateQuestion,
+      collect: () => { return { qid: question.id, answer: answer } },
+      clear: () => setAnswer(''),
+      reassign: (ans) => { if (typeof ans.answer === 'string') setAnswer(ans.answer); }
+    }));
 
     const renderAnswerField = () => {
         const isTextArea = (question.maxLength && question.maxLength > 100) || !question.maxLength;
@@ -120,10 +95,10 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
             <div>
                 {renderAnswerField()}
 
-                {showErrors && errors.length > 0 && (
+                { errors.length > 0 && (
                     <div className="mt-2 space-y-1">
                         {errors.map((error, index) => (
-                            <div key={index} className="text-red-500 text-sm font-medium">
+                            <div key={index} className="text-primary text-[12px] md:text-[14px] lg:text-[16px] font-medium">
                                 {error}
                             </div>
                         ))}
@@ -133,6 +108,6 @@ const EssayQuestionCard: React.FC<EssayQuestionCardProps> = ({
             </div>
         </div>
     );
-};
+});
 
 export default EssayQuestionCard;

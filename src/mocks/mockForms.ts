@@ -5,16 +5,20 @@ const mockForms: form[] = [
     id: 1,
     title: "Employee Feedback Form",
     description: "Gather feedback from employees about the workplace.",
-    questions: [
+    pages: [
       {
-        id: 101,
+        title: "Page 1",
+        description: "This is the first page.",
+            questions: [
+      {
+        id: 0,
         type: "Essay",
         question: "Describe your experience working here.",
         maxLength: 500,
         isMandatory: true,
       },
-      {
-        id: 102,
+     {
+        id: 1,
         type: "MCQ",
         question: "Which benefits do you value most?",
         choices: [
@@ -23,22 +27,29 @@ const mockForms: form[] = [
           { id: 3, content: "Remote Work" },
         ],
         isMandatory: true,
-        isMultipleChoice: true,
+        isMultiSelect: true,
       },
       {
-        id: 103,
+        id: 2,
         type: "Date",
         question: "When did you join the company?",
         minDate: "2010-01-01",
-        maxDate: "2024-12-31",
-        isMandatory: false,
+        maxDate: "2026-12-31",
+        isMandatory: true,
       },
       {
-        id: 104,
+        id: 3,
         type: "Number",
         question: "How many years have you worked here?",
         isInteger: true,
         isMandatory: true,
+      },
+    ], 
+      },
+      {
+        title: "Page 2",
+        description: "This is the second page.",
+        questions: [],
       },
     ],
   },
