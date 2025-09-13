@@ -24,7 +24,6 @@ const MCQQuestionCard = forwardRef<QuestionCardHandle, MCQQuestionCardProps>(({
             setErrors([]);
             return false;
         } catch (error: any) {
-            console.log(error);
             if (error.issues) {
                 setErrors(error.issues.map((issue: any) => issue.message));
             } else if (error.message) {

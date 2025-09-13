@@ -85,7 +85,6 @@ export default function FormView() {
   }
 
   const handleSubmit = () => {
-    console.log(answers);
     toast.promise(submitFormMutation.mutateAsync(), {
       loading: "Submitting...",
       success: "Your response has been submitted, Thank You!",
