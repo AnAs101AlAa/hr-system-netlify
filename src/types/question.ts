@@ -9,6 +9,7 @@ export interface EssayQuestion {
   question: string;
   maxLength?: number;
   isMandatory: boolean;
+  isTextArea?: boolean;
 }
 
 export interface MCQQuestion {

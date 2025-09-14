@@ -9,6 +9,7 @@ export interface formPage {
 
 export interface form { //Speculatory, to be finalized with backend
     id: number;
+    sheetName: string;
     pages: formPage[];
     title: string;
     description?: string;

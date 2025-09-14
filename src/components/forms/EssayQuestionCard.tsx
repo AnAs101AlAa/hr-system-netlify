@@ -47,7 +47,7 @@ const EssayQuestionCard = forwardRef<QuestionCardHandle, EssayQuestionCardProps>
     }));
 
     const renderAnswerField = () => {
-        const isTextArea = (question.maxLength && question.maxLength > 100) || !question.maxLength;
+        const isTextArea = question.isTextArea;
 
         if (isTextArea) {
             return (

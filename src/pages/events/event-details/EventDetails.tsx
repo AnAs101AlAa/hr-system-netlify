@@ -14,12 +14,12 @@ const EventDetails = () => {
 
   //   const { data: event, isLoading, error } = useEvent(eventId);
 
-  //dummy data for events
   const event = {
     id: 1,
     title: "Annual Company Meeting",
     startTime: new Date("2023-10-15T09:00:00"),
     endTime: new Date("2023-10-15T17:00:00"),
+    type: "Meeting",
     attendees: [
       {
         id: 1,
