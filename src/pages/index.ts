@@ -4,5 +4,6 @@ import EventDetails from "./events/event-details/EventDetails";
 import PastEventsPage from "./events/past_events/PastEventsPage";
 import FormView from "./forms/FormView";
 import FormSubmissionPage from "./forms/FormSubmissionPage";
+import UnauthorizedPage from "@/components/generics/UnauthorizedPage";
 
-export { LoginPage, HomePage, EventDetails, PastEventsPage, FormView, FormSubmissionPage };
+export { LoginPage, HomePage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage };
