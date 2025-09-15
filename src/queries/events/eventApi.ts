@@ -1,12 +1,12 @@
-import { api } from "../axiosInstance";
+import { systemApi } from "../axiosInstance";
 import type { Event, EventType } from "@/types/event";
 
-const EVENTS_API_URL = api.defaults.baseURL + "/events/";
-// const EVENT_TYPES_API_URL = api.defaults.baseURL + "/event-types/"; // TODO: Uncomment when backend is ready
+const EVENTS_API_URL = systemApi.defaults.baseURL + "/events/";
+// const EVENT_TYPES_API_URL = systemApi.defaults.baseURL + "/event-types/"; // TODO: Uncomment when backend is ready
 
 export class eventsApi {
   async fetchEventById(id: number): Promise<Event> {
-    const response = await api.get<Event>(`${EVENTS_API_URL}${id}`);
+    const response = await systemApi.get<Event>(`${EVENTS_API_URL}${id}`);
     return response.data;
   }
 

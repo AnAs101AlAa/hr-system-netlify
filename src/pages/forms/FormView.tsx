@@ -131,7 +131,7 @@ export default function FormView() {
       )}
 
       {formData && (
-        <div className="w-full md:w-2/3 lg:w-1/2 m-auto md:rounded-xl shadow-md p-5 flex flex-col gap-4 bg-background-primary">
+        <div className="w-full md:w-2/3 lg:w-1/3 m-auto md:rounded-xl shadow-md p-5 flex flex-col gap-4 bg-background-primary">
           {/* Form Header */}
           <div className="space-y-4 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background">
             <h1 className="text-2xl lg:text-3xl font-bold text-primary">
