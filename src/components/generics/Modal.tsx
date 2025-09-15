@@ -65,7 +65,7 @@ const Modal = ({
     >
       <div
         ref={modalRef}
-        className="bg-background rounded-lg shadow-xl w-full mx-4 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-[90vh] flex flex-col overflow-y-auto"
+        className="bg-background rounded-lg shadow-xl w-full mx-4 sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-[90vh] flex flex-col overflow-y-auto"
         tabIndex={-1}
       >
         <div className="p-4 sm:p-6 flex-1 flex flex-col">
