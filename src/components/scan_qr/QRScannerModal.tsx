@@ -4,6 +4,7 @@ import { ScannerContainer, ScannerActions } from "@/components/scan_qr";
 import { useQRScannerModal } from "@/hooks";
 import type { Event } from "@/types/event";
 import type { MemberData } from "@/types/attendance";
+import { eventsApi } from "@/queries/events";
 
 interface QRScannerModalProps {
   isOpen: boolean;
@@ -13,64 +14,22 @@ interface QRScannerModalProps {
 
 const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
   const [validationError, setValidationError] = useState<string | null>(null);
-
-  // Mock function to validate if QR data matches event
-  const validateQRForEvent = (qrData: string, eventId: number): boolean => {
-    // In real implementation, this would check if the QR code is valid for this specific event
-    // For now, we'll simulate different validation scenarios for demo purposes
-
-    /* TODO: Replace with actual API call to validate QR code against event
-    const response = await fetch(`/api/events/${eventId}/validate-qr`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ qrCode: qrData })
-    });
-    const { isValid, member } = await response.json();
-    return isValid;
-    */
-
-    // Mock validation scenarios (comment out in production):
-    const scenarios = [
-      {
-        probability: 0.6,
-        result: true,
-        reason: "Valid QR code for this event",
-      },
-      {
-        probability: 0.2,
-        result: false,
-        reason: "QR code is for a different event",
-      },
-      { probability: 0.1, result: false, reason: "QR code has expired" },
-      {
-        probability: 0.1,
-        result: false,
-        reason: "Member not registered for this event",
-      },
-    ];
-
-    const random = Math.random();
-    let cumulative = 0;
-
-    for (const scenario of scenarios) {
-      cumulative += scenario.probability;
-      if (random <= cumulative) {
-        console.log(
-          `Validation result for QR "${qrData}" in event ${eventId}: ${
-            scenario.result ? "VALID" : "INVALID"
-          } - ${scenario.reason}`
-        );
-        return scenario.result;
-      }
-    }
-
-    return true; // fallback
+  const attendMember = async (memberId: string, eventId: string) => {
+    const eventInsatnce = new eventsApi();
+    const response = await eventInsatnce.requestAttendance(
+      memberId,
+      eventId,
+      scanner.memberData?.status === "late" ? scanner.lateReason : ""
+    );
+    console.log(response);
+    return true;
   };
 
   const scanner = useQRScannerModal({
+    eventId: event.id,
     onSuccess: (memberData: MemberData) => {
       // Validate QR code against current event
-      const isValidForEvent = validateQRForEvent(memberData.id, event.id);
+      const isValidForEvent = attendMember(memberData.id, event.id);
 
       if (!isValidForEvent) {
         setValidationError(
@@ -137,7 +96,7 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
         <div className="mb-4 p-3 bg-blue-50 rounded-lg">
           <h4 className="font-semibold text-blue-900">{event.title}</h4>
           <p className="text-sm text-blue-700">
-            {new Date(event.startTime).toLocaleString("en-US", {
+            {new Date(event.startDate).toLocaleString("en-US", {
               month: "short",
               day: "numeric",
               hour: "2-digit",

@@ -11,7 +11,7 @@ interface ScannerContainerProps {
   memberData: MemberData | null;
   attendanceConfirmed: boolean;
   lateReason: string;
-  onScan: (detectedCodes: IDetectedBarcode[]) => void;
+  onScan: (detectedCodes: IDetectedBarcode[]) => void | Promise<void>;
   onError: (error: unknown) => void;
   onReasonChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onResetScanner: () => void;
