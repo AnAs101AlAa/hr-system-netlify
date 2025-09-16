@@ -16,6 +16,14 @@ export default function FormView() {
 
   const { formId } = useParams();
   const ID = formId ?? "";
+
+  const didSubmit = localStorage.getItem(`form_${ID}_completed`);
+  useEffect(() => {
+    if (didSubmit) {
+      navigate("/form/finish");
+    }
+  }, [didSubmit, navigate]);
+  
   const { data: formData, isFetching, isError } = useForm(ID);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [, setPageHistory] = useState<number[]>([0]);
@@ -97,6 +105,7 @@ export default function FormView() {
   const handleSubmit = (finalAnswers: Answer[]) => {
     toast.promise(
       submitFormMutation.mutateAsync(finalAnswers).then(() => {
+        localStorage.setItem(`form_${ID}_completed`, "true");
         navigate("/form/finish");
       }),
       {

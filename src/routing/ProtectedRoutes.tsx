@@ -1,10 +1,11 @@
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const MemberRoute = ({ children, allowedRole }: { children: React.ReactNode; allowedRole?: string }) => {
+const MemberRoute = ({ children, allowedRoles }: { children: React.ReactNode; allowedRoles?: string[] }) => {
   const { user } = useSelector((state: any) => state.auth);
+    
   if (!user) return <Navigate to="/unauthorized" replace />;
-  if (allowedRole && user.role !== allowedRole) return <Navigate to="/unauthorized" replace />;
+  if (allowedRoles && !allowedRoles.some(role => user.roles.includes(role))) return <Navigate to="/unauthorized" replace />;
   return <>{children}</>;
 };
 
