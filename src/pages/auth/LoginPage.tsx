@@ -6,8 +6,6 @@ import InputField from "@/components/generics/InputField";
 import PasswordField from "@/components/generics/PasswordField";
 import Button from "@/components/generics/Button";
 import { useLogin } from "@/queries/users/userQueries";
-import toast from "react-hot-toast";
-import { getErrorMessage } from "@/utils";
 
 const LoginPage = () => {
   const [loginForm, setLoginForm] = useState<LoginFormData>({
@@ -58,12 +56,11 @@ const LoginPage = () => {
     setIsSubmitting(true);
     try {
       await login(loginForm);
-      toast.success("Welcome Back!");
       setTimeout(() => {
         window.location.replace("/");
       }, 1000);
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      console.error(error)
     } finally {
       setIsSubmitting(false);
     }
