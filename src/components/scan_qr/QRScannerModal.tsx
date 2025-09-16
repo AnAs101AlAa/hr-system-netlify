@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
+import toast from "react-hot-toast";
 import Modal from "@/components/generics/Modal";
 import { ScannerContainer, ScannerActions } from "@/components/scan_qr";
 import { useQRScannerModal } from "@/hooks";
 import type { Event } from "@/types/event";
 import type { MemberData } from "@/types/attendance";
+import { getErrorMessage } from "@/utils";
 
 interface QRScannerModalProps {
   isOpen: boolean;
@@ -12,61 +14,139 @@ interface QRScannerModalProps {
 }
 
 const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const [attendanceStatus, setAttendanceStatus] = useState<number | null>(null);
+  const [leaveExcuse, setLeaveExcuse] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  const handleSuccess = useCallback(
+    async (memberData: MemberData) => {
+      setIsVerifying(true);
+
+      // New: Call endpoint to check attendance status
+      try {
+        const { eventsApi } = await import("@/queries/events");
+        const eventInstance = new eventsApi();
+        const statusResponse = await eventInstance.checkAttendanceStatus(
+          memberData.id,
+          event.id
+        );
+        setAttendanceStatus(statusResponse.status);
+        if (statusResponse.status === 2004) {
+          toast.error("Member already registered and left early");
+          scanner.resetScanner(true);
+        }
+      } catch (error) {
+        console.error("Failed to check attendance status:", error);
+        toast.error(getErrorMessage(error));
+        setIsVerifying(false);
+        return;
+      }
+
+      setIsVerifying(false);
+    },
+    [event.id, event.title]
+  );
+
+  const handleError = useCallback((error: string) => {
+    console.error("QR Scanner error:", error);
+    toast.error(error);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsVerifying(false);
+    setAttendanceStatus(null);
+    setLeaveExcuse("");
+    onClose();
+  }, [onClose]);
 
   const scanner = useQRScannerModal({
     eventId: event.id,
-    onSuccess: (memberData: MemberData) => {
-      // Clear any previous validation errors
-      setValidationError(null);
-      console.log(
-        `Successfully scanned member ${memberData.name} for event ${event.title}`
-      );
-    },
-    onError: (error: string) => {
-      console.error("QR Scanner error:", error);
-      setValidationError(error);
-    },
-    onClose: () => {
-      setValidationError(null);
-      onClose();
-    },
-    autoReset: false, // We'll handle reset manually after validation
+    onSuccess: handleSuccess,
+    onError: handleError,
+    onClose: handleClose,
+    autoReset: true, // We'll handle reset manually after validation
   });
 
-  const handleConfirmAttendance = async () => {
+  // Create a stable reference to the reset function
+  const resetScanner = useCallback(() => {
+    scanner.resetScanner(true);
+    setIsVerifying(false);
+    setAttendanceStatus(null);
+    setLeaveExcuse("");
+  }, [scanner]);
+
+  // Reset scanner when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      resetScanner();
+    }
+  }, [isOpen]);
+
+  const handleConfirmAttendance = useCallback(async () => {
     if (!scanner.memberData) {
-      setValidationError("No member data available to record attendance");
+      toast.error("No member data available to record attendance");
       return;
     }
+
+    // Set confirming state to show loading
+    scanner.setConfirming(true);
 
     try {
       // Import eventsApi here to avoid unused import warning
       const { eventsApi } = await import("@/queries/events");
 
       const eventInstance = new eventsApi();
-      const response = await eventInstance.requestAttendance(
-        scanner.memberData.id,
-        event.id,
-        scanner.memberData.status === "late" ? scanner.lateReason : ""
-      );
 
-      console.log("Attendance recorded successfully:", response);
+      // Use different API methods based on attendance status
+      if (attendanceStatus === 2002) {
+        // Late arrival
+      await eventInstance.recordLateArrivalExcuse(
+          scanner.memberData.id,
+          event.id,
+          leaveExcuse
+        );
+      } else if (attendanceStatus === 2003) {
+        // Leaving early
+      await eventInstance.recordLeaveEarly(
+          scanner.memberData.id,
+          event.id,
+          leaveExcuse
+        );
+      } else if (attendanceStatus === 2004) {
+        // Leaving early
+        toast.error("Member already registered and left early");
+        scanner.resetScanner(true);
+      } else {
+        // On-time attendance
+      await eventInstance.requestAttendance(
+          scanner.memberData.id,
+          event.id
+        );
+      }
 
-      // Call the scanner's confirmation handler
+      // Show success toast
+      toast.success("Attendance recorded successfully!");
+
+      // Reset confirming state
+      scanner.setConfirming(false);
+
+      // Call the scanner's confirmation handler only on success
       await scanner.handleConfirmAttendance();
-
     } catch (error) {
       console.error("Failed to record attendance:", error);
-      setValidationError("Failed to record attendance. Please try again.");
+      toast.error(getErrorMessage(error));
+      // Reset confirming state on error so user can try again
+      scanner.setConfirming(false);
     }
-  };
+  }, [attendanceStatus, leaveExcuse, event.id, scanner]);
 
-  const handleReturnToEvent = () => {
-    scanner.resetScanner();
-    setValidationError(null);
+  const handleReturnToEvent = useCallback(() => {
+    // Don't restart scanner since modal is closing
+    setIsVerifying(false);
+    setAttendanceStatus(null);
+    setLeaveExcuse("");
     onClose();
-  };
+  }, [onClose]);
 
   return (
     <Modal
@@ -89,14 +169,6 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
           </p>
         </div>
 
-        {/* Validation Error */}
-        {validationError && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800 text-sm font-medium">Validation Error</p>
-            <p className="text-red-700 text-sm">{validationError}</p>
-          </div>
-        )}
-
         {/* Scanner Container */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
           <ScannerContainer
@@ -105,9 +177,13 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
             memberData={scanner.memberData}
             attendanceConfirmed={scanner.attendanceConfirmed}
             lateReason={scanner.lateReason}
+            attendanceStatus={attendanceStatus}
+            leaveExcuse={leaveExcuse}
+            isVerifying={isVerifying}
             onScan={scanner.handleScan}
             onError={scanner.handleError}
             onReasonChange={scanner.handleReasonChange}
+            onLeaveExcuseChange={(e) => setLeaveExcuse(e.target.value)}
             onResetScanner={scanner.resetScanner}
           />
 

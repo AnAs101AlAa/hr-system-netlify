@@ -19,16 +19,13 @@ export const useQRScannerModal = (options: UseQRScannerModalOptions = {}) => {
   // Watch for memberData changes and trigger onSuccess when data is available
   useEffect(() => {
     if (onSuccess && qrScanner.memberData) {
-      console.log('member dataaaa:', qrScanner.memberData)
       onSuccess(qrScanner.memberData);
     }
   }, [qrScanner.memberData, onSuccess]);
 
   // Enhanced handlers for modal usage
   const handleScanSuccess = async (detectedCodes: IDetectedBarcode[]) => {
-    console.log('hhehheheheheheheheeheh')
     if (eventId) {
-      console.log(eventId)
       await qrScanner.handleScan(detectedCodes, eventId);
     }
   };
@@ -41,9 +38,8 @@ export const useQRScannerModal = (options: UseQRScannerModalOptions = {}) => {
   };
 
   const handleModalClose = () => {
-    console.log('jellll')
     if (autoReset) {
-      qrScanner.resetScanner();
+      qrScanner.resetScanner(false); // Stop camera when closing modal
     }
     if (onClose) {
       onClose();

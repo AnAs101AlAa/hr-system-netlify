@@ -18,7 +18,6 @@ const Dashboard = () => {
   const { data, isLoading } = useUpcomingEvents(currentPage, eventsPerPage, now);
   const upcomingEvents = data?.items ?? [];
   const totalCount = data?.total ?? 0;
-  console.log(data);
 
   const totalPages = Math.ceil(totalCount / eventsPerPage);
 

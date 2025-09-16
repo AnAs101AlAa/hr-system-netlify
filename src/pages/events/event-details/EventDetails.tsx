@@ -18,8 +18,6 @@ const EventDetails = () => {
   const { data: event, isLoading, error } = useEvent(id ? id : "");
   const { data: attendees } = useEventAttendees(id ? id : "");
 
-  console.log(attendees);
-
   const handleBack = () => {
     navigate(-1);
   };
@@ -46,7 +44,7 @@ const EventDetails = () => {
       <div className="min-h-screen bg-background p-4">
         <div className="max-w-6xl mx-auto">
           <EventDetailsHeader onBack={handleBack} />
-          <EventInformation event={event} />
+          <EventInformation event={event} attendees={attendees} />
           <AttendeesList attendees={attendees || []} eventEndTime={event.endDate} />
         </div>
       </div>

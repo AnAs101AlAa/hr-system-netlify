@@ -7,7 +7,6 @@ const EVENTS_API_URL = systemApi.defaults.baseURL + "/api/v1/";
 export class eventsApi {
   async fetchEventById(id: string): Promise<Event> {
     const response = await systemApi.get(`${EVENTS_API_URL}Events/${id}`);
-    console.log(response);
     return response.data.data;
   }
 
@@ -15,16 +14,6 @@ export class eventsApi {
     const nowDate = new Date().toISOString();
     const response = await systemApi.get(
       `${EVENTS_API_URL}Events/filtered?fromDate=${nowDate}&page=${page}&count=${pageSize}`
-    );
-    console.log("fetchUpcomingEvents response:", response);
-    console.log("fetchUpcomingEvents response.data:", response.data);
-    console.log(
-      "fetchUpcomingEvents response.data type:",
-      typeof response.data
-    );
-    console.log(
-      "fetchUpcomingEvents response.data isArray:",
-      Array.isArray(response.data)
     );
 
     // Access the array using the correct structure: response.data.data.items
@@ -135,15 +124,44 @@ export class eventsApi {
     return [];
   }
 
-  async requestAttendance(memberId: string, eventId: string, reason: string) {
+  async requestAttendance(memberId: string, eventId: string) {
     const response = await systemApi.post(
       EVENTS_API_URL + `Attendance/${eventId}/${memberId}`,
       {
         scanTime: new Date().toISOString(),
-        execuse: reason || "",
       }
     );
-    console.log("response", response);
+    return response.data;
+  }
+
+  async checkAttendanceStatus(memberId: string, eventId: string): Promise<{ status: number }> {
+    const response = await systemApi.post(
+      EVENTS_API_URL + `Attendance/${eventId}/${memberId}/status`,
+      {
+        scanTime: new Date().toISOString(),
+      }
+    );
+    return { status: response.data.data };
+  }
+
+  async recordLateArrivalExcuse(memberId: string, eventId: string, excuse: string) {
+    const response = await systemApi.post(
+      EVENTS_API_URL + `Attendance/${eventId}/lateArrival/${memberId}`,
+      {
+        execuse: excuse,
+      }
+    );
+    return response.data;
+  }
+
+  async recordLeaveEarly(memberId: string, eventId: string, excuse: string) {
+    const response = await systemApi.post(
+      EVENTS_API_URL + `Attendance/${eventId}/earlyLeave/${memberId}`,
+      {
+        scanTime: new Date().toISOString(),
+        execuse: excuse,
+      }
+    );
     return response.data;
   }
 }

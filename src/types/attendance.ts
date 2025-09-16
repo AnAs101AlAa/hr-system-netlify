@@ -13,7 +13,7 @@ export interface MemberData {
   // Additional fields for QR scanner functionality
   name: string; // Alias for fullName for backward compatibility
   team: string; // Alias for committee for backward compatibility
-  status: "on-time" | "late";
+  status: "on-time" | "late" | "leaving-early" | "pending";
   arrivalTime: string;
   eventStartTime?: string;
 }

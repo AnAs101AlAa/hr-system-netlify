@@ -17,8 +17,7 @@ const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
             <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
               Name
             </th>
-            <th
-              className="w-42 min-w-42 px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+            <th className="w-42 min-w-42 px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
               Phone
             </th>
             <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
@@ -78,15 +77,17 @@ const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm text-dashboard-card-text">
-                    {attendee.status === "left"
-                      ? (attendee.earlyLeave ? format(attendee.earlyLeave.leaveTime, "hour") : eventEndTime)
-                      : "N/A"}
+                    {attendee.earlyLeave
+                      ? format(attendee.earlyLeave.scanTime, "hour")
+                      : eventEndTime}
                   </div>
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm text-dashboard-card-text">
                     <p className="break-words leading-relaxed">
-                      {attendee.lateArrival || "N/A"}
+                      {attendee.lateArrival
+                        ? attendee.lateArrival.execuse
+                        : "N/A"}
                     </p>
                   </div>
                 </td>

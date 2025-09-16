@@ -4,8 +4,10 @@ export interface Attendee extends member {
   status: "arrived" | "absent" | "left";
   arrivalTime?: Date;
   leaveTime?: Date;
-  lateArrival?: string;
-  earlyLeave?: { leaveTime: string; execuse: string};
+  lateArrival?: {
+    execuse:string
+  };
+  earlyLeave?: { scanTime: string; execuse: string};
 }
 
 export interface Event {

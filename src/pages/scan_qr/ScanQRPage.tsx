@@ -6,7 +6,7 @@ import {
 } from "@/components/scan_qr";
 import { useQRScanner } from "@/hooks/useQRScanner";
 import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
-
+import { useNavigate } from "react-router-dom";
 const ScanQRPage = () => {
   const {
     isScanning,
@@ -34,6 +34,8 @@ const ScanQRPage = () => {
     // For now, we'll call handleScan with a placeholder eventId
     await handleScan(detectedCodes, "placeholder-event-id");
   };
+
+  const Navigate = useNavigate();
 
   return (
     <WithNavbar>
@@ -65,8 +67,9 @@ const ScanQRPage = () => {
               onScan={handleScanWrapper}
               onError={handleError}
               onReasonChange={handleReasonChange}
-              onResetScanner={resetScanner}
-            />
+              onResetScanner={resetScanner} attendanceStatus={null} leaveExcuse={""} onLeaveExcuseChange={function (): void {
+                throw new Error("Function not implemented.");
+              } }            />
 
             {/* Action Buttons */}
             <div className="p-4 md:p-6 bg-gray-50 border-t border-[var(--color-dashboard-card-border)]">
@@ -76,10 +79,7 @@ const ScanQRPage = () => {
                 isConfirming={isConfirming}
                 lateReason={lateReason}
                 onConfirmAttendance={handleConfirmAttendance}
-                onReturnToEvents={() => {
-                  console.log("navigating to event details");
-                  // Navigate back to events page
-                }}
+                onReturnToEvents={() => Navigate('/')}
                 onResetScanner={resetScanner}
               />
             </div>

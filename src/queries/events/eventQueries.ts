@@ -96,7 +96,6 @@ export const usePastEvents = (eventType: string, title: string, page: number, pa
       try {
         const data = await eventsApiInstance.fetchPastEvents(eventType, title, page, pageSize);
         const count = await eventsApiInstance.fetchPastEventsCount(eventType, title);
-        console.log(data)
         return { items: data, total: count };
       } catch (error) {
         const errorMessage = getErrorMessage(error);
