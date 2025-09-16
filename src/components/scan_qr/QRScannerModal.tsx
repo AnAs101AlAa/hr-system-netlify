@@ -30,7 +30,6 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
           memberData.id,
           event.id
         );
-        console.log(statusResponse);
         setAttendanceStatus(statusResponse.status);
         if (statusResponse.status === 2004) {
           toast.error("Member already registered and left early");
@@ -44,9 +43,6 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
       }
 
       setIsVerifying(false);
-      console.log(
-        `Successfully scanned member ${memberData.name} for event ${event.title}`
-      );
     },
     [event.id, event.title]
   );
@@ -100,19 +96,18 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
       const { eventsApi } = await import("@/queries/events");
 
       const eventInstance = new eventsApi();
-      let response;
 
       // Use different API methods based on attendance status
       if (attendanceStatus === 2002) {
         // Late arrival
-        response = await eventInstance.recordLateArrivalExcuse(
+      await eventInstance.recordLateArrivalExcuse(
           scanner.memberData.id,
           event.id,
           leaveExcuse
         );
       } else if (attendanceStatus === 2003) {
         // Leaving early
-        response = await eventInstance.recordLeaveEarly(
+      await eventInstance.recordLeaveEarly(
           scanner.memberData.id,
           event.id,
           leaveExcuse
@@ -123,13 +118,11 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
         scanner.resetScanner(true);
       } else {
         // On-time attendance
-        response = await eventInstance.requestAttendance(
+      await eventInstance.requestAttendance(
           scanner.memberData.id,
           event.id
         );
       }
-
-      console.log("Attendance recorded successfully:", response);
 
       // Show success toast
       toast.success("Attendance recorded successfully!");

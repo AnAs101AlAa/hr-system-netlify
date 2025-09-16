@@ -8,7 +8,6 @@ interface AttendeesTableProps {
 }
 
 const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
-  console.log(attendees);
   return (
     <div className="hidden lg:block overflow-x-auto">
       <table className="w-full">

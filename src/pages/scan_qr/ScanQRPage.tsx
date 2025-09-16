@@ -6,7 +6,7 @@ import {
 } from "@/components/scan_qr";
 import { useQRScanner } from "@/hooks/useQRScanner";
 import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
-
+import { useNavigate } from "react-router-dom";
 const ScanQRPage = () => {
   const {
     isScanning,
@@ -34,6 +34,8 @@ const ScanQRPage = () => {
     // For now, we'll call handleScan with a placeholder eventId
     await handleScan(detectedCodes, "placeholder-event-id");
   };
+
+  const Navigate = useNavigate();
 
   return (
     <WithNavbar>
@@ -77,10 +79,7 @@ const ScanQRPage = () => {
                 isConfirming={isConfirming}
                 lateReason={lateReason}
                 onConfirmAttendance={handleConfirmAttendance}
-                onReturnToEvents={() => {
-                  console.log("navigating to event details");
-                  // Navigate back to events page
-                }}
+                onReturnToEvents={() => Navigate('/')}
                 onResetScanner={resetScanner}
               />
             </div>

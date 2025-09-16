@@ -14,7 +14,6 @@ const EventCard: React.FC<{ event: Omit<Event, "attendees"> }> = ({
   const { id, title, startDate, endDate, location } = event;
   const navigate = useNavigate();
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
-  console.log(event);
   const isPastEvent = new Date(endDate) <= new Date();
   // Check if event is happening today and start time has come or passed, and hasn't ended yet
   const now = new Date();

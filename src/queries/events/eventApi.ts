@@ -7,7 +7,6 @@ const EVENTS_API_URL = systemApi.defaults.baseURL + "/api/v1/";
 export class eventsApi {
   async fetchEventById(id: string): Promise<Event> {
     const response = await systemApi.get(`${EVENTS_API_URL}Events/${id}`);
-    console.log(response);
     return response.data.data;
   }
 
@@ -15,16 +14,6 @@ export class eventsApi {
     const nowDate = new Date().toISOString();
     const response = await systemApi.get(
       `${EVENTS_API_URL}Events/filtered?fromDate=${nowDate}&page=${page}&count=${pageSize}`
-    );
-    console.log("fetchUpcomingEvents response:", response);
-    console.log("fetchUpcomingEvents response.data:", response.data);
-    console.log(
-      "fetchUpcomingEvents response.data type:",
-      typeof response.data
-    );
-    console.log(
-      "fetchUpcomingEvents response.data isArray:",
-      Array.isArray(response.data)
     );
 
     // Access the array using the correct structure: response.data.data.items
@@ -142,7 +131,6 @@ export class eventsApi {
         scanTime: new Date().toISOString(),
       }
     );
-    console.log("response", response);
     return response.data;
   }
 
@@ -163,7 +151,6 @@ export class eventsApi {
         execuse: excuse,
       }
     );
-    console.log("Late arrival excuse response", response);
     return response.data;
   }
 
@@ -175,7 +162,6 @@ export class eventsApi {
         execuse: excuse,
       }
     );
-    console.log("Leave early response", response);
     return response.data;
   }
 }
