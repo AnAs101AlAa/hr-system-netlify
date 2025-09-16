@@ -4,6 +4,7 @@ import type { MemberData } from "@/types/attendance";
 import type { QRScanType } from "@/types/qrcode";
 import { UserApi } from "@/queries/users";
 import { eventsApiInstance } from "@/queries/events/eventApi";
+import { getErrorMessage } from "@/utils";
 
 export const useQRScanner = () => {
   const [isScanning, setIsScanning] = useState(true);
@@ -171,7 +172,7 @@ export const useQRScanner = () => {
               console.log("QR Code scanned and validated:", qrData);
             } catch (apiError) {
               console.error("Failed to fetch member data:", apiError);
-              setError("Failed to fetch member information. Please try again.");
+              setError(getErrorMessage(error));
             }
           } else {
             console.error("Invalid userId type:", typeof potentialData.userId);
@@ -198,8 +199,8 @@ export const useQRScanner = () => {
     setError("Failed to access camera or scan QR code. Please try again.");
   };
 
-  const resetScanner = () => {
-    setIsScanning(true);
+  const resetScanner = (restartScanning = true) => {
+    setIsScanning(restartScanning);
     setError(null);
     setMemberData(null);
     setLateReason("");
@@ -213,16 +214,15 @@ export const useQRScanner = () => {
       return;
     }
 
-    setIsConfirming(true);
+    // Don't set isConfirming here - it's managed by the modal now
     setError(null);
 
     try {
       // The actual API call is now handled in the modal component
       // This just handles the UI state transitions
-      setTimeout(() => {
-        setAttendanceConfirmed(true);
-        setIsConfirming(false);
-      }, 1000); // Shorter delay since API call is handled elsewhere
+      // Immediately set confirmed state since API call was successful
+      setAttendanceConfirmed(true);
+      // isConfirming should already be false at this point
     } catch (error) {
       console.error("Error in attendance confirmation:", error);
       setError("Failed to confirm attendance. Please try again.");
@@ -232,6 +232,10 @@ export const useQRScanner = () => {
 
   const handleReasonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setLateReason(e.target.value);
+  };
+
+  const setConfirming = (confirming: boolean) => {
+    setIsConfirming(confirming);
   };
 
   return {
@@ -249,5 +253,6 @@ export const useQRScanner = () => {
     resetScanner,
     handleConfirmAttendance,
     handleReasonChange,
+    setConfirming,
   };
 };

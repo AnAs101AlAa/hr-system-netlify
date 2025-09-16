@@ -7,7 +7,10 @@ interface AttendeesCardViewProps {
   eventEndTime?: string;
 }
 
-const AttendeesCardView = ({ attendees, eventEndTime }: AttendeesCardViewProps) => {
+const AttendeesCardView = ({
+  attendees,
+  eventEndTime,
+}: AttendeesCardViewProps) => {
   return (
     <div className="lg:hidden divide-y divide-gray-100">
       {attendees && attendees.length > 0 ? (
@@ -55,9 +58,9 @@ const AttendeesCardView = ({ attendees, eventEndTime }: AttendeesCardViewProps) 
                   Leaving:
                 </span>
                 <p className="text-dashboard-card-text text-[13px]">
-                    {attendee.status === "left"
-                      ? (attendee.earlyLeave ? format(attendee.earlyLeave.leaveTime, "hour") : eventEndTime)
-                      : "N/A"}
+                  {attendee.earlyLeave
+                    ? format(attendee.earlyLeave.scanTime, "hour")
+                    : eventEndTime}
                 </p>
               </div>
             </div>

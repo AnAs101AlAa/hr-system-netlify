@@ -7,7 +7,7 @@ export interface Attendee extends member {
   lateArrival?: {
     execuse:string
   };
-  earlyLeave?: { leaveTime: string; execuse: string};
+  earlyLeave?: { scanTime: string; execuse: string};
 }
 
 export interface Event {

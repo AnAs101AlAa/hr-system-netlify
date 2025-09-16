@@ -1,11 +1,10 @@
-import type { MemberData } from "@/types/attendance";
-
 interface FinalConfirmationProps {
-  memberData: MemberData;
   lateReason: string;
+  leaveExcuse: string;
+  attendanceStatus: number | null;
 }
 
-const FinalConfirmation = ({ memberData, lateReason }: FinalConfirmationProps) => {
+const FinalConfirmation = ({ lateReason, leaveExcuse, attendanceStatus }: FinalConfirmationProps) => {
   return (
     <div className="w-full bg-green-50 text-center p-6">
       <div className="w-16 h-16 md:w-20 md:h-20 mb-4 bg-green-100 rounded-full flex items-center justify-center mx-auto">
@@ -29,10 +28,16 @@ const FinalConfirmation = ({ memberData, lateReason }: FinalConfirmationProps) =
       <p className="text-sm text-[var(--color-dashboard-description)] mb-4">
         The attendance has been successfully recorded.
       </p>
-      {memberData?.status === "late" && (
-        <div className="bg-white rounded-lg p-3 border border-green-200">
+      {attendanceStatus === 2002 && lateReason && (
+        <div className="bg-white rounded-lg p-3 border border-gray-200">
           <p className="text-xs text-gray-500 mb-1">Late Reason:</p>
           <p className="text-sm text-gray-800">{lateReason}</p>
+        </div>
+      )}
+      {attendanceStatus === 2003 && leaveExcuse && (
+        <div className="bg-white rounded-lg p-3 border border-gray-200">
+          <p className="text-xs text-gray-500 mb-1">Leave Reason:</p>
+          <p className="text-sm text-gray-800">{leaveExcuse}</p>
         </div>
       )}
     </div>

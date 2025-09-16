@@ -9,7 +9,8 @@ interface AttendeesListProps {
 }
 
 const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
-  const [displayedAttendees, setDisplayedAttendees] = useState<Attendee[]>(attendees);
+  const [displayedAttendees, setDisplayedAttendees] =
+    useState<Attendee[]>(attendees);
   const [searchKey, setSearchKey] = useState<string>("");
 
   useEffect(() => {
@@ -37,10 +38,16 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
         />
       </div>
       {/* Desktop Table View */}
-      <AttendeesTable attendees={displayedAttendees} eventEndTime={eventEndTime} />
+      <AttendeesTable
+        attendees={displayedAttendees}
+        eventEndTime={eventEndTime}
+      />
 
       {/* Mobile Card View */}
-      <AttendeesCardView attendees={displayedAttendees} eventEndTime={eventEndTime} />
+      <AttendeesCardView
+        attendees={displayedAttendees}
+        eventEndTime={eventEndTime}
+      />
     </div>
   );
 };

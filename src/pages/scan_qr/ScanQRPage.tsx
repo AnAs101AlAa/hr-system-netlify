@@ -65,8 +65,9 @@ const ScanQRPage = () => {
               onScan={handleScanWrapper}
               onError={handleError}
               onReasonChange={handleReasonChange}
-              onResetScanner={resetScanner}
-            />
+              onResetScanner={resetScanner} attendanceStatus={null} leaveExcuse={""} onLeaveExcuseChange={function (): void {
+                throw new Error("Function not implemented.");
+              } }            />
 
             {/* Action Buttons */}
             <div className="p-4 md:p-6 bg-gray-50 border-t border-[var(--color-dashboard-card-border)]">
