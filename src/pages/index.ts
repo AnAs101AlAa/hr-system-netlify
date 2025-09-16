@@ -5,5 +5,6 @@ import PastEventsPage from "./events/past_events/PastEventsPage";
 import FormView from "./forms/FormView";
 import FormSubmissionPage from "./forms/FormSubmissionPage";
 import UnauthorizedPage from "@/components/generics/UnauthorizedPage";
+import ScanQRPage from "./scan_qr/ScanQRPage";
 
-export { LoginPage, HomePage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage };
+export { LoginPage, HomePage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage,ScanQRPage };
