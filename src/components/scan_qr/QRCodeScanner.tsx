@@ -2,7 +2,7 @@ import { Scanner } from "@yudiel/react-qr-scanner";
 import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
 
 interface QRCodeScannerProps {
-  onScan: (detectedCodes: IDetectedBarcode[]) => void;
+  onScan: (detectedCodes: IDetectedBarcode[]) => void | Promise<void>;
   onError: (error: unknown) => void;
 }
 

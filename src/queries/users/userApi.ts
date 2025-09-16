@@ -19,4 +19,9 @@ export class UserApi {
     const { data } = await systemApi.get(USER_API_URL + "session");
     return data;
   }
+
+  async getMemberDetails(userId:string){
+    const {data}=await systemApi.get(`/api/v1/Members/${userId}`);
+    return data
+  }
 }
