@@ -4,7 +4,6 @@ import { ScannerContainer, ScannerActions } from "@/components/scan_qr";
 import { useQRScannerModal } from "@/hooks";
 import type { Event } from "@/types/event";
 import type { MemberData } from "@/types/attendance";
-import { eventsApi } from "@/queries/events";
 
 interface QRScannerModalProps {
   isOpen: boolean;
@@ -14,39 +13,19 @@ interface QRScannerModalProps {
 
 const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
   const [validationError, setValidationError] = useState<string | null>(null);
-  const attendMember = async (memberId: string, eventId: string) => {
-    const eventInsatnce = new eventsApi();
-    const response = await eventInsatnce.requestAttendance(
-      memberId,
-      eventId,
-      scanner.memberData?.status === "late" ? scanner.lateReason : ""
-    );
-    console.log(response);
-    return true;
-  };
 
   const scanner = useQRScannerModal({
     eventId: event.id,
     onSuccess: (memberData: MemberData) => {
-      // Validate QR code against current event
-      const isValidForEvent = attendMember(memberData.id, event.id);
-
-      if (!isValidForEvent) {
-        setValidationError(
-          `This QR code is not valid for "${event.title}". Please scan the correct QR code for this event.`
-        );
-        scanner.resetScanner();
-        return;
-      }
-
       // Clear any previous validation errors
       setValidationError(null);
       console.log(
-        `Successfully validated member ${memberData.name} for event ${event.title}`
+        `Successfully scanned member ${memberData.name} for event ${event.title}`
       );
     },
     onError: (error: string) => {
       console.error("QR Scanner error:", error);
+      setValidationError(error);
     },
     onClose: () => {
       setValidationError(null);
@@ -56,27 +35,31 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
   });
 
   const handleConfirmAttendance = async () => {
-    await scanner.handleConfirmAttendance();
-
-    // TODO: Here you would typically send the attendance data to your backend
-    /* Example API call:
-    try {
-      await fetch(`/api/events/${event.id}/attendance`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          memberId: scanner.memberData?.id,
-          eventId: event.id,
-          arrivalTime: scanner.memberData?.arrivalTime,
-          status: scanner.memberData?.status,
-          lateReason: scanner.memberData?.status === 'late' ? scanner.lateReason : null
-        })
-      });
-      console.log('Attendance recorded successfully');
-    } catch (error) {
-      console.error('Failed to record attendance:', error);
+    if (!scanner.memberData) {
+      setValidationError("No member data available to record attendance");
+      return;
     }
-    */
+
+    try {
+      // Import eventsApi here to avoid unused import warning
+      const { eventsApi } = await import("@/queries/events");
+
+      const eventInstance = new eventsApi();
+      const response = await eventInstance.requestAttendance(
+        scanner.memberData.id,
+        event.id,
+        scanner.memberData.status === "late" ? scanner.lateReason : ""
+      );
+
+      console.log("Attendance recorded successfully:", response);
+
+      // Call the scanner's confirmation handler
+      await scanner.handleConfirmAttendance();
+
+    } catch (error) {
+      console.error("Failed to record attendance:", error);
+      setValidationError("Failed to record attendance. Please try again.");
+    }
   };
 
   const handleReturnToEvent = () => {
