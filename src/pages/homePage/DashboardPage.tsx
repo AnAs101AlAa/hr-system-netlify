@@ -37,7 +37,7 @@ const Dashboard = () => {
   return (
     <WithNavbar>
       <div className="mx-4 md:mx-6 lg:mx-8 flex flex-col md:items-center">
-        <div className="md:w-[80%] lg:w-2/3 xl:w-3/5 space-y-4 md:space-y-5 lg:space-y-6">
+        <div className="md:w-[80%] lg:w-[75%] xl:w-2/3 space-y-4 md:space-y-5 lg:space-y-6">
           <WelcomeCard />
           <ActionCards />
         </div>
@@ -50,7 +50,7 @@ const Dashboard = () => {
           </p>
         </div>
       ) : (
-        <div className="md:w-[80%] lg:w-2/3 xl:w-3/5 space-y-4 md:space-y-5 lg:space-y-6 md:block">
+        <div className="md:w-[80%] lg:w-[75%] xl:w-2/3 space-y-4 md:space-y-5 lg:space-y-6 md:block">
           <div className="mt-3 md:mt-4 lg:mt-5">
             {upcomingEvents.length > 0 && (<Pagination
               currentPage={currentPage}

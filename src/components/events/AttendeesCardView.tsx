@@ -4,9 +4,10 @@ import StatusBadge from "./StatusBadge";
 
 interface AttendeesCardViewProps {
   attendees: Attendee[];
+  eventEndTime?: string;
 }
 
-const AttendeesCardView = ({ attendees }: AttendeesCardViewProps) => {
+const AttendeesCardView = ({ attendees, eventEndTime }: AttendeesCardViewProps) => {
   return (
     <div className="lg:hidden divide-y divide-gray-100">
       {attendees && attendees.length > 0 ? (
@@ -27,7 +28,7 @@ const AttendeesCardView = ({ attendees }: AttendeesCardViewProps) => {
                   Team:
                 </span>
                 <p className="text-dashboard-card-text">
-                  {attendee.team || "N/A"}
+                  {attendee.committee || "N/A"}
                 </p>
               </div>
               <div>
@@ -35,7 +36,7 @@ const AttendeesCardView = ({ attendees }: AttendeesCardViewProps) => {
                   Phone:
                 </span>
                 <p className="text-dashboard-card-text">
-                  {format(attendee.phone, "phone")}
+                  {format(attendee.phoneNumber, "phone")}
                 </p>
               </div>
             </div>
@@ -54,7 +55,9 @@ const AttendeesCardView = ({ attendees }: AttendeesCardViewProps) => {
                   Leaving:
                 </span>
                 <p className="text-dashboard-card-text text-[13px]">
-                  {format(attendee.departureTime, "hour")}
+                    {attendee.status === "left"
+                      ? (attendee.earlyLeave ? format(attendee.earlyLeave.leaveTime, "hour") : eventEndTime)
+                      : "N/A"}
                 </p>
               </div>
             </div>
@@ -65,7 +68,7 @@ const AttendeesCardView = ({ attendees }: AttendeesCardViewProps) => {
                   Late Arrival Reason:
                 </span>
                 <p className="text-dashboard-card-text">
-                  {attendee.lateArrivalReason || "N/A"}
+                  {attendee.lateArrival || "N/A"}
                 </p>
               </div>
               <div>
@@ -73,7 +76,7 @@ const AttendeesCardView = ({ attendees }: AttendeesCardViewProps) => {
                   Early Leaving Reason:
                 </span>
                 <p className="text-dashboard-card-text">
-                  {attendee.earlyLeavingReason || "N/A"}
+                  {attendee.earlyLeave?.execuse || "N/A"}
                 </p>
               </div>
             </div>

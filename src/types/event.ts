@@ -3,9 +3,9 @@ import type { member } from "./member";
 export interface Attendee extends member {
   status: "arrived" | "absent" | "left";
   arrivalTime?: Date;
-  departureTime?: Date;
-  lateArrivalReason?: string;
-  earlyLeavingReason?: string;
+  leaveTime?: Date;
+  lateArrival?: string;
+  earlyLeave?: { leaveTime: string; execuse: string};
 }
 
 export interface Event {

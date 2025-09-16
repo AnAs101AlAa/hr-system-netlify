@@ -19,7 +19,7 @@ const EventDetails = () => {
   const { data: attendees } = useEventAttendees(id ? id : "");
 
   console.log(attendees);
-  
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -47,7 +47,7 @@ const EventDetails = () => {
         <div className="max-w-6xl mx-auto">
           <EventDetailsHeader onBack={handleBack} />
           <EventInformation event={event} />
-          <AttendeesList attendees={attendees || []} />
+          <AttendeesList attendees={attendees || []} eventEndTime={event.endTime} />
         </div>
       </div>
     </WithNavbar>

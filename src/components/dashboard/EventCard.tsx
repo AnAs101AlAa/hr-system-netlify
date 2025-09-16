@@ -19,7 +19,7 @@ const EventCard: React.FC<{ event: Omit<Event, "attendees"> }> = ({
   const isPastEvent = new Date(endDate) < new Date();
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4">
+    <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4 h-full relative">
       <div className="flex items-center gap-3">
         <h3 className="font-bold text-gray-800 text-[20px] md:text-[22px] lg:text-[24px]">{title}</h3>
       </div>
@@ -30,7 +30,7 @@ const EventCard: React.FC<{ event: Omit<Event, "attendees"> }> = ({
         <span className="flex gap-1"><IoIosPin className="text-primary size-5 -ml-0.5" /><span className="font-semibold">Location:</span> {location}</span>
       </div>
 
-      <div className="flex justify-end items-center gap-3 mt-1">
+      <div className="flex justify-end items-center gap-3 mt-1 absolute bottom-4 right-5 w-auto">
         {/* you can later adjust the onClick for the detail and scanQR however you want */}
         <Button
           buttonText="Details"
