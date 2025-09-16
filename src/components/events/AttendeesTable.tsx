@@ -8,6 +8,7 @@ interface AttendeesTableProps {
 }
 
 const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
+  console.log(attendees)
   return (
     <div className="hidden lg:block overflow-x-auto">
       <table className="w-full">
@@ -86,7 +87,7 @@ const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
                 <td className="px-4 py-4">
                   <div className="text-sm text-dashboard-card-text">
                     <p className="break-words leading-relaxed">
-                      {attendee.lateArrival || "N/A"}
+                      {attendee.lateArrival?attendee.lateArrival.execuse : "N/A"}
                     </p>
                   </div>
                 </td>

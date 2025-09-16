@@ -68,7 +68,7 @@ const AttendeesCardView = ({ attendees, eventEndTime }: AttendeesCardViewProps) 
                   Late Arrival Reason:
                 </span>
                 <p className="text-dashboard-card-text">
-                  {attendee.lateArrival || "N/A"}
+                  {attendee.lateArrival?.execuse || "N/A"}
                 </p>
               </div>
               <div>
