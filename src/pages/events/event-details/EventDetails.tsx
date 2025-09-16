@@ -6,74 +6,36 @@ import {
   EventNotFound,
 } from "@/components/events";
 import WithNavbar from "@/components/hoc/WithNavbar";
+import { useEvent } from "@/queries/events/eventQueries";
+import { useParams } from "react-router-dom";
+import LoadingPage from "@/components/generics/LoadingPage";
+import { useEventAttendees } from "@/queries/events/eventQueries";
 
 const EventDetails = () => {
-  //   const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  //   const eventId = id ? parseInt(id, 10) : 0;
 
-  //   const { data: event, isLoading, error } = useEvent(eventId);
+  const { data: event, isLoading, error } = useEvent(id ? id : "");
+  const { data: attendees } = useEventAttendees(id ? id : "");
 
-  const event = {
-    id: 1,
-    title: "Annual Company Meeting",
-    startTime: new Date("2023-10-15T09:00:00"),
-    endTime: new Date("2023-10-15T17:00:00"),
-    type: "Meeting",
-    attendees: [
-      {
-        id: 1,
-        name: "Ahmed Fathy",
-        phone: "201552851443",
-        team: "IT",
-        role: "Frontend Developer",
-        email: "john.doe@company.com",
-        status: "arrived" as const,
-        arrivalTime: new Date("2023-10-15T09:05:00"),
-        departureTime: new Date("2023-10-15T16:55:00"),
-        lateArrivalReason: "Traffic jam",
-      },
-      {
-        id: 2,
-        name: "Jane Smith",
-        phone: "01552851443",
-        team: "Sales",
-        role: "Representative",
-        email: "jane.smith@company.com",
-        status: "absent" as const,
-      },
-      {
-        id: 3,
-        name: "Alice Johnson",
-        phone: "+201012345678",
-        team: "Development",
-        role: "Developer",
-        email: "alice.johnson@company.com",
-        status: "left" as const,
-        arrivalTime: new Date("2023-10-15T09:15:00"),
-        departureTime: new Date("2023-10-15T12:00:00"),
-        lateArrivalReason: "Doctor appointment",
-        earlyLeavingReason: "Personal family emergency",
-      },
-    ],
-  };
+  console.log(attendees);
 
   const handleBack = () => {
     navigate(-1);
   };
 
-  //   if (isLoading) {
-  //     return <EventLoadingSkeleton />;
-  //   }
+  if (isLoading) {
+    return <LoadingPage />;
+  }
 
-  //   if (error) {
-  //     return (
-  //       <EventNotFound
-  //         message="Error Loading Event"
-  //         description="Unable to load event details. Please try again later."
-  //       />
-  //     );
-  //   }
+  if (error) {
+    return (
+      <EventNotFound
+        message="Error Loading Event"
+        description="Unable to load event details. Please try again later."
+      />
+    );
+  }
 
   if (!event) {
     return <EventNotFound />;
@@ -85,7 +47,7 @@ const EventDetails = () => {
         <div className="max-w-6xl mx-auto">
           <EventDetailsHeader onBack={handleBack} />
           <EventInformation event={event} />
-          <AttendeesList attendees={event.attendees || []} />
+          <AttendeesList attendees={attendees || []} eventEndTime={event.endDate} />
         </div>
       </div>
     </WithNavbar>

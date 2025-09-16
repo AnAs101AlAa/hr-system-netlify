@@ -2,10 +2,11 @@ import { systemApi } from "../axiosInstance";
 import type { User } from "@/types/user";
 
 const USER_API_URL = systemApi.defaults.baseURL + "/users/";
+const LOGIN_ROUTE=systemApi.defaults.baseURL + "/api/v1/Auth/";
 
 export class UserApi {
   async login(credentials: Partial<User>) {
-    const { data } = await systemApi.post(USER_API_URL + "login", credentials);
+    const { data } = await systemApi.post(LOGIN_ROUTE + "login", credentials);
     return data;
   }
 
@@ -17,5 +18,11 @@ export class UserApi {
   async session() {
     const { data } = await systemApi.get(USER_API_URL + "session");
     return data;
+  }
+
+  async getMemberDetails(userId:string){
+    const {data}=await systemApi.get(`/api/v1/Members/${userId}`);
+    console.log('heeeeeeeeeeee',data.data)
+    return data.data; // Access the nested data property
   }
 }

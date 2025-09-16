@@ -1,170 +1,150 @@
 import { systemApi } from "../axiosInstance";
-import type { Event, EventType } from "@/types/event";
+import type { Event, Attendee } from "@/types/event";
 
-const EVENTS_API_URL = systemApi.defaults.baseURL + "/events/";
+const EVENTS_API_URL = systemApi.defaults.baseURL + "/api/v1/";
 // const EVENT_TYPES_API_URL = systemApi.defaults.baseURL + "/event-types/"; // TODO: Uncomment when backend is ready
 
 export class eventsApi {
-  async fetchEventById(id: number): Promise<Event> {
-    const response = await systemApi.get<Event>(`${EVENTS_API_URL}${id}`);
-    return response.data;
+  async fetchEventById(id: string): Promise<Event> {
+    const response = await systemApi.get(`${EVENTS_API_URL}Events/${id}`);
+    console.log(response);
+    return response.data.data;
   }
 
-  async fetchPastEvents(): Promise<Event[]> {
-    // TODO: Replace with actual API call when backend is ready
-    // const response = await api.get<Event[]>(`${EVENTS_API_URL}past`);
-    // return response.data;
-
-    // Dummy data for development
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          {
-            id: 1,
-            title: "Team Meeting",
-            type: "meeting",
-            startTime: new Date("2024-10-01T14:00:00"),
-            endTime: new Date("2024-10-01T15:00:00"),
-            attendees: [],
-          },
-          {
-            id: 2,
-            title: "Project Review",
-            type: "review",
-            startTime: new Date("2024-10-01T14:00:00"),
-            endTime: new Date("2024-10-01T15:00:00"),
-            attendees: [],
-          },
-          {
-            id: 3,
-            title: "Training Session",
-            type: "training",
-            startTime: new Date("2024-10-01T14:00:00"),
-            endTime: new Date("2024-10-01T15:00:00"),
-            attendees: [],
-          },
-          {
-            id: 4,
-            title: "Client Presentation",
-            type: "presentation",
-            startTime: new Date("2024-10-01T14:00:00"),
-            endTime: new Date("2024-10-01T15:00:00"),
-            attendees: [],
-          },
-          {
-            id: 5,
-            title: "Code Review",
-            type: "review",
-            startTime: new Date("2024-10-01T14:00:00"),
-            endTime: new Date("2024-10-01T15:00:00"),
-            attendees: [],
-          },
-          {
-            id: 6,
-            title: "Design Review",
-            type: "review",
-            startTime: new Date("2024-10-02T10:00:00"),
-            endTime: new Date("2024-10-02T11:00:00"),
-            attendees: [],
-          },
-          {
-            id: 7,
-            title: "Sprint Planning",
-            type: "planning",
-            startTime: new Date("2024-10-02T14:00:00"),
-            endTime: new Date("2024-10-02T16:00:00"),
-            attendees: [],
-          },
-          {
-            id: 8,
-            title: "Stakeholder Meeting",
-            type: "meeting",
-            startTime: new Date("2024-10-03T09:00:00"),
-            endTime: new Date("2024-10-03T10:30:00"),
-            attendees: [],
-          },
-          {
-            id: 9,
-            title: "Weekly Standup",
-            type: "meeting",
-            startTime: new Date("2024-10-04T09:00:00"),
-            endTime: new Date("2024-10-04T09:30:00"),
-            attendees: [],
-          },
-          {
-            id: 10,
-            title: "Technical Workshop",
-            type: "training",
-            startTime: new Date("2024-10-05T13:00:00"),
-            endTime: new Date("2024-10-05T17:00:00"),
-            attendees: [],
-          },
-        ]);
-      }, 500); // Simulate network delay
-    });
-  }
-
-  async fetchEventTypes(): Promise<EventType[]> {
-    // TODO: Replace with actual API call when backend is ready
-    // const response = await api.get<EventType[]>(EVENT_TYPES_API_URL);
-    // return response.data;
-
-    // Dummy data for development
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          {
-            id: "meeting",
-            label: "Meetings",
-            description: "Team meetings and discussions",
-          },
-          {
-            id: "review",
-            label: "Reviews",
-            description: "Code and project reviews",
-          },
-          {
-            id: "training",
-            label: "Training",
-            description: "Learning and development sessions",
-          },
-          {
-            id: "presentation",
-            label: "Presentations",
-            description: "Client and internal presentations",
-          },
-          {
-            id: "planning",
-            label: "Planning",
-            description: "Sprint and project planning sessions",
-          },
-        ]);
-      }, 300); // Simulate network delay
-    });
-  }
-
-  async fetchEventsByType(eventType: string): Promise<Event[]> {
-    // TODO: Replace with actual API call when backend is ready
-    // const response = await api.get<Event[]>(`${EVENTS_API_URL}type/${eventType}`);
-    // return response.data;
-
-    // Dummy data for development - filter by type
-    const allEvents = await this.fetchPastEvents();
-    return allEvents.filter((event) => event.type === eventType);
-  }
-
-  async searchPastEvents(query: string): Promise<Event[]> {
-    // TODO: Replace with actual API call when backend is ready
-    // const response = await api.get<Event[]>(`${EVENTS_API_URL}past/search`, {
-    //   params: { q: query }
-    // });
-    // return response.data;
-
-    // Dummy data for development - filter by title
-    const allEvents = await this.fetchPastEvents();
-    return allEvents.filter((event) =>
-      event.title.toLowerCase().includes(query.toLowerCase())
+  async fetchUpcomingEvents(page: number, pageSize: number): Promise<Event[]> {
+    const nowDate = new Date().toISOString();
+    const response = await systemApi.get(
+      `${EVENTS_API_URL}Events/filtered?fromDate=${nowDate}&page=${page}&count=${pageSize}`
     );
+    console.log("fetchUpcomingEvents response:", response);
+    console.log("fetchUpcomingEvents response.data:", response.data);
+    console.log(
+      "fetchUpcomingEvents response.data type:",
+      typeof response.data
+    );
+    console.log(
+      "fetchUpcomingEvents response.data isArray:",
+      Array.isArray(response.data)
+    );
+
+    // Access the array using the correct structure: response.data.data.items
+    const items = response.data?.data?.items;
+    if (Array.isArray(items)) {
+      return items;
+    }
+
+    console.warn(
+      "Unexpected response structure for fetchUpcomingEvents:",
+      response.data
+    );
+    return [];
+  }
+
+  async fetchEventsCount(fromDate: string): Promise<number> {
+    const response = await systemApi.get(
+      `${EVENTS_API_URL}Events/filtered?${
+        fromDate ? `fromDate=${fromDate}` : ""
+      }`
+    );
+
+    // Access count using the correct structure: response.data.data.items.length
+    const items = response.data?.data?.items;
+    if (Array.isArray(items)) {
+      return items.length;
+    }
+
+    console.warn(
+      "Unexpected response structure for fetchEventsCount:",
+      response.data
+    );
+    return 0;
+  }
+
+  async fetchPastEventsCount(
+    eventType: string,
+    title: string
+  ): Promise<number> {
+    const nowDate = new Date().toISOString();
+    const response = await systemApi.get(
+      `${EVENTS_API_URL}Events/filtered?toDate=${nowDate}&${
+        eventType != "" ? `eventType=${eventType}` : ""
+      }&${title != "" ? `title=${title}` : ""}`
+    );
+
+    // Access count using the correct structure: response.data.data.items.length
+    const items = response.data?.data?.items;
+    if (Array.isArray(items)) {
+      return items.length;
+    }
+
+    console.warn(
+      "Unexpected response structure for fetchPastEventsCount:",
+      response.data
+    );
+    return 0;
+  }
+
+  async checkOngoingEvent(toDate: string): Promise<Event | null> {
+    const response = await systemApi.get(
+      `${EVENTS_API_URL}Events/filtered?toDate=${toDate}`
+    );
+    const items = response.data.data?.items;
+    return items && items.length > 0 ? items[0] : null;
+  }
+
+  async fetchEventAttendees(eventId: string): Promise<Attendee[]> {
+    const response = await systemApi.get(
+      `${EVENTS_API_URL}Attendance/${eventId}`
+    );
+    // Access the array using the correct structure: response.data.data.items
+    const items = response.data?.data;
+    if (Array.isArray(items)) {
+      return items;
+    }
+
+    console.warn(
+      "Unexpected response structure for fetchEventAttendees:",
+      response.data
+    );
+    return [];
+  }
+
+  async fetchPastEvents(
+    eventType: string,
+    title: string,
+    page: number,
+    pageSize: number
+  ): Promise<Event[]> {
+    const nowDate = new Date().toISOString();
+    const response = await systemApi.get(
+      `${EVENTS_API_URL}Events/filtered?toDate=${nowDate}&${
+        eventType != "" ? `eventType=${eventType}` : ""
+      }&${title != "" ? `title=${title}` : ""}&page=${page}&count=${pageSize}`
+    );
+
+    // Access the array using the correct structure: response.data.data.items
+    const items = response.data?.data?.items;
+    if (Array.isArray(items)) {
+      return items;
+    }
+
+    console.warn(
+      "Unexpected response structure for fetchPastEvents:",
+      response.data
+    );
+    return [];
+  }
+
+  async requestAttendance(memberId: string, eventId: string, reason: string) {
+    const response = await systemApi.post(
+      EVENTS_API_URL + `Attendance/${eventId}/${memberId}`,
+      {
+        scanTime: new Date().toISOString(),
+        execuse: reason || "",
+      }
+    );
+    console.log("response", response);
+    return response.data;
   }
 }
 

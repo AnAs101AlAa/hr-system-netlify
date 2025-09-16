@@ -1,4 +1,4 @@
-type FormatMode = "full" | "hour" | "phone";
+type FormatMode = "full" | "hour" | "phone" | "stringed";
 
 const formatDateTime = (date: Date, mode: FormatMode = "full") => {
   if (mode === "hour") {
@@ -69,6 +69,11 @@ const format = (data: unknown, mode: FormatMode): string => {
           typeof data === "string" ? new Date(data) : (data as Date);
         if (isNaN(dateObj.getTime())) return "Invalid Date";
         return formatDateTime(dateObj, mode);
+      }
+      case "stringed": {
+        const intoDate = new Date(data as string);
+        if (isNaN(intoDate.getTime())) return "Invalid Date";
+        return formatDateTime(intoDate, "full");
       }
       default:
         return String(data || "N/A");

@@ -14,7 +14,7 @@ const WelcomeCard = () => {
         >
           <LazyImageLoader
             src={
-              user?.photoUrl ||
+              user?.profileImageUrl ||
               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLn1_EIWe4MQKAqinzLYerlpzm0pyawzZbYg&s"
             }
             alt="User Avatar"
@@ -28,7 +28,7 @@ const WelcomeCard = () => {
             Welcome back,
           </div>
           <div className="text-dashboard-user-name font-bold text-[19.7px] leading-[23px] font-inter sm:text-[21px] sm:leading-[24px] md:text-[22px] md:leading-[26px] lg:text-[24px] lg:leading-[28px] xl:text-[26px] xl:leading-[30px]">
-            {user?.fullName || "Logine Ahmed"}
+            {user?.name || "Logine Ahmed"}
           </div>
         </div>
       </div>

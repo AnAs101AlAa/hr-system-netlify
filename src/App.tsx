@@ -8,13 +8,13 @@ function App() {
     <BrowserRouter>
       <Toaster />
       <Routes>
-        {routes.map(({ path, Component, protected: isProtected, role }, index) =>
+        {routes.map(({ path, Component, protected: isProtected, roles }, index) =>
           isProtected ? (
             <Route
               key={index}
               path={path}
               element={
-                <MemberRoute allowedRole={role}>
+                <MemberRoute allowedRoles={roles}>
                   <Component />
                 </MemberRoute>
               }

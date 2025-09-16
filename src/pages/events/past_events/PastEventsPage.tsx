@@ -2,29 +2,17 @@ import { EventsList, Pagination } from "@/components/dashboard";
 import WithNavbar from "@/components/hoc/WithNavbar";
 import SearchField from "@/components/generics/SearchField";
 import DropdownMenu from "@/components/generics/dropDownMenu";
-import { useState, useEffect, useMemo } from "react";
-import { usePastEvents, useEventTypes } from "@/queries/events/eventQueries";
+import { useState, useEffect } from "react";
+import { usePastEvents } from "@/queries/events/eventQueries";
+import EVENT_TYPES from "@/constants/eventTypes";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const PastEventsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEventType, setSelectedEventType] = useState("");
 
-  // Fetch past events and event types from API
-  const { data: pastEvents = [], error: eventsError } = usePastEvents();
-  const { data: eventTypes = [], error: typesError } = useEventTypes();
-
-  // Transform event types for dropdown options
-  const eventTypeOptions = useMemo(() => {
-    const allEventsOption = { value: "", label: "All Events" };
-    const typeOptions = eventTypes.map((type) => ({
-      value: type.id,
-      label: type.label,
-    }));
-    return [allEventsOption, ...typeOptions];
-  }, [eventTypes]);
-
-  // Responsive events per page - fewer on mobile, more on desktop
+    // Responsive events per page - fewer on mobile, more on desktop
   const getEventsPerPage = () => {
     if (typeof window !== "undefined") {
       if (window.innerWidth < 640) return 4; // Mobile: 4 events
@@ -36,7 +24,9 @@ const PastEventsPage = () => {
   };
 
   const [eventsPerPage, setEventsPerPage] = useState(getEventsPerPage());
-
+  const { data, error: eventsError, isLoading } = usePastEvents(selectedEventType, searchTerm, currentPage, eventsPerPage);
+  const pastEvents = data?.items ?? [];
+  const totalCount = data?.total ?? 0;
   // Update events per page on window resize
   useEffect(() => {
     const handleResize = () => {
@@ -51,21 +41,7 @@ const PastEventsPage = () => {
     }
   }, []);
 
-  // Filter events based on search term and event type
-  const filteredEvents = pastEvents.filter((event) => {
-    const matchesSearch = event.title
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesType =
-      selectedEventType === "" || event.type === selectedEventType;
-    return matchesSearch && matchesType;
-  });
-
-  const totalFilteredPages = Math.ceil(filteredEvents.length / eventsPerPage);
-
-  const startIndex = (currentPage - 1) * eventsPerPage;
-  const endIndex = startIndex + eventsPerPage;
-  const currentEvents = filteredEvents.slice(startIndex, endIndex);
+  const totalFilteredPages = Math.ceil(totalCount / eventsPerPage);
 
   // Reset to first page when search term or event type changes
   useEffect(() => {
@@ -107,7 +83,7 @@ const PastEventsPage = () => {
                 <div className="w-full lg:w-64 lg:-mt-6">
                   <DropdownMenu
                     placeholder="Filter by event type"
-                    options={eventTypeOptions}
+                    options={[{ value: "", label: "All" }, ...EVENT_TYPES]}
                     value={selectedEventType}
                     onChange={setSelectedEventType}
                   />
@@ -115,9 +91,9 @@ const PastEventsPage = () => {
               </div>
 
               {/* Error state */}
-              {(eventsError || typesError) && (
+              {(eventsError) && (
                 <div className="text-center py-8">
-                  <p className="text-red-600 text-lg">
+                  <p className="text-primary text-lg">
                     Failed to load events. Please try again later.
                   </p>
                 </div>
@@ -125,9 +101,9 @@ const PastEventsPage = () => {
 
               {/* Empty state */}
               {!eventsError &&
-                !typesError &&
-                currentEvents.length === 0 &&
-                pastEvents.length === 0 && (
+                pastEvents.length === 0 &&
+                pastEvents.length === 0 &&
+                !isLoading && (
                   <div className="text-center py-8">
                     <p className="text-muted-secondary text-lg">
                       No past events available.
@@ -137,8 +113,7 @@ const PastEventsPage = () => {
 
               {/* No filtered results */}
               {!eventsError &&
-                !typesError &&
-                currentEvents.length === 0 &&
+                pastEvents.length === 0 &&
                 pastEvents.length > 0 && (
                   <div className="text-center py-8">
                     <p className="text-muted-secondary text-lg">
@@ -147,9 +122,19 @@ const PastEventsPage = () => {
                   </div>
                 )}
 
+              {isLoading && (
+                <div className="flex justify-center items-center w-full flex-col mt-10">
+                  <div className="animate-spin inline-block text-[26px] text-secondary">
+                    <AiOutlineLoading3Quarters />
+                  </div>
+                  <p className="text-inactive-tab-text text-center w-full text-[16px] md:text-[18px] lg:text-[20px]">
+                    Loading events...
+                  </p>
+                </div>
+              )}
               {/* Events list */}
-              {!eventsError && !typesError && currentEvents.length > 0 && (
-                <EventsList events={currentEvents} />
+              {!eventsError && pastEvents.length > 0 && (
+                <EventsList events={pastEvents} />
               )}
             </div>
           </div>

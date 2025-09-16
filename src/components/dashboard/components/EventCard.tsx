@@ -7,11 +7,11 @@ import formatDateTime from "@/utils/Formater";
 import type { Event } from "@/types/event";
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-  const { id, title, startTime, endTime } = event;
+  const { id, title, startDate, endDate } = event;
   const navigate = useNavigate();
 
   // if event in the past, only show "Details" button, else show both "Details" and "Scan QR" buttons
-  const isPastEvent = new Date(endTime) < new Date();
+  const isPastEvent = new Date(endDate) < new Date();
 
   return (
     <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4">
@@ -21,8 +21,8 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
       </div>
 
       <div className="flex flex-col text-sm text-gray-500 ">
-        <span>Start: {formatDateTime(startTime, "full")}</span>
-        <span>End: {formatDateTime(endTime, "full")}</span>
+        <span>Start: {formatDateTime(startDate, "full")}</span>
+        <span>End: {formatDateTime(endDate, "full")}</span>
       </div>
 
       <div className="flex justify-end items-center gap-3 mt-1">

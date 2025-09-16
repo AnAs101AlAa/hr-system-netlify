@@ -3,22 +3,18 @@ import type { member } from "./member";
 export interface Attendee extends member {
   status: "arrived" | "absent" | "left";
   arrivalTime?: Date;
-  departureTime?: Date;
-  lateArrivalReason?: string;
-  earlyLeavingReason?: string;
-}
-
-export interface EventType {
-  id: string;
-  label: string;
-  description?: string;
+  leaveTime?: Date;
+  lateArrival?: string;
+  earlyLeave?: { leaveTime: string; execuse: string};
 }
 
 export interface Event {
-  id: number;
+  id: string;
   title: string;
+  description: string;
+  location: string;
   type: string;
-  startTime: Date;
-  endTime: Date;
-  attendees: Attendee[];
+  startDate: string;
+  endDate: string;
+  attendees?: Attendee[];
 }
