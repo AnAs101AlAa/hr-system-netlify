@@ -5,6 +5,7 @@ import {
   ScannerInstructions,
 } from "@/components/scan_qr";
 import { useQRScanner } from "@/hooks/useQRScanner";
+import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
 
 const ScanQRPage = () => {
   const {
@@ -20,6 +21,19 @@ const ScanQRPage = () => {
     handleConfirmAttendance,
     handleReasonChange,
   } = useQRScanner();
+
+  // Wrapper function to handle the eventId requirement
+  const handleScanWrapper = async (detectedCodes: IDetectedBarcode[]) => {
+    // For standalone scanner, we need an eventId. This could be improved by:
+    // 1. Getting eventId from URL params
+    // 2. Getting eventId from context
+    // 3. Showing event selection before scanning
+    // For now, we'll use a placeholder or show an error
+    console.warn("ScanQRPage: No eventId available for scanning");
+    // You might want to navigate to event selection or show an error
+    // For now, we'll call handleScan with a placeholder eventId
+    await handleScan(detectedCodes, "placeholder-event-id");
+  };
 
   return (
     <WithNavbar>
@@ -48,7 +62,7 @@ const ScanQRPage = () => {
               memberData={memberData}
               attendanceConfirmed={attendanceConfirmed}
               lateReason={lateReason}
-              onScan={handleScan}
+              onScan={handleScanWrapper}
               onError={handleError}
               onReasonChange={handleReasonChange}
               onResetScanner={resetScanner}

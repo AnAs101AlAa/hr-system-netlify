@@ -47,7 +47,7 @@ const EventDetails = () => {
         <div className="max-w-6xl mx-auto">
           <EventDetailsHeader onBack={handleBack} />
           <EventInformation event={event} />
-          <AttendeesList attendees={attendees || []} eventEndTime={event.endTime} />
+          <AttendeesList attendees={attendees || []} eventEndTime={event.endDate} />
         </div>
       </div>
     </WithNavbar>

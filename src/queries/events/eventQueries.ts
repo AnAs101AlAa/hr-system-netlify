@@ -26,7 +26,7 @@ export const useEvent = (id: string) => {
     queryFn: async () => {
       try {
         const data = await eventsApiInstance.fetchEventById(id);
-        return data.data;
+        return data;
       } catch (error) {
         const errorMessage = getErrorMessage(error);
         toast.error(`Failed to fetch event: ${errorMessage}`);
@@ -44,7 +44,7 @@ export const useUpcomingEvents = (page: number, pageSize: number, fromDate: stri
       try {
         const data = await eventsApiInstance.fetchUpcomingEvents(page, pageSize);
         const count = await eventsApiInstance.fetchEventsCount(fromDate);
-        return { items: data.data.items, total: count };
+        return { items: data, total: count };
       } catch (error) {
         const errorMessage = getErrorMessage(error);
         toast.error(`Failed to fetch upcoming events: ${errorMessage}`);
@@ -77,7 +77,7 @@ export const useEventAttendees = (eventId: string) => {
     queryFn: async () => {
       try {
         const data = await eventsApiInstance.fetchEventAttendees(eventId);
-        return data.data;
+        return data;
       } catch (error) {
         const errorMessage = getErrorMessage(error);
         toast.error(`Failed to fetch event attendees: ${errorMessage}`);
@@ -96,7 +96,8 @@ export const usePastEvents = (eventType: string, title: string, page: number, pa
       try {
         const data = await eventsApiInstance.fetchPastEvents(eventType, title, page, pageSize);
         const count = await eventsApiInstance.fetchPastEventsCount(eventType, title);
-        return { items: data.data.items, total: count };
+        console.log(data)
+        return { items: data, total: count };
       } catch (error) {
         const errorMessage = getErrorMessage(error);
         toast.error(`Failed to fetch past events: ${errorMessage}`);
