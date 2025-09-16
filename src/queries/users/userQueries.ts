@@ -25,7 +25,6 @@ export const useLogin = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: userKeys.session() });
       const { id = "", email = "", name = "", profileImageUrl = "", phoneNumber = "", roles = [] } = data.data || {};
-      console.log("Login successful, user data:", { id, email, name, profileImageUrl, phoneNumber, roles });
       dispatch(setUser({ id, email, name, profileImageUrl, phoneNumber, roles }));
       toast.success("Login successful! Welcome back!");
     },

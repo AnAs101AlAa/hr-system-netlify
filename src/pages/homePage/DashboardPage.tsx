@@ -6,82 +6,18 @@ import {
   EventsList,
 } from "@/components/dashboard";
 import WithNavbar from "@/components/hoc/WithNavbar";
+import { useUpcomingEvents } from "@/queries/events/eventQueries";
+import { BiLoaderAlt } from "react-icons/bi";
 
 const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 4;
+  const { data, isLoading } = useUpcomingEvents(currentPage, eventsPerPage);
+  const upcomingEvents = data?.items ?? [];
+  const totalCount = data?.total ?? 0;
+  console.log(data);
 
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Team Meeting",
-      type: "meeting",
-      startTime: new Date("2024-10-01T14:00:00"),
-      endTime: new Date("2024-10-01T15:00:00"),
-    },
-    {
-      id: 2,
-      title: "Project Review",
-      type: "review",
-
-      startTime: new Date("2024-10-01T14:00:00"),
-      endTime: new Date("2024-10-01T15:00:00"),
-    },
-    {
-      id: 3,
-      title: "Training Session",
-      type: "session",
-
-      startTime: new Date("2024-10-01T14:00:00"),
-      endTime: new Date("2024-10-01T15:00:00"),
-    },
-    {
-      id: 4,
-      title: "Client Presentation",
-      type: "presentation",
-
-      startTime: new Date("2024-10-01T14:00:00"),
-      endTime: new Date("2024-10-01T15:00:00"),
-    },
-    {
-      id: 5,
-      title: "Code Review",
-      type: "review",
-
-      startTime: new Date("2024-10-01T14:00:00"),
-      endTime: new Date("2024-10-01T15:00:00"),
-    },
-    {
-      id: 6,
-      title: "Design Review",
-      type: "review",
-
-      startTime: new Date("2024-10-02T10:00:00"),
-      endTime: new Date("2024-10-02T11:00:00"),
-    },
-    {
-      id: 7,
-      title: "Sprint Planning",
-      type: "planning",
-
-      startTime: new Date("2024-10-02T14:00:00"),
-      endTime: new Date("2024-10-02T16:00:00"),
-    },
-    {
-      id: 8,
-      title: "Stakeholder Meeting",
-      type: "meeting",
-
-      startTime: new Date("2024-10-03T09:00:00"),
-      endTime: new Date("2024-10-03T10:30:00"),
-    },
-  ];
-
-  const totalPages = Math.ceil(upcomingEvents.length / eventsPerPage);
-
-  const startIndex = (currentPage - 1) * eventsPerPage;
-  const endIndex = startIndex + eventsPerPage;
-  const currentEvents = upcomingEvents.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(totalCount / eventsPerPage);
 
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -103,6 +39,14 @@ const Dashboard = () => {
           <ActionCards />
         </div>
 
+      {isLoading ? (
+        <div className="flex justify-center items-center w-full flex-col mt-10">
+          <BiLoaderAlt className="animate-spin inline-block text-[26px] text-secondary" />
+          <p className="text-inactive-tab-text text-center w-full text-[16px] md:text-[18px] lg:text-[20px]">
+            Loading events...
+          </p>
+        </div>
+      ) : (
         <div className="md:w-[80%] lg:w-2/3 xl:w-3/5 space-y-4 md:space-y-5 lg:space-y-6 md:block">
           <div className="mt-3 md:mt-4 lg:mt-5">
             <Pagination
@@ -112,9 +56,10 @@ const Dashboard = () => {
               onNext={handleNext}
               title="Upcoming Events"
             />
-            <EventsList events={currentEvents} />
+            <EventsList events={upcomingEvents}/>
           </div>
         </div>
+      )}
       </div>
     </WithNavbar>
   );

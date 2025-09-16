@@ -17,7 +17,7 @@ const EventInformation = ({ event }: EventInformationProps) => {
             Start Date & Time
           </span>
           <div className="text-dashboard-card-text text-sm sm:text-base lg:text-lg">
-            {event.startTime ? format(event.startTime, "full") : "N/A"}
+            {event.startDate ? format(event.startDate, "full") : "N/A"}
           </div>
         </div>
         <div className="flex flex-col space-y-1 sm:space-y-2">
@@ -25,7 +25,7 @@ const EventInformation = ({ event }: EventInformationProps) => {
             End Date & Time
           </span>
           <div className="text-dashboard-card-text text-sm sm:text-base lg:text-lg">
-            {event.endTime ? format(event.endTime, "full") : "N/A"}
+            {event.endDate ? format(event.endDate, "full") : "N/A"}
           </div>
         </div>
       </div>

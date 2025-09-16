@@ -1,12 +1,28 @@
 import { systemApi } from "../axiosInstance";
-import type { Event, EventType } from "@/types/event";
+import type { Event } from "@/types/event";
 
-const EVENTS_API_URL = systemApi.defaults.baseURL + "/events/";
+const EVENTS_API_URL = systemApi.defaults.baseURL + "/api/v1/";
 // const EVENT_TYPES_API_URL = systemApi.defaults.baseURL + "/event-types/"; // TODO: Uncomment when backend is ready
 
 export class eventsApi {
-  async fetchEventById(id: number): Promise<Event> {
-    const response = await systemApi.get<Event>(`${EVENTS_API_URL}${id}`);
+  async fetchEventById(id: string): Promise<Event> {
+    const response = await systemApi.get<Event>(`${EVENTS_API_URL}Events/${id}`);
+    return response.data;
+  }
+
+  async fetchUpcomingEvents(page: number, pageSize: number): Promise<Event[]> {
+    const nowDate = new Date().toISOString();
+    const response = await systemApi.get<Event[]>(`${EVENTS_API_URL}Events/filtered?fromDate=${nowDate}&page=${page}&count=${pageSize}`);
+    return response.data;
+  }
+
+  async fetchEventsCount(fromDate: string): Promise<number> {
+    const response = await systemApi.get<number>(`${EVENTS_API_URL}Events/filtered?${fromDate ? `fromDate=${fromDate}` : ""}`);
+    return response.data.data.items.length;
+  }
+
+  async fetchEventAttendees(eventId: string): Promise<Event> {
+    const response = await systemApi.get<Event>(`${EVENTS_API_URL}Attendance/${eventId}`);
     return response.data;
   }
 
@@ -23,7 +39,7 @@ export class eventsApi {
             id: 1,
             title: "Team Meeting",
             type: "meeting",
-            startTime: new Date("2024-10-01T14:00:00"),
+            startD: new Date("2024-10-01T14:00:00"),
             endTime: new Date("2024-10-01T15:00:00"),
             attendees: [],
           },
@@ -104,7 +120,7 @@ export class eventsApi {
     });
   }
 
-  async fetchEventTypes(): Promise<EventType[]> {
+  async fetchEventTypes(): Promise<string[]> {
     // TODO: Replace with actual API call when backend is ready
     // const response = await api.get<EventType[]>(EVENT_TYPES_API_URL);
     // return response.data;
@@ -113,31 +129,11 @@ export class eventsApi {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([
-          {
-            id: "meeting",
-            label: "Meetings",
-            description: "Team meetings and discussions",
-          },
-          {
-            id: "review",
-            label: "Reviews",
-            description: "Code and project reviews",
-          },
-          {
-            id: "training",
-            label: "Training",
-            description: "Learning and development sessions",
-          },
-          {
-            id: "presentation",
-            label: "Presentations",
-            description: "Client and internal presentations",
-          },
-          {
-            id: "planning",
-            label: "Planning",
-            description: "Sprint and project planning sessions",
-          },
+          "meeting",
+          "training",
+          "review",
+          "presentation",
+          "planning",
         ]);
       }, 300); // Simulate network delay
     });
