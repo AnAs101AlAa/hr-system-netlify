@@ -5,6 +5,8 @@ import { createMCQValidationSchema } from '@/schemas/questionSchemas';
 import Checkbox from '../generics/Checkbox';
 import Radiobutton from '../generics/Radiobutton';
 import type { QuestionCardHandle } from '@/types/form';
+import InputField from '../generics/InputField';
+
 interface MCQQuestionCardProps {
     question: MCQQuestion;
     initialValue?: string;
@@ -75,25 +77,56 @@ const MCQQuestionCard = forwardRef<QuestionCardHandle, MCQQuestionCardProps>(({
             <div>
                 {question.isMultiSelect ? (
                     <div className="flex flex-col gap-3 md:gap-4">
-                        {question.choices.map((choice) => (
+                    {question.choices.map((choice) =>
+                        choice.content.toLowerCase() === 'other' ? (
+                            <InputField
+                                key={choice.id}
+                                id={`other-${choice.id}`}
+                                label="Other"
+                                value={Array.isArray(answer) ? answer.find(ans => ans.startsWith('Other: '))?.replace('Other: ', '') || '' : ''}
+                                onChange={(e) => {
+                                    const otherValue = e.target.value;
+                                    const updatedAnswers = (answer as string[]).filter(ans => !ans.startsWith('Other: '));
+                                    if (otherValue) {
+                                        updatedAnswers.push(`Other: ${otherValue}`);
+                                    }
+                                    setAnswer(updatedAnswers);
+                                }}
+                                placeholder="Please specify"
+                            />
+                        ) : (
                             <Checkbox
                                 key={choice.id}
                                 label={choice.content}
                                 checked={answer.includes(choice.content)}
                                 onChange={() => handleAnswerChange(choice.content)}
                             />
-                        ))}
+                        )
+                    )}
                     </div>
                 ) : (
                     <div className="flex flex-col gap-3 md:gap-4">
                         {question.choices.map((choice) => (
+                            choice.content.toLowerCase() === 'other' ? (
+                                <InputField
+                                    key={choice.id}
+                                    id={`other-${choice.id}`}
+                                    label="Other"
+                                    value={typeof answer === 'string' && answer.startsWith('Other: ') ? answer.replace('Other: ', '') : ''}
+                                    onChange={(e) => {
+                                        const otherValue = e.target.value;
+                                        setAnswer(otherValue ? `Other: ${otherValue}` : '');
+                                    }}
+                                    placeholder="Please specify"
+                                />
+                            ) : (
                             <Radiobutton
                                 key={choice.id}
                                 label={choice.content}
                                 checked={answer === choice.content}
                                 onChange={() => handleAnswerChange(choice.content)}
                             />
-                        ))}
+                        )))}
                     </div>
                 )}
 
