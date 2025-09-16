@@ -53,6 +53,23 @@ export const useUpcomingEvents = (page: number, pageSize: number) => {
   });
 };
 
+export const useOngoingEvent = (toDate: string) => {
+  return useQuery({
+    queryKey: [...eventKeys.upcomingEvents(), "ongoing", toDate],
+    queryFn: async () => {
+      try {
+        const data = await eventsApiInstance.checkOngoingEvent(toDate);
+        return data;
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        toast.error(`Failed to fetch ongoing event: ${errorMessage}`);
+        throw error;
+      }
+    },
+    enabled: !!toDate,
+  });
+}
+
 export const useEventAttendees = (eventId: string) => {
   return useQuery({
     queryKey: eventKeys.eventAttendees(eventId),
