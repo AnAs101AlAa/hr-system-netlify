@@ -23,7 +23,7 @@ export class eventsApi {
 
   async checkOngoingEvent(toDate: string): Promise<Event | null> {
     const response = await systemApi.get<Event | null>(`${EVENTS_API_URL}Events/filtered?toDate=${toDate}`);
-    return response.data.items;
+    return response.data.data.items;
   }
 
   async fetchEventAttendees(eventId: string): Promise<Event> {

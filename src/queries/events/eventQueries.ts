@@ -16,6 +16,7 @@ export const eventKeys = {
     [...eventKeys.all, "searchPast", query] as const,
   upcomingEvents: () => [...eventKeys.all, "upcoming"] as const,
   eventAttendees: (eventId: string) => [...eventKeys.details(), eventId, "attendees"] as const,
+  ongoingEvent: (toDate: string) => ["ongoing", toDate] as const,
 };
 
 // Hook to fetch event by ID
@@ -36,13 +37,13 @@ export const useEvent = (id: string) => {
   });
 };
 
-export const useUpcomingEvents = (page: number, pageSize: number) => {
+export const useUpcomingEvents = (page: number, pageSize: number, fromDate: string) => {
   return useQuery({
-    queryKey: [...eventKeys.upcomingEvents(), page, pageSize],
+    queryKey: [...eventKeys.upcomingEvents(), page, pageSize, fromDate],
     queryFn: async () => {
       try {
         const data = await eventsApiInstance.fetchUpcomingEvents(page, pageSize);
-        const count = await eventsApiInstance.fetchEventsCount(new Date().toISOString());
+        const count = await eventsApiInstance.fetchEventsCount(fromDate);
         return { items: data.data.items, total: count };
       } catch (error) {
         const errorMessage = getErrorMessage(error);
@@ -55,7 +56,7 @@ export const useUpcomingEvents = (page: number, pageSize: number) => {
 
 export const useOngoingEvent = (toDate: string) => {
   return useQuery({
-    queryKey: [...eventKeys.upcomingEvents(), "ongoing", toDate],
+    queryKey: [...eventKeys.ongoingEvent(toDate)],
     queryFn: async () => {
       try {
         const data = await eventsApiInstance.checkOngoingEvent(toDate);

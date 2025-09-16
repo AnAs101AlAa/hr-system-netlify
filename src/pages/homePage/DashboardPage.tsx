@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   WelcomeCard,
   ActionCards,
@@ -12,7 +12,10 @@ import { BiLoaderAlt } from "react-icons/bi";
 const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 4;
-  const { data, isLoading } = useUpcomingEvents(currentPage, eventsPerPage);
+
+  const now = useMemo(() => new Date().toISOString(), []);
+
+  const { data, isLoading } = useUpcomingEvents(currentPage, eventsPerPage, now);
   const upcomingEvents = data?.items ?? [];
   const totalCount = data?.total ?? 0;
   console.log(data);
@@ -49,13 +52,13 @@ const Dashboard = () => {
       ) : (
         <div className="md:w-[80%] lg:w-2/3 xl:w-3/5 space-y-4 md:space-y-5 lg:space-y-6 md:block">
           <div className="mt-3 md:mt-4 lg:mt-5">
-            <Pagination
+            {upcomingEvents.length > 0 && (<Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPrevious={handlePrevious}
+              onPrevious={handlePrevious} 
               onNext={handleNext}
               title="Upcoming Events"
-            />
+            />)}
             <EventsList events={upcomingEvents}/>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { NAV_ITEMS } from "@/constants";
 import { IoQrCodeOutline } from "react-icons/io5";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import useCheckOngoingEvent from "@/hooks/useCheckOngoingEvent";
 
