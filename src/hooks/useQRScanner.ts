@@ -209,16 +209,25 @@ export const useQRScanner = () => {
 
   const handleConfirmAttendance = async () => {
     if (memberData?.status === "late" && !lateReason.trim()) {
-      return; // Don't proceed if late and no reason provided
+      setError("Please provide a reason for being late.");
+      return;
     }
 
     setIsConfirming(true);
+    setError(null);
 
-    // Simulate API call
-    setTimeout(() => {
-      setAttendanceConfirmed(true);
+    try {
+      // The actual API call is now handled in the modal component
+      // This just handles the UI state transitions
+      setTimeout(() => {
+        setAttendanceConfirmed(true);
+        setIsConfirming(false);
+      }, 1000); // Shorter delay since API call is handled elsewhere
+    } catch (error) {
+      console.error("Error in attendance confirmation:", error);
+      setError("Failed to confirm attendance. Please try again.");
       setIsConfirming(false);
-    }, 1500);
+    }
   };
 
   const handleReasonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
