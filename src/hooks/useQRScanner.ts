@@ -22,7 +22,7 @@ export const useQRScanner = () => {
       console.log("Fetching member data for userId:", userId);
       const userInstance = new UserApi();
       const userResponse = await userInstance.getMemberDetails(userId);
-      console.log("Raw User API response:", userResponse.data.fullName);
+      console.log("Raw User API response:", userResponse);
       console.log("User response type:", typeof userResponse);
       console.log(
         "User response keys:",
@@ -38,7 +38,7 @@ export const useQRScanner = () => {
         "Event response keys:",
         eventResponse ? Object.keys(eventResponse) : "null/undefined"
       );
-      console.log("Event startDate value:", eventResponse?.data.startDate);
+      console.log("Event startDate value:", eventResponse?.startDate);
 
       // Handle invalid responses
       if (!userResponse || typeof userResponse !== "object") {
@@ -49,7 +49,7 @@ export const useQRScanner = () => {
         throw new Error("Invalid event response from API");
       }
 
-      const eventStartDate = new Date(eventResponse.data.startDate);
+      const eventStartDate = new Date(eventResponse.startDate);
       console.log("Parsed event start date:", eventStartDate);
       console.log(
         "Is event start date valid?",
@@ -80,21 +80,21 @@ export const useQRScanner = () => {
 
       const memberData: MemberData = {
         // API response fields with null checks
-        id: userResponse.data.id || userId,
-        fullName: userResponse.data.fullName,
-        email: userResponse.data.email || "",
-        nationalId: userResponse.data.nationalId || "",
-        phoneNumber: userResponse.data.phoneNumber || "",
-        graduationYear: userResponse.data.graduationYear || 0,
-        engineeringMajor: userResponse.data.engineeringMajor || "",
-        educationSystem: userResponse.data.educationSystem || "",
-        position: userResponse.data.position || "",
-        committee: userResponse.data.committee || "",
-        isActive: userResponse.data.isActive || false,
+        id: userResponse.id || userId,
+        fullName: userResponse.fullName,
+        email: userResponse.email || "",
+        nationalId: userResponse.nationalId || "",
+        phoneNumber: userResponse.phoneNumber || "",
+        graduationYear: userResponse.graduationYear || 0,
+        engineeringMajor: userResponse.engineeringMajor || "",
+        educationSystem: userResponse.educationSystem || "",
+        position: userResponse.position || "",
+        committee: userResponse.committee || "",
+        isActive: userResponse.isActive || false,
 
         // Backward compatibility aliases
-        name: userResponse.data.fullName,
-        team: userResponse.data.committee || "",
+        name: userResponse.fullName,
+        team: userResponse.committee || "",
 
         // QR scanner specific fields
         status: isLate ? "late" : "on-time",

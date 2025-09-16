@@ -22,6 +22,7 @@ export class UserApi {
 
   async getMemberDetails(userId:string){
     const {data}=await systemApi.get(`/api/v1/Members/${userId}`);
-    return data
+    console.log('heeeeeeeeeeee',data.data)
+    return data.data; // Access the nested data property
   }
 }
