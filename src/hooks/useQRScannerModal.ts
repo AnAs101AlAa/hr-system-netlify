@@ -43,7 +43,7 @@ export const useQRScannerModal = (options: UseQRScannerModalOptions = {}) => {
   const handleModalClose = () => {
     console.log('jellll')
     if (autoReset) {
-      qrScanner.resetScanner();
+      qrScanner.resetScanner(false); // Stop camera when closing modal
     }
     if (onClose) {
       onClose();

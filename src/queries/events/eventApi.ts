@@ -135,15 +135,47 @@ export class eventsApi {
     return [];
   }
 
-  async requestAttendance(memberId: string, eventId: string, reason: string) {
+  async requestAttendance(memberId: string, eventId: string) {
     const response = await systemApi.post(
       EVENTS_API_URL + `Attendance/${eventId}/${memberId}`,
       {
         scanTime: new Date().toISOString(),
-        execuse: reason || "",
       }
     );
     console.log("response", response);
+    return response.data;
+  }
+
+  async checkAttendanceStatus(memberId: string, eventId: string): Promise<{ status: number }> {
+    const response = await systemApi.post(
+      EVENTS_API_URL + `Attendance/${eventId}/${memberId}/status`,
+      {
+        scanTime: new Date().toISOString(),
+      }
+    );
+    return { status: response.data.data };
+  }
+
+  async recordLateArrivalExcuse(memberId: string, eventId: string, excuse: string) {
+    const response = await systemApi.post(
+      EVENTS_API_URL + `Attendance/${eventId}/lateArrival/${memberId}`,
+      {
+        execuse: excuse,
+      }
+    );
+    console.log("Late arrival excuse response", response);
+    return response.data;
+  }
+
+  async recordLeaveEarly(memberId: string, eventId: string, excuse: string) {
+    const response = await systemApi.post(
+      EVENTS_API_URL + `Attendance/${eventId}/earlyLeave/${memberId}`,
+      {
+        scanTime: new Date().toISOString(),
+        execuse: excuse,
+      }
+    );
+    console.log("Leave early response", response);
     return response.data;
   }
 }

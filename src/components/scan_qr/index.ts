@@ -7,5 +7,6 @@ export { default as FinalConfirmation } from "./FinalConfirmation";
 export { default as ScannerActions } from "./ScannerActions";
 export { default as ScannerInstructions } from "./ScannerInstructions";
 export { default as ScannerContainer } from "./ScannerContainer";
+export { default as ScannerLoading } from "./ScannerLoading";
 export { default as ErrorFallBack } from "./ErrorFallBack";
 export { default as QRScannerModal } from "./QRScannerModal";
