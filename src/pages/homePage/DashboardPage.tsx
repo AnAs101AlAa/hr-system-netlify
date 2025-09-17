@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   WelcomeCard,
   ActionCards,
@@ -8,6 +8,7 @@ import {
 import WithNavbar from "@/components/hoc/WithNavbar";
 import { useUpcomingEvents } from "@/queries/events/eventQueries";
 import { BiLoaderAlt } from "react-icons/bi";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,12 +16,18 @@ const Dashboard = () => {
 
   const now = useMemo(() => new Date().toISOString(), []);
 
-  const { data, isLoading } = useUpcomingEvents(currentPage, eventsPerPage, now);
+  const { data, isLoading, error, isError } = useUpcomingEvents(currentPage, eventsPerPage, now);
   const upcomingEvents = data?.items ?? [];
   const totalCount = data?.total ?? 0;
 
   const totalPages = Math.ceil(totalCount / eventsPerPage);
 
+  useEffect(() => {
+    if (isError && error) {
+      toast.error(`Failed to fetch upcoming events, please try again`);
+    }
+  }, [isError, error]);
+  
   const handlePrevious = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);

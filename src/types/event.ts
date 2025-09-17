@@ -1,7 +1,7 @@
 import type { member } from "./member";
 
 export interface Attendee extends member {
-  status: "arrived" | "absent" | "left";
+  status: "Attended" | "Absent" | "Left";
   arrivalTime?: Date;
   leaveTime?: Date;
   lateArrival?: {
