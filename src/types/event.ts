@@ -8,6 +8,14 @@ export interface Attendee extends member {
   earlyLeavingReason?: string;
 }
 
+export interface VestAttendee {
+  id: number;
+  name: string;
+  phone: string;
+  committee: string;
+  vestStatus: "assigned" | "returned" | "unassigned";
+}
+
 export interface EventType {
   id: string;
   label: string;
@@ -21,4 +29,13 @@ export interface Event {
   startTime: Date;
   endTime: Date;
   attendees: Attendee[];
+}
+
+export interface VestEvent {
+  id: number;
+  title: string;
+  type: string;
+  startTime: Date;
+  endTime: Date;
+  attendees: VestAttendee[];
 }

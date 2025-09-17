@@ -4,7 +4,7 @@ export interface User {
   email: string;
   fullName: string;
   photoUrl?: string;
-  role: "admin" | "user";
+  role: "admin" | "user" | "vest";
   password?: string;
   token?: string;
 }
