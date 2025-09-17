@@ -48,7 +48,7 @@ const EventInformation = ({ event, attendees }: EventInformationProps) => {
                 {attendees.filter((a) => a.status.toLowerCase() === "attended").length}
               </div>
               <div className="text-xs sm:text-sm lg:text-base text-dashboard-description">
-                Arrived
+                Attended
               </div>
             </div>
             <div className="bg-red-50 rounded-lg p-2 sm:p-3 lg:p-4">
