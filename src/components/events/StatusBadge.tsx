@@ -1,10 +1,10 @@
 interface StatusBadgeProps {
-  status: "arrived" | "absent" | "left" | "late" | "left & late";
+  status: "Attended" | "Absent" | "Left" | "Late" | "Left & Late";
 }
 
 const StatusBadge = ({ status }: StatusBadgeProps) => {
   const getStatusStyles = () => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case "arrived":
         return "bg-red-500 text-white border-red-500";
       case "late":

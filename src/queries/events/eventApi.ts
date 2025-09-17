@@ -86,7 +86,19 @@ export class eventsApi {
       `${EVENTS_API_URL}Attendance/${eventId}`
     );
     // Access the array using the correct structure: response.data.data.items
-    const items = response.data?.data;
+    const items = response.data?.data.map((att: any) => ({
+      id: att.memberId,
+      name: att.fullName,
+      phoneNumber: att.phoneNumber,
+      committee: att.committee,
+      email: att.email,
+      status: att.status,
+      arrivalTime: att.attendanceDate,
+      lateArrival: { execuse: att.lateArrivalExcuse?.execuse },
+      earlyLeave: att.earlyLeave,
+    }));
+
+    console.log("Fetched attendees:", items);
     if (Array.isArray(items)) {
       return items;
     }
@@ -108,7 +120,8 @@ export class eventsApi {
     const response = await systemApi.get(
       `${EVENTS_API_URL}Events/filtered?toDate=${nowDate}&${
         eventType != "" ? `eventType=${eventType}` : ""
-      }&${title != "" ? `title=${title}` : ""}&page=${page}&count=${pageSize}`
+      }&${title != "" ? `title=${title}` : ""}&page=${page}&count=${pageSize}
+      &OrderBy=date&Descending=true`
     );
 
     // Access the array using the correct structure: response.data.data.items

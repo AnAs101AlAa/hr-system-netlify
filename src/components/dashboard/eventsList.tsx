@@ -14,7 +14,7 @@ const EventsList = ({ events }: EventsListProps) => {
         <p className="text-inactive-tab-text text-center w-full font-semibold text-[20px] md:text-[22px] lg:text-[24px] mt-10">Sorry, no upcoming events to display.</p>
       ) : (
         eventsArray.map((event: Omit<Event, "attendees">) => (
-          <div className="w-full md:w-[49.5%] min-h-[270px]" key={event.id}>
+          <div className="w-full md:w-[49.5%] min-h-[220px] md:min-h-[240px] lg:min-h-[260px]" key={event.id}>
             <EventCard event={event} />
           </div>
         ))

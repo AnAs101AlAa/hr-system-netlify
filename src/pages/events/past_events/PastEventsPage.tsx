@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { usePastEvents } from "@/queries/events/eventQueries";
 import EVENT_TYPES from "@/constants/eventTypes";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import toast from "react-hot-toast";
 
 const PastEventsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,9 +25,11 @@ const PastEventsPage = () => {
   };
 
   const [eventsPerPage, setEventsPerPage] = useState(getEventsPerPage());
-  const { data, error: eventsError, isLoading } = usePastEvents(selectedEventType, searchTerm, currentPage, eventsPerPage);
+  const { data, error: eventsError, isLoading, isError: isEventsError } = usePastEvents(selectedEventType, searchTerm, currentPage, eventsPerPage);
   const pastEvents = data?.items ?? [];
   const totalCount = data?.total ?? 0;
+  const totalFilteredPages = Math.ceil(totalCount / eventsPerPage);
+  
   // Update events per page on window resize
   useEffect(() => {
     const handleResize = () => {
@@ -40,8 +43,13 @@ const PastEventsPage = () => {
       return () => window.removeEventListener("resize", handleResize);
     }
   }, []);
+  
+  useEffect(() => {
+    if (isEventsError && eventsError) {
+      toast.error(`Failed to fetch past events, please try again`);
+    }
+  }, [isEventsError, eventsError]);
 
-  const totalFilteredPages = Math.ceil(totalCount / eventsPerPage);
 
   // Reset to first page when search term or event type changes
   useEffect(() => {

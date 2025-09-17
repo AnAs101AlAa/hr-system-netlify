@@ -45,7 +45,7 @@ const EventInformation = ({ event, attendees }: EventInformationProps) => {
             </div>
             <div className="bg-green-50 rounded-lg p-2 sm:p-3 lg:p-4">
               <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-contrast">
-                {attendees.filter((a) => a.status === "arrived").length}
+                {attendees.filter((a) => a.status.toLowerCase() === "attended").length}
               </div>
               <div className="text-xs sm:text-sm lg:text-base text-dashboard-description">
                 Arrived
@@ -53,7 +53,7 @@ const EventInformation = ({ event, attendees }: EventInformationProps) => {
             </div>
             <div className="bg-red-50 rounded-lg p-2 sm:p-3 lg:p-4">
               <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-primary">
-                {attendees.filter((a) => a.status === "absent").length}
+                {attendees.filter((a) => a.status.toLowerCase() === "absent").length}
               </div>
               <div className="text-xs sm:text-sm lg:text-base text-dashboard-description">
                 Absent
@@ -61,7 +61,7 @@ const EventInformation = ({ event, attendees }: EventInformationProps) => {
             </div>
             <div className="bg-blue-50 rounded-lg p-2 sm:p-3 lg:p-4">
               <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-secondary">
-                {attendees.filter((a) => a.status === "left").length}
+                {attendees.filter((a) => a.status.toLowerCase() === "left").length}
               </div>
               <div className="text-xs sm:text-sm lg:text-base text-dashboard-description">
                 Left

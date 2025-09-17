@@ -60,7 +60,7 @@ const AttendeesCardView = ({
                 <p className="text-dashboard-card-text text-[13px]">
                   {attendee.earlyLeave
                     ? format(attendee.earlyLeave.scanTime, "hour")
-                    : eventEndTime}
+                    : format(eventEndTime, "hour")}
                 </p>
               </div>
             </div>

@@ -79,7 +79,7 @@ const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
                   <div className="text-sm text-dashboard-card-text">
                     {attendee.earlyLeave
                       ? format(attendee.earlyLeave.scanTime, "hour")
-                      : eventEndTime}
+                      : format(eventEndTime, "hour")}
                   </div>
                 </td>
                 <td className="px-4 py-4">
