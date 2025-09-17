@@ -5,7 +5,7 @@ interface StatusBadgeProps {
 const StatusBadge = ({ status }: StatusBadgeProps) => {
   const getStatusStyles = () => {
     switch (status.toLowerCase()) {
-      case "arrived":
+      case "attended":
         return "bg-red-500 text-white border-red-500";
       case "late":
         return "bg-yellow-500 text-white border-yellow-500";

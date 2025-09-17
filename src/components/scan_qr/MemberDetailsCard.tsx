@@ -43,7 +43,7 @@ const MemberDetailsCard = ({ memberData }: MemberDetailsCardProps) => {
                 : "bg-green-100 text-green-700"
             }`}
           >
-            {memberData.status === "late" ? "Arrived" : "Arrived"}
+            {memberData.status === "late" ? "attended" : "attended"}
           </span>
         </div>
         <div className="flex justify-between">
