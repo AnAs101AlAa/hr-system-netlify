@@ -100,14 +100,15 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
       // Use different API methods based on attendance status
       if (attendanceStatus === 2002) {
         // Late arrival
-      await eventInstance.recordLateArrivalExcuse(
+        await eventInstance.recordLateArrivalExcuse(
           scanner.memberData.id,
           event.id,
           leaveExcuse
         );
       } else if (attendanceStatus === 2003) {
         // Leaving early
-      await eventInstance.recordLeaveEarly(
+
+        await eventInstance.recordLeaveEarly(
           scanner.memberData.id,
           event.id,
           leaveExcuse
@@ -118,10 +119,7 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
         scanner.resetScanner(true);
       } else {
         // On-time attendance
-      await eventInstance.requestAttendance(
-          scanner.memberData.id,
-          event.id
-        );
+        await eventInstance.requestAttendance(scanner.memberData.id, event.id);
       }
 
       // Show success toast
@@ -132,6 +130,8 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
 
       // Call the scanner's confirmation handler only on success
       await scanner.handleConfirmAttendance();
+      scanner.resetScanner(true);
+      setLeaveExcuse("");
     } catch (error) {
       console.error("Failed to record attendance:", error);
       toast.error(getErrorMessage(error));
@@ -176,13 +176,13 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
             error={scanner.error}
             memberData={scanner.memberData}
             attendanceConfirmed={scanner.attendanceConfirmed}
-            lateReason={scanner.lateReason}
+            lateReason={leaveExcuse}
             attendanceStatus={attendanceStatus}
             leaveExcuse={leaveExcuse}
             isVerifying={isVerifying}
             onScan={scanner.handleScan}
             onError={scanner.handleError}
-            onReasonChange={scanner.handleReasonChange}
+            onReasonChange={(e) => setLeaveExcuse(e.target.value)}
             onLeaveExcuseChange={(e) => setLeaveExcuse(e.target.value)}
             onResetScanner={scanner.resetScanner}
           />

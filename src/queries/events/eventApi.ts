@@ -158,9 +158,14 @@ export class eventsApi {
   }
 
   async recordLateArrivalExcuse(memberId: string, eventId: string, excuse: string) {
+  // Add 3 hours to current time and format as ISO string
+  const now = new Date();
+  now.setHours(now.getHours() + 3);
+  const scanTime = now.toISOString();
     const response = await systemApi.post(
       EVENTS_API_URL + `Attendance/${eventId}/lateArrival/${memberId}`,
       {
+        scanTime,
         execuse: excuse,
       }
     );
@@ -168,10 +173,14 @@ export class eventsApi {
   }
 
   async recordLeaveEarly(memberId: string, eventId: string, excuse: string) {
+  // Add 3 hours to current time and format as ISO string
+  const now = new Date();
+  now.setHours(now.getHours() + 3);
+  const scanTime = now.toISOString();
     const response = await systemApi.post(
       EVENTS_API_URL + `Attendance/${eventId}/earlyLeave/${memberId}`,
       {
-        scanTime: new Date().toISOString(),
+        scanTime,
         execuse: excuse,
       }
     );
