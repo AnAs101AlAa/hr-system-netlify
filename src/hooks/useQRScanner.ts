@@ -192,6 +192,7 @@ export const useQRScanner = () => {
   };
 
   const handleReasonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    console.log(e.target.value)
     setLateReason(e.target.value);
   };
 
