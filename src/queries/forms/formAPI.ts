@@ -1,19 +1,19 @@
 import type { Answer } from "@/types/question";
-import { api } from "../axiosInstance";
-const FORMS_API_URL = api.defaults.baseURL + "form/"; //Speculatory endpoint, to be changed when backend is finalized
+import { formsApi } from "../axiosInstance";
+const FORMS_API_URL = formsApi.defaults.baseURL + "form/"; //Speculatory endpoint, to be changed when backend is finalized
 
 //Returns everything about a specific form
-export async function getForm(formId: number) {
-    const response = await api.get(`${FORMS_API_URL}${formId}`);
+export async function getForm(formId: string) {
+    const response = await formsApi.get(`${FORMS_API_URL}${formId}`);
     return response.data
 }
 
-export async function saveAnswer(formId: number, questionId: number, answer: Answer) {
-    const response = await api.post(`${FORMS_API_URL}${formId}/questions/${questionId}/answers`, answer);
+export async function saveAnswer(formId: string, questionId: number, answer: Answer, formName: string) {
+    const response = await formsApi.post(`${FORMS_API_URL}${formId}/questions/${questionId}/answers`, { answer, formName });
     return response.data;
 }
 
-export async function submitForm(formId: number, answers: Answer[]) {
-    const response = await api.post(`${FORMS_API_URL}${formId}/submit`, { answers})
+export async function submitForm(formId: string, answers: Answer[], formName: string) {
+    const response = await formsApi.post(`${FORMS_API_URL}${formId}/submit`, { answers, formName })
     return response.data;
 }

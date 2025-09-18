@@ -6,8 +6,7 @@ import InputField from "@/components/generics/InputField";
 import PasswordField from "@/components/generics/PasswordField";
 import Button from "@/components/generics/Button";
 import { useLogin } from "@/queries/users/userQueries";
-import toast from "react-hot-toast";
-import { getErrorMessage } from "@/utils";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [loginForm, setLoginForm] = useState<LoginFormData>({
@@ -19,7 +18,8 @@ const LoginPage = () => {
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { mutateAsync: login } = useLogin();
-  
+  const navigate = useNavigate();
+
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { id, value } = e.target;
     setLoginForm((prev) => ({ ...prev, [id]: value }));
@@ -58,12 +58,11 @@ const LoginPage = () => {
     setIsSubmitting(true);
     try {
       await login(loginForm);
-      toast.success("Welcome Back!");
       setTimeout(() => {
-        window.location.replace("/");
+        navigate("/");
       }, 1000);
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      console.error(error)
     } finally {
       setIsSubmitting(false);
     }

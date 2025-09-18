@@ -1,18 +1,18 @@
-import type { Attendee } from "../../types/event";
-
 interface StatusBadgeProps {
-  status: Attendee["status"];
+  status: "Attended" | "Absent" | "Left" | "Late" | "Left & Late";
 }
 
 const StatusBadge = ({ status }: StatusBadgeProps) => {
   const getStatusStyles = () => {
-    switch (status) {
-      case "arrived":
-        return "bg-green-500 text-white border-green-500";
+    switch (status.toLowerCase()) {
+      case "attended":
+        return "bg-red-500 text-white border-red-500";
+      case "late":
+        return "bg-yellow-500 text-white border-yellow-500";
+      case "left":
+        return "bg-blue-500 text-white border-blue-500";
       case "absent":
         return "bg-primary text-white border-primary";
-      case "left":
-        return "bg-secondary text-white border-secondary";
       default:
         return "bg-gray-300 text-gray-600 border-gray-300";
     }

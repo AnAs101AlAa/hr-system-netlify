@@ -24,7 +24,8 @@ export const useLogin = () => {
       userApiInstance.login(credentials),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: userKeys.session() });
-      dispatch(setUser(data.user ?? data)); //Depending on The API response :(
+      const { id = "", email = "", name = "", profileImageUrl = "", phoneNumber = "", roles = [] } = data.data || {};
+      dispatch(setUser({ id, email, name, profileImageUrl, phoneNumber, roles }));
       toast.success("Login successful! Welcome back!");
     },
     onError: (error) => {

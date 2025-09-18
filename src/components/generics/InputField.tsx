@@ -23,7 +23,7 @@ export default function InputField({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e)}
-        className={`border-contrast rounded-xl px-3 py-2 md:px-4 md:py-3 border outline-none ${
+        className={`border-gray-400 rounded-xl px-3 py-2 md:px-4 md:py-3 border outline-none ${
           error
             ? "border-red-300 focus:border-red-500 focus:ring-red-500/30"
             : "focus:border-primary"

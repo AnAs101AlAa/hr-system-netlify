@@ -4,9 +4,10 @@ import StatusBadge from "./StatusBadge";
 
 interface AttendeesTableProps {
   attendees: Attendee[];
+  eventEndTime?: string;
 }
 
-const AttendeesTable = ({ attendees }: AttendeesTableProps) => {
+const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
   return (
     <div className="hidden lg:block overflow-x-auto">
       <table className="w-full">
@@ -16,8 +17,7 @@ const AttendeesTable = ({ attendees }: AttendeesTableProps) => {
             <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
               Name
             </th>
-            <th
-              className="w-42 min-w-42 px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+            <th className="w-42 min-w-42 px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
               Phone
             </th>
             <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
@@ -59,12 +59,12 @@ const AttendeesTable = ({ attendees }: AttendeesTableProps) => {
                   style={{ width: "8rem", minWidth: "8rem" }}
                 >
                   <div className="text-sm text-dashboard-card-text font-mono">
-                    {format(attendee.phone, "phone")}
+                    {format(attendee.phoneNumber, "phone")}
                   </div>
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm text-dashboard-card-text">
-                    {attendee.team || "N/A"}
+                    {attendee.committee || "N/A"}
                   </div>
                 </td>
                 <td className="px-4 py-4">
@@ -77,20 +77,24 @@ const AttendeesTable = ({ attendees }: AttendeesTableProps) => {
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm text-dashboard-card-text">
-                    {format(attendee.departureTime, "hour")}
+                    {attendee.earlyLeave
+                      ? format(attendee.earlyLeave.scanTime, "hour")
+                      : format(eventEndTime, "hour")}
                   </div>
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm text-dashboard-card-text">
                     <p className="break-words leading-relaxed">
-                      {attendee.lateArrivalReason || "N/A"}
+                      {attendee.lateArrival
+                        ? attendee.lateArrival.execuse
+                        : "N/A"}
                     </p>
                   </div>
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm text-dashboard-card-text">
                     <p className="break-words leading-relaxed">
-                      {attendee.earlyLeavingReason || "N/A"}
+                      {attendee.earlyLeave?.execuse || "N/A"}
                     </p>
                   </div>
                 </td>

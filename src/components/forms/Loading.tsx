@@ -1,11 +1,9 @@
 import { FaQuestionCircle, FaAsterisk } from "react-icons/fa";
-import WithNavbar from "@/components/hoc/WithNavbar";
 
 export default function FormLoadingComponent() {
   return (
-    <WithNavbar>
       <div className="min-h-screen bg-background">
-        <div className="w-full md:w-3/4 lg:w-10/12 m-auto rounded-xl shadow-md p-5 flex flex-col gap-4">
+        <div className="w-full md:w-2/3 lg:w-1/3 m-auto rounded-xl shadow-md p-5 flex flex-col gap-4">
           {/* Form Title Loading */}
           <div className="p-4">
             <div className="h-8 md:h-10 lg:h-12 bg-background-contrast rounded-lg animate-pulse mb-2"></div>
@@ -76,6 +74,5 @@ export default function FormLoadingComponent() {
           </div>
         </div>
       </div>
-    </WithNavbar>
   );
 }

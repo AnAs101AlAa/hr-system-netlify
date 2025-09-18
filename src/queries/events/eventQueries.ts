@@ -8,98 +8,76 @@ export const eventKeys = {
   lists: () => [...eventKeys.all, "list"] as const,
   list: (filters: string) => [...eventKeys.lists(), { filters }] as const,
   details: () => [...eventKeys.all, "detail"] as const,
-  detail: (id: number) => [...eventKeys.details(), id] as const,
+  detail: (id: string) => [...eventKeys.details(), id] as const,
   pastEvents: () => [...eventKeys.all, "past"] as const,
   eventTypes: () => [...eventKeys.all, "types"] as const,
   eventsByType: (type: string) => [...eventKeys.all, "byType", type] as const,
   searchPastEvents: (query: string) =>
     [...eventKeys.all, "searchPast", query] as const,
+  upcomingEvents: () => [...eventKeys.all, "upcoming"] as const,
+  eventAttendees: (eventId: string) => [...eventKeys.details(), eventId, "attendees"] as const,
+  ongoingEvent: (toDate: string) => ["ongoing", toDate] as const,
 };
 
 // Hook to fetch event by ID
-export const useEvent = (id: number) => {
+export const useEvent = (id: string) => {
   return useQuery({
     queryKey: eventKeys.detail(id),
     queryFn: async () => {
-      try {
-        const data = await eventsApiInstance.fetchEventById(id);
-        return data;
-      } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        toast.error(`Failed to fetch event: ${errorMessage}`);
-        throw error;
-      }
+      const data = await eventsApiInstance.fetchEventById(id);
+      return data;
     },
     enabled: !!id,
   });
 };
 
+export const useUpcomingEvents = (page: number, pageSize: number, fromDate: string) => {
+  return useQuery({
+    queryKey: [...eventKeys.upcomingEvents(), page, pageSize, fromDate],
+    queryFn: async () => {
+      const data = await eventsApiInstance.fetchUpcomingEvents(page, pageSize);
+      const count = await eventsApiInstance.fetchEventsCount(fromDate);
+      return { items: data, total: count };
+    },
+  });
+};
+
+export const useOngoingEvent = (toDate: string) => {
+  return useQuery({
+    queryKey: [...eventKeys.ongoingEvent(toDate)],
+    queryFn: async () => {
+      try {
+        const data = await eventsApiInstance.checkOngoingEvent(toDate);
+        return data;
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        toast.error(`Failed to fetch ongoing event: ${errorMessage}`);
+        throw error;
+      }
+    },
+    enabled: !!toDate,
+  });
+}
+
+export const useEventAttendees = (eventId: string) => {
+  return useQuery({
+    queryKey: eventKeys.eventAttendees(eventId),
+    queryFn: async () => {
+      const data = await eventsApiInstance.fetchEventAttendees(eventId);
+      return data;
+    },
+    enabled: !!eventId,
+  });
+}
+
 // Hook to fetch past events
-export const usePastEvents = () => {
+export const usePastEvents = (eventType: string, title: string, page: number, pageSize: number) => {
   return useQuery({
-    queryKey: eventKeys.pastEvents(),
+    queryKey: [eventKeys.pastEvents(), eventType, title, page],
     queryFn: async () => {
-      try {
-        const data = await eventsApiInstance.fetchPastEvents();
-        return data;
-      } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        toast.error(`Failed to fetch past events: ${errorMessage}`);
-        throw error;
-      }
+      const data = await eventsApiInstance.fetchPastEvents(eventType, title, page, pageSize);
+      const count = await eventsApiInstance.fetchPastEventsCount(eventType, title);
+      return { items: data, total: count };
     },
-  });
-};
-
-// Hook to fetch event types
-export const useEventTypes = () => {
-  return useQuery({
-    queryKey: eventKeys.eventTypes(),
-    queryFn: async () => {
-      try {
-        const data = await eventsApiInstance.fetchEventTypes();
-        return data;
-      } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        toast.error(`Failed to fetch event types: ${errorMessage}`);
-        throw error;
-      }
-    },
-  });
-};
-
-// Hook to fetch events by type
-export const useEventsByType = (eventType: string) => {
-  return useQuery({
-    queryKey: eventKeys.eventsByType(eventType),
-    queryFn: async () => {
-      try {
-        const data = await eventsApiInstance.fetchEventsByType(eventType);
-        return data;
-      } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        toast.error(`Failed to fetch events by type: ${errorMessage}`);
-        throw error;
-      }
-    },
-    enabled: !!eventType,
-  });
-};
-
-// Hook to search past events
-export const useSearchPastEvents = (query: string) => {
-  return useQuery({
-    queryKey: eventKeys.searchPastEvents(query),
-    queryFn: async () => {
-      try {
-        const data = await eventsApiInstance.searchPastEvents(query);
-        return data;
-      } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        toast.error(`Failed to search past events: ${errorMessage}`);
-        throw error;
-      }
-    },
-    enabled: !!query && query.length > 0,
   });
 };

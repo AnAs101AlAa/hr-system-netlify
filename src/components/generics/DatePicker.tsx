@@ -22,7 +22,7 @@ export default function DatePicker({
   maxDate,
 }: DatePickerProps) {
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value);
+    onChange(e.target.value.toString());
   };
 
   return (

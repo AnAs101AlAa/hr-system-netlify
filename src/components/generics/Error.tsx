@@ -1,5 +1,4 @@
 import { FaExclamationTriangle } from "react-icons/fa";
-import WithNavbar from "@/components/hoc/WithNavbar";
 
 interface ErrorComponentProps {
   title: string;
@@ -11,7 +10,6 @@ export default function ErrorComponent({
   message,
 }: ErrorComponentProps) {
   return (
-    <WithNavbar>
       <div className="min-h-screen bg-background">
         <div className="w-full md:w-3/4 lg:w-10/12 m-auto rounded-xl shadow-md p-5 flex flex-col gap-4">
           {/* Error Container */}
@@ -46,6 +44,5 @@ export default function ErrorComponent({
           </div>
         </div>
       </div>
-    </WithNavbar>
   );
 }
