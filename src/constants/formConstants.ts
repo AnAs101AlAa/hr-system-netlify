@@ -4,4 +4,6 @@ const SUBMISSION_CATCHER = {
     questions: [],
 }
 
-export { SUBMISSION_CATCHER };
+const QUESTION_TYPES = ["Essay", "MCQ", "Date", "Number"] as const;
+
+export { SUBMISSION_CATCHER, QUESTION_TYPES };

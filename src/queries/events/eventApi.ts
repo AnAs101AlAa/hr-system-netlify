@@ -6,17 +6,8 @@ const EVENTS_API_URL = systemApi.defaults.baseURL + "/api/v1/";
 
 export class eventsApi {
   async fetchEventById(id: string): Promise<Event> {
-    //const response = await systemApi.get(`${EVENTS_API_URL}Events/${id}`);
-    //return response.data.data;
-    return {
-      id: "1",
-      title: "Annual Company Meeting",
-      type: "meeting",
-      startDate: "2023-10-15T09:00:00",
-      endDate: "2023-10-15T17:00:00",
-      description: "A meeting to discuss company performance and future plans.",
-      location: "Main Conference Room",
-    }
+    const response = await systemApi.get(`${EVENTS_API_URL}Events/${id}`);
+    return response.data.data;
   }
 
   async fetchUpcomingEvents(page: number, pageSize: number): Promise<Event[]> {
@@ -91,35 +82,37 @@ export class eventsApi {
   }
 
   async fetchEventAttendees(eventId: string): Promise<Attendee[] | VestAttendee[]> {
-    // const response = await systemApi.get(
-    //   `${EVENTS_API_URL}Attendance/${eventId}`
-    // );
-    // // Access the array using the correct structure: response.data.data.items
-    // const items = response.data?.data.map((att: any) => ({
-    //   id: att.memberId,
-    //   name: att.fullName,
-    //   phoneNumber: att.phoneNumber,
-    //   committee: att.committee,
-    //   email: att.email,
-    //   status: att.status,
-    //   arrivalTime: att.attendanceDate,
-    //   lateArrival: { execuse: att.lateArrivalExcuse?.execuse },
-    //   earlyLeave: att.earlyLeave,
-    // }));
+    const response = await systemApi.get(
+      `${EVENTS_API_URL}Attendance/${eventId}`
+    );
+    // Define a type for the expected attendee object structure
+    type RawAttendee = {
+      memberId: string;
+      fullName: string;
+      phoneNumber: string;
+      committee: string;
+      email: string;
+      status: string;
+      attendanceDate: string;
+      lateArrivalExcuse?: { execuse: string };
+      earlyLeave?: string;
+    };
 
-    // if (Array.isArray(items)) {
-    //   return items;
-    // }    
-    return [
-      {
-        id: "1",
-        name: "John Doe",
-        phoneNumber: "123-456-7890",
-        committee: "Finance",
-        email: "john.doe@example.com",
-        vestStatus: "unassigned",
-      },
-    ];
+    const items = Array.isArray(response.data?.data)
+      ? response.data.data.map((att: RawAttendee) => ({
+          id: att.memberId,
+          name: att.fullName,
+          phoneNumber: att.phoneNumber,
+          committee: att.committee,
+          email: att.email,
+          status: att.status,
+          arrivalTime: att.attendanceDate,
+          lateArrival: { execuse: att.lateArrivalExcuse?.execuse },
+          earlyLeave: att.earlyLeave,
+        }))
+      : [];
+
+    return items;
   }
 
   async fetchPastEvents(

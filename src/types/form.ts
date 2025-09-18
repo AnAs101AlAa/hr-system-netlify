@@ -7,10 +7,12 @@ export interface formPage {
     toBranch?: { [questionId: number]: { assertOn: string, targetPage: number } };
 }
 
-export interface form { //Speculatory, to be finalized with backend
-    id: number;
+export interface form {
+    id: string;
     sheetName: string;
-    pages: formPage[];
+    createdAt: string;
+    updatedAt: string;
+    pages?: formPage[];
     title: string;
     description?: string;
 }

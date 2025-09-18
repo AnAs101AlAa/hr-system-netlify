@@ -57,8 +57,8 @@ export default function Button({ buttonText, onClick, type, disabled = false, lo
                 ${!isDisabled ? hoverStyles[type] : ''} 
                 ${isDisabled ? disabledStyles : ''} 
                 ${widthStyles[width]}
-                mt-5 lg:mt-7 rounded-xl px-6 py-2 border font-bold text-[12px] md:text-[13px] lg:text-[14px] 
-                transition-all duration-200 ease-in-out flex items-center justify-center
+                rounded-xl px-6 py-2 border font-bold text-[12px] md:text-[13px] lg:text-[14px] 
+                transition-all duration-200 ease-in-out flex items-center justify-center h-fit
                 ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}
             `}
         >

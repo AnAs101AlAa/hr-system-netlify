@@ -1,8 +1,12 @@
 import type { Answer } from "@/types/question";
 import { formsApi } from "../axiosInstance";
-const FORMS_API_URL = formsApi.defaults.baseURL + "form/"; //Speculatory endpoint, to be changed when backend is finalized
+const FORMS_API_URL = formsApi.defaults.baseURL + "/form/";
 
-//Returns everything about a specific form
+export async function getForms() {
+    const response = await formsApi.get(`${FORMS_API_URL}`);
+    return response.data;
+}
+
 export async function getForm(formId: string) {
     const response = await formsApi.get(`${FORMS_API_URL}${formId}`);
     return response.data

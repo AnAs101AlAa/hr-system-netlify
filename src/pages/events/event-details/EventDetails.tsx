@@ -55,7 +55,7 @@ const EventDetails = () => {
     return <EventNotFound />;
   }
 
-  if (true) {
+  if (userRole && userRole.includes("VestAdmin")) {
     return <VestEventDetailsView event={event} attendees={attendees as VestAttendee[]} onBack={handleBack} />;
   }
 
