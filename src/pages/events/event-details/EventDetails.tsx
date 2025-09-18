@@ -4,6 +4,7 @@ import {
   EventInformation,
   AttendeesList,
   EventNotFound,
+  VestEventDetailsView,
 } from "@/components/events";
 import WithNavbar from "@/components/hoc/WithNavbar";
 import { useEvent } from "@/queries/events/eventQueries";
@@ -12,10 +13,14 @@ import LoadingPage from "@/components/generics/LoadingPage";
 import { useEventAttendees } from "@/queries/events/eventQueries";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import type { Attendee, VestAttendee } from "@/types/event";
 
 const EventDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useSelector((state: any) => state.auth);
+  const userRole = user?.roles;
 
   const { data: event, isLoading, error : eventError, isError: isEventError } = useEvent(id ? id : "");
   const { data: attendees, error: attendeesError, isError: isAttendeesError } = useEventAttendees(id ? id : "");
@@ -50,13 +55,17 @@ const EventDetails = () => {
     return <EventNotFound />;
   }
 
+  if (true) {
+    return <VestEventDetailsView event={event} attendees={attendees as VestAttendee[]} onBack={handleBack} />;
+  }
+
   return (
     <WithNavbar>
       <div className="min-h-screen bg-background p-4">
         <div className="max-w-6xl mx-auto">
           <EventDetailsHeader onBack={handleBack} />
-          <EventInformation event={event} attendees={attendees} />
-          <AttendeesList attendees={attendees || []} eventEndTime={event.endDate} />
+          <EventInformation event={event} attendees={attendees as Attendee[]} />
+          <AttendeesList attendees={attendees as Attendee[] || []} eventEndTime={event.endDate} />
         </div>
       </div>
     </WithNavbar>

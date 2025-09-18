@@ -1,7 +1,7 @@
 export interface member {
-  id: number;
+  id: string;
   name: string;
-  role: string;
+  role?: string;
   committee: string;
   email: string;
   phoneNumber: string;
