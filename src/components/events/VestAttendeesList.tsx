@@ -11,7 +11,7 @@ const VestAttendeesList = ({ attendees }: VestAttendeesListProps) => {
         <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
             <div className="p-4 border-b border-dashboard-border">
                 <h3 className="text-lg font-bold text-[#727477]">
-                    Vest Management {attendees?.length ? `(${attendees.length})` : ""}
+                    Members {attendees?.length ? `(${attendees.length})` : ""}
                 </h3>
             </div>
 

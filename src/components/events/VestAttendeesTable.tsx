@@ -127,7 +127,7 @@ const VestAttendeesTable = ({ attendees }: VestAttendeesTableProps) => {
                                     style={{ width: "8rem", minWidth: "8rem" }}
                                 >
                                     <div className="text-sm text-dashboard-card-text font-mono">
-                                        {format(attendee.phone, "phone")}
+                                        {format(attendee.phoneNumber, "phone")}
                                     </div>
                                 </td>
                                 <td className="px-4 py-4">

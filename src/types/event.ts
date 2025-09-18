@@ -13,11 +13,7 @@ export interface Attendee extends member {
   earlyLeavingReason?: string;
 }
 
-export interface VestAttendee {
-  id: number;
-  name: string;
-  phone: string;
-  committee: string;
+export interface VestAttendee extends member {
   vestStatus: "assigned" | "returned" | "unassigned";
 }
 

@@ -108,7 +108,7 @@ const VestAttendeesCardView = ({ attendees }: VestAttendeesCardViewProps) => {
                                     Phone:
                                 </span>
                                 <p className="text-dashboard-card-text">
-                                    {format(attendee.phone, "phone")}
+                                    {format(attendee.phoneNumber, "phone")}
                                 </p>
                             </div>
                         </div>

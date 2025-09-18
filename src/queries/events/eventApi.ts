@@ -1,13 +1,22 @@
 import { systemApi } from "../axiosInstance";
-import type { Event, Attendee } from "@/types/event";
+import type { Event, Attendee, VestAttendee } from "@/types/event";
 
 const EVENTS_API_URL = systemApi.defaults.baseURL + "/api/v1/";
 // const EVENT_TYPES_API_URL = systemApi.defaults.baseURL + "/event-types/"; // TODO: Uncomment when backend is ready
 
 export class eventsApi {
   async fetchEventById(id: string): Promise<Event> {
-    const response = await systemApi.get(`${EVENTS_API_URL}Events/${id}`);
-    return response.data.data;
+    //const response = await systemApi.get(`${EVENTS_API_URL}Events/${id}`);
+    //return response.data.data;
+    return {
+      id: "1",
+      title: "Annual Company Meeting",
+      type: "meeting",
+      startDate: "2023-10-15T09:00:00",
+      endDate: "2023-10-15T17:00:00",
+      description: "A meeting to discuss company performance and future plans.",
+      location: "Main Conference Room",
+    }
   }
 
   async fetchUpcomingEvents(page: number, pageSize: number): Promise<Event[]> {
@@ -81,33 +90,36 @@ export class eventsApi {
     return items && items.length > 0 ? items[0] : null;
   }
 
-  async fetchEventAttendees(eventId: string): Promise<Attendee[]> {
-    const response = await systemApi.get(
-      `${EVENTS_API_URL}Attendance/${eventId}`
-    );
-    // Access the array using the correct structure: response.data.data.items
-    const items = response.data?.data.map((att: any) => ({
-      id: att.memberId,
-      name: att.fullName,
-      phoneNumber: att.phoneNumber,
-      committee: att.committee,
-      email: att.email,
-      status: att.status,
-      arrivalTime: att.attendanceDate,
-      lateArrival: { execuse: att.lateArrivalExcuse?.execuse },
-      earlyLeave: att.earlyLeave,
-    }));
+  async fetchEventAttendees(eventId: string): Promise<Attendee[] | VestAttendee[]> {
+    // const response = await systemApi.get(
+    //   `${EVENTS_API_URL}Attendance/${eventId}`
+    // );
+    // // Access the array using the correct structure: response.data.data.items
+    // const items = response.data?.data.map((att: any) => ({
+    //   id: att.memberId,
+    //   name: att.fullName,
+    //   phoneNumber: att.phoneNumber,
+    //   committee: att.committee,
+    //   email: att.email,
+    //   status: att.status,
+    //   arrivalTime: att.attendanceDate,
+    //   lateArrival: { execuse: att.lateArrivalExcuse?.execuse },
+    //   earlyLeave: att.earlyLeave,
+    // }));
 
-    console.log("Fetched attendees:", items);
-    if (Array.isArray(items)) {
-      return items;
-    }
-
-    console.warn(
-      "Unexpected response structure for fetchEventAttendees:",
-      response.data
-    );
-    return [];
+    // if (Array.isArray(items)) {
+    //   return items;
+    // }    
+    return [
+      {
+        id: "1",
+        name: "John Doe",
+        phoneNumber: "123-456-7890",
+        committee: "Finance",
+        email: "john.doe@example.com",
+        vestStatus: "unassigned",
+      },
+    ];
   }
 
   async fetchPastEvents(

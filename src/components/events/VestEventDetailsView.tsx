@@ -1,20 +1,21 @@
 import WithNavbar from "@/components/hoc/WithNavbar";
 import { EventDetailsHeader, VestEventInformation, VestAttendeesList } from "@/components/events";
-import type { VestEvent } from "@/types/event";
+import type { Event, VestAttendee } from "@/types/event";
 
 interface VestEventDetailsViewProps {
-    event: VestEvent;
+    event: Event;
+    attendees: VestAttendee[];
     onBack: () => void;
 }
 
-const VestEventDetailsView: React.FC<VestEventDetailsViewProps> = ({ event, onBack }) => {
+const VestEventDetailsView: React.FC<VestEventDetailsViewProps> = ({ event, attendees, onBack }) => {
     return (
         <WithNavbar>
             <div className="min-h-screen bg-background p-4">
                 <div className="max-w-6xl mx-auto">
                     <EventDetailsHeader onBack={onBack} />
-                    <VestEventInformation event={event} />
-                    <VestAttendeesList attendees={event.attendees || []} />
+                    <VestEventInformation event={event} attendees={attendees} />
+                    <VestAttendeesList attendees={attendees || []} />
                 </div>
             </div>
         </WithNavbar>

@@ -35,7 +35,7 @@ const EventInformation = ({ event, attendees }: EventInformationProps) => {
       {attendees && (
         <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-dashboard-border">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 lg:gap-6 text-center">
-            <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4">
+            <div className="bg-gray-100 rounded-lg p-2 sm:p-3 lg:p-4">
               <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-dashboard-heading">
                 {attendees.length}
               </div>
@@ -43,7 +43,7 @@ const EventInformation = ({ event, attendees }: EventInformationProps) => {
                 Total
               </div>
             </div>
-            <div className="bg-green-50 rounded-lg p-2 sm:p-3 lg:p-4">
+            <div className="bg-green-100 rounded-lg p-2 sm:p-3 lg:p-4">
               <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-contrast">
                 {attendees.filter((a) => a.status.toLowerCase() === "attended").length}
               </div>
@@ -51,7 +51,7 @@ const EventInformation = ({ event, attendees }: EventInformationProps) => {
                 Attended
               </div>
             </div>
-            <div className="bg-red-50 rounded-lg p-2 sm:p-3 lg:p-4">
+            <div className="bg-red-100 rounded-lg p-2 sm:p-3 lg:p-4">
               <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-primary">
                 {attendees.filter((a) => a.status.toLowerCase() === "absent").length}
               </div>
@@ -59,7 +59,7 @@ const EventInformation = ({ event, attendees }: EventInformationProps) => {
                 Absent
               </div>
             </div>
-            <div className="bg-blue-50 rounded-lg p-2 sm:p-3 lg:p-4">
+            <div className="bg-blue-100 rounded-lg p-2 sm:p-3 lg:p-4">
               <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-secondary">
                 {attendees.filter((a) => a.status.toLowerCase() === "left").length}
               </div>
