@@ -29,7 +29,7 @@ const MemberDetailsCard = ({ memberData }: MemberDetailsCardProps) => {
             Name
           </span>
           <span className="text-sm font-medium text-[var(--color-contrast)]">
-            {memberData.name}
+            {memberData.fullName}
           </span>
         </div>
         <div className="flex justify-between">
@@ -37,7 +37,7 @@ const MemberDetailsCard = ({ memberData }: MemberDetailsCardProps) => {
             Team
           </span>
           <span className="text-sm font-medium text-[var(--color-contrast)]">
-            {memberData.team}
+            {memberData.committee}
           </span>
         </div>
         <div className="flex justify-between">
