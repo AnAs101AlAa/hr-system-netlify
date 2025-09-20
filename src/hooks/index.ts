@@ -1,2 +1,2 @@
-export { useQRScanner } from "./useQRScanner";
-export { useQRScannerModal } from "./useQRScannerModal";
+// export { useQRScanner } from "./useQRScanner"; // Removed: obsolete
+// export { useQRScannerModal } from "./useQRScannerModal"; // Removed: obsolete

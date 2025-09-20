@@ -14,15 +14,15 @@ const EventCard: React.FC<{ event: Omit<Event, "attendees"> }> = ({
   const { id, title, startDate, endDate, location } = event;
   const navigate = useNavigate();
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
-  const isPastEvent = new Date(endDate) <= new Date();
-  // Check if event is happening today and start time has come or passed, and hasn't ended yet
   const now = new Date();
   const eventStart = new Date(startDate);
   const eventEnd = new Date(endDate);
+  // Compare both date and time for event status
+  const isPastEvent = now >= eventEnd;
   const isEventTodayAndStarted =
-    eventStart.toDateString() === now.toDateString() &&
-    now >= eventStart &&
-    now < eventEnd;
+    now >= eventStart && now < eventEnd;
+
+    console.log(eventEnd,"HHEHHWHWHWHWHW", endDate)
 
   return (
     <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4 h-full relative">

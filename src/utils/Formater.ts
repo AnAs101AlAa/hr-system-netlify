@@ -58,6 +58,7 @@ const formatPhone = (phone: string | undefined | null): string => {
 };
 
 const format = (data: unknown, mode: FormatMode): string => {
+  console.log(data);
   try {
     switch (mode) {
       case "phone":
@@ -83,5 +84,20 @@ const format = (data: unknown, mode: FormatMode): string => {
   }
 };
 
-export { formatDateTime };
+function toLocalISOString(date: Date): string {
+  const pad = (n: number) => n.toString().padStart(2, "0");
+
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+  const ms = date.getMilliseconds().toString().padStart(3, "0");
+
+  // Same shape as ISO string, but using local parts
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${ms}Z`;
+}
+
+export { formatDateTime, toLocalISOString };
 export default format;

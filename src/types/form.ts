@@ -1,10 +1,19 @@
-import type { Question, Answer } from "./question";
+import type { Question, Answer, questionError } from "./question";
 
 export interface formPage {
     title: string;
-    description?: string;
+    description: string;
     questions: Question[];
     toBranch?: { [questionId: number]: { assertOn: string, targetPage: number } };
+}
+
+export interface formPageError {
+    pageIndex: number;
+    title: string;
+    description: string;
+    questionCount?: string;
+    questions: questionError[];
+    toBranchErrors?: string[];
 }
 
 export interface form {
@@ -18,3 +27,5 @@ export interface form {
 }
 
 export type QuestionCardHandle = { validate: () => boolean, collect: () => Answer, clear: () => void, reassign: (answer: Answer) => void };
+
+export type FormEditorHandle = { collect: () => boolean };

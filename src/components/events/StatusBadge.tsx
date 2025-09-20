@@ -6,7 +6,7 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
   const getStatusStyles = () => {
     switch (status.toLowerCase()) {
       case "attended":
-        return "bg-red-500 text-white border-red-500";
+        return "bg-green-500 text-white border-green-500";
       case "late":
         return "bg-yellow-500 text-white border-yellow-500";
       case "left":

@@ -20,12 +20,21 @@ export const useLogin = () => {
   const dispatch = useDispatch();
 
   return useMutation({
-    mutationFn: (credentials: Parameters<typeof userApiInstance.login>[0]) => 
+    mutationFn: (credentials: Parameters<typeof userApiInstance.login>[0]) =>
       userApiInstance.login(credentials),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: userKeys.session() });
-      const { id = "", email = "", name = "", profileImageUrl = "", phoneNumber = "", roles = [] } = data.data || {};
-      dispatch(setUser({ id, email, name, profileImageUrl, phoneNumber, roles }));
+      const {
+        id = "",
+        email = "",
+        name = "",
+        profileImageUrl = "",
+        phoneNumber = "",
+        roles = [],
+      } = data.data || {};
+      dispatch(
+        setUser({ id, email, name, profileImageUrl, phoneNumber, roles })
+      );
       toast.success("Login successful! Welcome back!");
     },
     onError: (error) => {

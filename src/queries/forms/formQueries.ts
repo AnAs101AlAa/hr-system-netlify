@@ -38,3 +38,9 @@ export const useSubmitForm = (formId: string, formName: string) => {
         mutationFn: (answers: Answer[]) => formAPI.submitForm(formId, answers, formName),
     })
 }
+
+export const useCreateForm = () => {
+    return useMutation( {
+        mutationFn: (formData: form) => formAPI.createForm(formData),
+    })
+}

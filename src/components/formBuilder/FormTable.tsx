@@ -56,7 +56,7 @@ const FormTable = ({ forms }: FormsTableProps) => {
                   </div>
                 </td>
                 <td className="px-4 py-4">
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center gap-2">
                     <Button
                       type={ButtonTypes.SECONDARY}
                       onClick={() => navigate(`/form-builder/${form.id}`)}

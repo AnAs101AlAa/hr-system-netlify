@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { eventsApiInstance } from "./eventApi";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@/utils";
@@ -15,8 +15,112 @@ export const eventKeys = {
   searchPastEvents: (query: string) =>
     [...eventKeys.all, "searchPast", query] as const,
   upcomingEvents: () => [...eventKeys.all, "upcoming"] as const,
-  eventAttendees: (eventId: string) => [...eventKeys.details(), eventId, "attendees"] as const,
+  eventAttendees: (eventId: string) =>
+    [...eventKeys.details(), eventId, "attendees"] as const,
   ongoingEvent: (toDate: string) => ["ongoing", toDate] as const,
+  requestAttendance: (eventId: string, memberId: string) =>
+    ["requestAttendance", eventId, memberId] as const,
+  checkAttendanceStatus: (eventId: string, memberId: string) =>
+    ["checkAttendanceStatus", eventId, memberId] as const,
+  recordLateArrivalExcuse: (eventId: string, memberId: string) =>
+    ["recordLateArrivalExcuse", eventId, memberId] as const,
+  recordLeaveEarly: (eventId: string, memberId: string) =>
+    ["recordLeaveEarly", eventId, memberId] as const,
+};
+// Mutation: Request Attendance
+export const useRequestAttendance = () => {
+  return useMutation({
+    mutationFn: async ({
+      memberId,
+      eventId,
+    }: {
+      memberId: string;
+      eventId: string;
+    }) => {
+      try {
+        return await eventsApiInstance.requestAttendance(memberId, eventId);
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        toast.error(`Attendance request failed: ${errorMessage}`);
+        throw error;
+      }
+    },
+  });
+};
+
+// Mutation: Check Attendance Status
+export const useCheckAttendanceStatus = () => {
+  return useMutation({
+    mutationFn: async ({
+      memberId,
+      eventId,
+    }: {
+      memberId: string;
+      eventId: string;
+    }) => {
+      try {
+        return await eventsApiInstance.checkAttendanceStatus(memberId, eventId);
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        toast.error(`Check attendance status failed: ${errorMessage}`);
+        throw error;
+      }
+    },
+  });
+};
+
+// Mutation: Record Late Arrival Excuse
+export const useRecordLateArrivalExcuse = () => {
+  return useMutation({
+    mutationFn: async ({
+      memberId,
+      eventId,
+      excuse,
+    }: {
+      memberId: string;
+      eventId: string;
+      excuse: string;
+    }) => {
+      try {
+        return await eventsApiInstance.recordLateArrivalExcuse(
+          memberId,
+          eventId,
+          excuse
+        );
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        toast.error(`Late arrival excuse failed: ${errorMessage}`);
+        throw error;
+      }
+    },
+  });
+};
+
+// Mutation: Record Leave Early
+export const useRecordLeaveEarly = () => {
+  return useMutation({
+    mutationFn: async ({
+      memberId,
+      eventId,
+      excuse,
+    }: {
+      memberId: string;
+      eventId: string;
+      excuse: string;
+    }) => {
+      try {
+        return await eventsApiInstance.recordLeaveEarly(
+          memberId,
+          eventId,
+          excuse
+        );
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        toast.error(`Leave early excuse failed: ${errorMessage}`);
+        throw error;
+      }
+    },
+  });
 };
 
 // Hook to fetch event by ID
@@ -31,7 +135,11 @@ export const useEvent = (id: string) => {
   });
 };
 
-export const useUpcomingEvents = (page: number, pageSize: number, fromDate: string) => {
+export const useUpcomingEvents = (
+  page: number,
+  pageSize: number,
+  fromDate: string
+) => {
   return useQuery({
     queryKey: [...eventKeys.upcomingEvents(), page, pageSize, fromDate],
     queryFn: async () => {
@@ -57,7 +165,7 @@ export const useOngoingEvent = (toDate: string) => {
     },
     enabled: !!toDate,
   });
-}
+};
 
 export const useEventAttendees = (eventId: string) => {
   return useQuery({
@@ -68,15 +176,28 @@ export const useEventAttendees = (eventId: string) => {
     },
     enabled: !!eventId,
   });
-}
+};
 
 // Hook to fetch past events
-export const usePastEvents = (eventType: string, title: string, page: number, pageSize: number) => {
+export const usePastEvents = (
+  eventType: string,
+  title: string,
+  page: number,
+  pageSize: number
+) => {
   return useQuery({
     queryKey: [eventKeys.pastEvents(), eventType, title, page],
     queryFn: async () => {
-      const data = await eventsApiInstance.fetchPastEvents(eventType, title, page, pageSize);
-      const count = await eventsApiInstance.fetchPastEventsCount(eventType, title);
+      const data = await eventsApiInstance.fetchPastEvents(
+        eventType,
+        title,
+        page,
+        pageSize
+      );
+      const count = await eventsApiInstance.fetchPastEventsCount(
+        eventType,
+        title
+      );
       return { items: data, total: count };
     },
   });

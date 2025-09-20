@@ -1,217 +1,202 @@
-import { useState, useCallback, useEffect } from "react";
-import toast from "react-hot-toast";
 import Modal from "@/components/generics/Modal";
 import { ScannerContainer, ScannerActions } from "@/components/scan_qr";
-import { useQRScannerModal } from "@/hooks";
+import ReasonPopup from "@/components/QR/ReasonPopup";
+import { useAttendanceFlow } from "@/hooks/useAttendanceFlow";
 import type { Event } from "@/types/event";
-import type { MemberData } from "@/types/attendance";
-import { getErrorMessage } from "@/utils";
+import { useState, useEffect, useRef } from "react";
+import toast from "react-hot-toast";
 
+/**
+ * Modal for scanning QR codes and handling attendance flow.
+ * @module QRScannerModal
+ */
 interface QRScannerModalProps {
+  /** Whether the modal is open */
   isOpen: boolean;
+  /** Handler to close the modal */
   onClose: () => void;
+  /** Event info (without attendees) */
   event: Omit<Event, "attendees">;
 }
 
 const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
-  const [attendanceStatus, setAttendanceStatus] = useState<number | null>(null);
-  const [leaveExcuse, setLeaveExcuse] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false);
+  const {
+    isScanning,
+    error,
+    memberData,
+    attendanceStatus,
+    lateReason,
+    setLateReason,
+    leaveExcuse,
+    setLeaveExcuse,
+    isConfirming,
+    attendanceConfirmed,
+    handleScan,
+    confirmAttendance,
+    reset,
+  } = useAttendanceFlow(event.id);
 
-  const handleSuccess = useCallback(
-    async (memberData: MemberData) => {
-      setIsVerifying(true);
+  // Which reason popup is currently open
+  const [reasonPopupOpen, setReasonPopupOpen] = useState<
+    null | "late" | "early" | ""
+  >(null);
 
-      // New: Call endpoint to check attendance status
-      try {
-        const { eventsApi } = await import("@/queries/events");
-        const eventInstance = new eventsApi();
-        const statusResponse = await eventInstance.checkAttendanceStatus(
-          memberData.id,
-          event.id
-        );
-        setAttendanceStatus(statusResponse.status);
-        if (statusResponse.status === 2004) {
-          toast.error("Member already registered and left early");
-          scanner.resetScanner(true);
-        }
-      } catch (error) {
-        console.error("Failed to check attendance status:", error);
-        toast.error(getErrorMessage(error));
-        setIsVerifying(false);
-        return;
-      }
+  // Remember if the user just dismissed the popup for this scan flow,
+  // so we don't immediately re-open it due to the same attendanceStatus.
+  const dismissedRef = useRef(false);
 
-      setIsVerifying(false);
-    },
-    [event.id, event.title]
-  );
+  // Track if we should confirm after popup closes (submit)
+  const confirmAfterPopup = useRef<null | (() => void)>(null);
 
-  const handleError = useCallback((error: string) => {
-    console.error("QR Scanner error:", error);
-    toast.error(error);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setIsVerifying(false);
-    setAttendanceStatus(null);
-    setLeaveExcuse("");
-    onClose();
-  }, [onClose]);
-
-  const scanner = useQRScannerModal({
-    eventId: event.id,
-    onSuccess: handleSuccess,
-    onError: handleError,
-    onClose: handleClose,
-    autoReset: true, // We'll handle reset manually after validation
-  });
-
-  // Create a stable reference to the reset function
-  const resetScanner = useCallback(() => {
-    scanner.resetScanner(true);
-    setIsVerifying(false);
-    setAttendanceStatus(null);
-    setLeaveExcuse("");
-  }, [scanner]);
-
-  // Reset scanner when modal opens
+  // Auto-open popup ONLY if:
+  //  - the status requires it (2002 late / 2003 early),
+  //  - we still don't have a reason/excuse,
+  //  - and the user hasn't just dismissed it.
   useEffect(() => {
-    if (isOpen) {
-      resetScanner();
+    if (attendanceStatus === 2002 && !lateReason && !dismissedRef.current) {
+      setReasonPopupOpen("late");
+    } else if (
+      attendanceStatus === 2003 &&
+      !leaveExcuse &&
+      !dismissedRef.current
+    ) {
+      setReasonPopupOpen("early");
+    } else {
+      setReasonPopupOpen(null);
     }
-  }, [isOpen]);
 
-  const handleConfirmAttendance = useCallback(async () => {
-    if (!scanner.memberData) {
-      toast.error("No member data available to record attendance");
-      return;
+    // Show toast for 2004 (already left)
+    if (attendanceStatus === 2004) {
+      toast.error("Member already registered and left early");
+      reset();
     }
+  }, [attendanceStatus, lateReason, leaveExcuse, reset]);
 
-    // Set confirming state to show loading
-    scanner.setConfirming(true);
-
-    try {
-      // Import eventsApi here to avoid unused import warning
-      const { eventsApi } = await import("@/queries/events");
-
-      const eventInstance = new eventsApi();
-
-      // Use different API methods based on attendance status
-      if (attendanceStatus === 2002) {
-        // Late arrival
-        await eventInstance.recordLateArrivalExcuse(
-          scanner.memberData.id,
-          event.id,
-          leaveExcuse
-        );
-      } else if (attendanceStatus === 2003) {
-        // Leaving early
-
-        await eventInstance.recordLeaveEarly(
-          scanner.memberData.id,
-          event.id,
-          leaveExcuse
-        );
-      } else if (attendanceStatus === 2004) {
-        // Leaving early
-        toast.error("Member already registered and left early");
-        scanner.resetScanner(true);
-      } else {
-        // On-time attendance
-        await eventInstance.requestAttendance(scanner.memberData.id, event.id);
-      }
-
-      // Show success toast
-      toast.success("Attendance recorded successfully!");
-
-      // Reset confirming state
-      scanner.setConfirming(false);
-
-      // Call the scanner's confirmation handler only on success
-      await scanner.handleConfirmAttendance();
-      scanner.resetScanner(true);
-      setLeaveExcuse("");
-    } catch (error) {
-      console.error("Failed to record attendance:", error);
-      toast.error(getErrorMessage(error));
-      // Reset confirming state on error so user can try again
-      scanner.setConfirming(false);
+  // After a successful submit closed the popup and queued confirm, run it.
+  useEffect(() => {
+    if (!reasonPopupOpen && confirmAfterPopup.current) {
+      confirmAfterPopup.current();
+      confirmAfterPopup.current = null;
     }
-  }, [attendanceStatus, leaveExcuse, event.id, scanner]);
+  }, [reasonPopupOpen]);
 
-  const handleReturnToEvent = useCallback(() => {
-    // Don't restart scanner since modal is closing
-    setIsVerifying(false);
-    setAttendanceStatus(null);
-    setLeaveExcuse("");
+  // Return to events: fully reset the scanner state and clear the dismissal guard
+  const handleReturnToEvent = () => {
+    dismissedRef.current = false;
+    reset();
     onClose();
-  }, [onClose]);
+  };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={scanner.handleClose}
-      title={`Scan QR Code - ${event.title}`}
-    >
-      <div className="p-4">
-        {/* Event Info */}
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-          <h4 className="font-semibold text-blue-900">{event.title}</h4>
-          <p className="text-sm text-blue-700">
-            {new Date(event.startDate).toLocaleString("en-US", {
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })}
-          </p>
-        </div>
+    <>
+      <Modal
+        isOpen={isOpen}
+        onClose={handleReturnToEvent}
+        title={`Scan QR Code - ${event.title}`}
+      >
+        <div className="p-4">
+          {/* Event Info */}
+          <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+            <h4 className="font-semibold text-blue-900">{event.title}</h4>
+            <p className="text-sm text-blue-700">
+              {new Date(event.startDate).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })}
+            </p>
+          </div>
 
-        {/* Scanner Container */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-          <ScannerContainer
-            isScanning={scanner.isScanning}
-            error={scanner.error}
-            memberData={scanner.memberData}
-            attendanceConfirmed={scanner.attendanceConfirmed}
-            lateReason={leaveExcuse}
-            attendanceStatus={attendanceStatus}
-            leaveExcuse={leaveExcuse}
-            isVerifying={isVerifying}
-            onScan={scanner.handleScan}
-            onError={scanner.handleError}
-            onReasonChange={(e) => setLeaveExcuse(e.target.value)}
-            onLeaveExcuseChange={(e) => setLeaveExcuse(e.target.value)}
-            onResetScanner={scanner.resetScanner}
-          />
-
-          {/* Action Buttons */}
-          <div className="p-4 bg-gray-50 border-t border-gray-200">
-            <ScannerActions
-              attendanceConfirmed={scanner.attendanceConfirmed}
-              memberData={scanner.memberData}
-              isConfirming={scanner.isConfirming}
-              lateReason={scanner.lateReason}
-              onConfirmAttendance={handleConfirmAttendance}
-              onReturnToEvents={handleReturnToEvent}
-              onResetScanner={scanner.resetScanner}
+          {/* Scanner Container */}
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+            <ScannerContainer
+              isScanning={isScanning}
+              error={error}
+              memberData={memberData}
+              attendanceConfirmed={attendanceConfirmed}
+              lateReason={lateReason}
+              attendanceStatus={attendanceStatus}
+              leaveExcuse={leaveExcuse}
+              onScan={handleScan}
+              onError={(setError) => setError}
+              onReasonChange={(e) => setLateReason(e.target.value)}
+              onResetScanner={() => {
+                dismissedRef.current = false;
+                reset();
+              }}
             />
+
+            {/* Action Buttons */}
+            <div className="p-4 bg-gray-50 border-t border-gray-200">
+              <ScannerActions
+                attendanceConfirmed={attendanceConfirmed}
+                memberData={memberData}
+                isConfirming={isConfirming}
+                lateReason={lateReason}
+                onConfirmAttendance={confirmAttendance}
+                onReturnToEvents={handleReturnToEvent}
+                onResetScanner={() => {
+                  dismissedRef.current = false;
+                  reset();
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Modal-specific actions */}
+          <div className="mt-4 flex justify-end gap-2">
+            <button
+              onClick={handleReturnToEvent}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+            >
+              Cancel
+            </button>
           </div>
         </div>
+      </Modal>
 
-        {/* Modal-specific actions */}
-        <div className="mt-4 flex justify-end gap-2">
-          <button
-            onClick={scanner.handleClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </Modal>
+      {/* ReasonPopup for late arrival */}
+      <ReasonPopup
+        isOpen={reasonPopupOpen === "late"}
+        onClose={(status, reason) => {
+          setReasonPopupOpen(null);
+          if (status === 1) {
+            // User canceled -> don't re-open automatically for the same scan
+            dismissedRef.current = true;
+          }
+          if (status === 0 && reason) {
+            // User submitted
+            dismissedRef.current = false; // allow future prompts in new flows
+            setLateReason(reason);
+            confirmAfterPopup.current = confirmAttendance;
+          }
+        }}
+        title="Late Arrival Notice"
+        prompt="Please provide the reason for late arrival"
+        initialReason={lateReason}
+      />
+
+      {/* ReasonPopup for early leave */}
+      <ReasonPopup
+        isOpen={reasonPopupOpen === "early"}
+        onClose={(status, reason) => {
+          setReasonPopupOpen(null);
+          if (status === 1) {
+            dismissedRef.current = true; // canceled -> don't re-open instantly
+          }
+          if (status === 0 && reason) {
+            dismissedRef.current = false;
+            setLeaveExcuse(reason);
+            confirmAfterPopup.current = confirmAttendance;
+          }
+        }}
+        title="Early Leave Notice"
+        prompt="Please provide the reason for early leave"
+        initialReason={leaveExcuse}
+      />
+    </>
   );
 };
 

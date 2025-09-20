@@ -1,10 +1,24 @@
+/**
+ * Displays the final confirmation after attendance is recorded.
+ * @module FinalConfirmation
+ */
+/**
+ * Props for FinalConfirmation.
+ * @property lateReason - Reason for late arrival.
+ * @property leaveExcuse - Reason for early leave.
+ * @property attendanceStatus - Attendance status code.
+ */
 interface FinalConfirmationProps {
   lateReason: string;
   leaveExcuse: string;
   attendanceStatus: number | null;
 }
 
-const FinalConfirmation = ({ lateReason, leaveExcuse, attendanceStatus }: FinalConfirmationProps) => {
+const FinalConfirmation = ({
+  lateReason,
+  leaveExcuse,
+  attendanceStatus,
+}: FinalConfirmationProps) => {
   return (
     <div className="w-full bg-green-50 text-center p-6">
       <div className="w-16 h-16 md:w-20 md:h-20 mb-4 bg-green-100 rounded-full flex items-center justify-center mx-auto">

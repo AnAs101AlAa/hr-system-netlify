@@ -2,9 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { User } from "@/types/user";
 
-interface AuthState {
+export interface AuthState {
   user: User | null;
-  isAuthenticated: boolean;  // Or Token? cant dertermine yet we are waiting the lazy backend team to finish
+  isAuthenticated: boolean; // Or Token? cant dertermine yet we are waiting the lazy backend team to finish
 }
 
 const initialState: AuthState = {

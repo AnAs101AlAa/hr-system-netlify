@@ -1,15 +1,25 @@
+/**
+ * Displays the confirmation UI for attendance, including status and reason forms.
+ * @module AttendanceConfirmation
+ */
 import { FaCheckCircle, FaClock, FaSignOutAlt } from "react-icons/fa";
 import type { MemberData } from "@/types/attendance";
 import MemberDetailsCard from "./MemberDetailsCard";
-import LateReasonForm from "./LateReasonForm";
 
+/**
+ * Props for AttendanceConfirmation.
+ * @property memberData - The member's data.
+ * @property attendanceStatus - Attendance status code.
+ * @property lateReason - Reason for late arrival.
+ * @property leaveExcuse - Reason for early leave.
+ * @property onReasonChange - Handler for reason textarea change (late/early).
+ */
 interface AttendanceConfirmationProps {
   memberData: MemberData;
   attendanceStatus: number | null;
   lateReason: string;
   leaveExcuse: string;
   onReasonChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onLeaveExcuseChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 const AttendanceConfirmation = ({
@@ -18,7 +28,6 @@ const AttendanceConfirmation = ({
   lateReason,
   leaveExcuse,
   onReasonChange,
-  onLeaveExcuseChange,
 }: AttendanceConfirmationProps) => {
   // Helper function to get status configuration
   const getStatusConfig = (status: number | null) => {
@@ -27,7 +36,8 @@ const AttendanceConfirmation = ({
         return {
           icon: <FaCheckCircle className="text-green-500" size={40} />,
           title: "On-Time Attendance",
-          message: "The attendance status for the recently scanned member has been successfully updated.",
+          message:
+            "The attendance status for the recently scanned member has been successfully updated.",
           bgColor: "bg-green-50",
           borderColor: "border-green-200",
           textColor: "text-green-600",
@@ -37,7 +47,8 @@ const AttendanceConfirmation = ({
         return {
           icon: <FaClock className="text-orange-500" size={40} />,
           title: "Late Arrival Detected",
-          message: "Please provide a reason for late attendance before confirming.",
+          message:
+            "Please provide a reason for late attendance before confirming.",
           bgColor: "bg-orange-50",
           borderColor: "border-orange-200",
           textColor: "text-orange-600",
@@ -47,7 +58,8 @@ const AttendanceConfirmation = ({
         return {
           icon: <FaSignOutAlt className="text-blue-500" size={40} />,
           title: "Early Leave Detected",
-          message: "Please provide a reason for leaving early before confirming.",
+          message:
+            "Please provide a reason for leaving early before confirming.",
           bgColor: "bg-blue-50",
           borderColor: "border-blue-200",
           textColor: "text-blue-600",
@@ -69,69 +81,69 @@ const AttendanceConfirmation = ({
   const statusConfig = getStatusConfig(attendanceStatus);
 
   return (
-    <div className={`w-full text-center p-6 rounded-lg border ${statusConfig.bgColor} ${statusConfig.borderColor}`}>
+    <div
+      className={`w-full text-center p-6 rounded-lg border ${statusConfig.bgColor} ${statusConfig.borderColor}`}
+    >
       {/* Status Icon */}
-      <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${statusConfig.iconBg} mb-4`}>
+      <div
+        className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${statusConfig.iconBg} mb-4`}
+      >
         {statusConfig.icon}
       </div>
 
       {/* Status Title */}
-      <h2 className={`text-lg md:text-xl font-semibold ${statusConfig.textColor} mb-2`}>
+      <h2
+        className={`text-lg md:text-xl font-semibold ${statusConfig.textColor} mb-2`}
+      >
         {statusConfig.title}
       </h2>
 
       {/* Status Message */}
-      <p className="text-sm text-gray-600 mb-6">
-        {statusConfig.message}
-      </p>
+      <p className="text-sm text-gray-600 mb-6">{statusConfig.message}</p>
 
       {/* Member Details Card */}
       <div className="mb-6">
         <MemberDetailsCard memberData={memberData} />
       </div>
 
-      {/* Late Reason Form for Status 2002 */}
-      {attendanceStatus === 2002 && (
-        <LateReasonForm
-          lateReason={lateReason}
-          onChange={onReasonChange}
-          error={
-            attendanceStatus === 2002 && !lateReason.trim()
-              ? "Reason is required for late attendance"
-              : undefined
-          }
-        />
-      )}
-
-      {/* Leave Excuse Form for Status 2003 */}
-      {attendanceStatus === 2003 && (
+      {/* Reason Form for Status 2002 (late) or 2003 (early leave) */}
+      {(attendanceStatus === 2002 || attendanceStatus === 2003) && (
         <div className="mb-6">
           <label
-            htmlFor="leave-excuse"
+            htmlFor="reason-input"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
-            Reason for Leaving Early *
+            {attendanceStatus === 2002
+              ? "Reason for Late Arrival *"
+              : "Reason for Leaving Early *"}
           </label>
           <textarea
-            id="leave-excuse"
-            value={leaveExcuse}
-            onChange={onLeaveExcuseChange}
-            placeholder="Please provide a reason for leaving early..."
-            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              attendanceStatus === 2003 && !leaveExcuse.trim()
+            id="reason-input"
+            value={attendanceStatus === 2002 ? lateReason : leaveExcuse}
+            onChange={onReasonChange}
+            disabled
+            placeholder={
+              attendanceStatus === 2002
+                ? "Please provide a reason for late arrival..."
+                : "Please provide a reason for leaving early..."
+            }
+            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 ${
+              !(attendanceStatus === 2002 ? lateReason : leaveExcuse).trim()
                 ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                : "border-gray-300"
+                : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
             }`}
             rows={4}
             maxLength={500}
           />
-          {attendanceStatus === 2003 && !leaveExcuse.trim() && (
+          {!(attendanceStatus === 2002 ? lateReason : leaveExcuse).trim() && (
             <p className="mt-1 text-sm text-red-600">
-              Reason is required for early leave
+              Reason is required for{" "}
+              {attendanceStatus === 2002 ? "late attendance" : "early leave"}
             </p>
           )}
           <p className="mt-1 text-xs text-gray-500">
-            {leaveExcuse.length}/500 characters
+            {attendanceStatus === 2002 ? lateReason.length : leaveExcuse.length}
+            /500 characters
           </p>
         </div>
       )}
