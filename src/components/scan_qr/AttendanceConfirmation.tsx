@@ -121,6 +121,7 @@ const AttendanceConfirmation = ({
             id="reason-input"
             value={attendanceStatus === 2002 ? lateReason : leaveExcuse}
             onChange={onReasonChange}
+            disabled
             placeholder={
               attendanceStatus === 2002
                 ? "Please provide a reason for late arrival..."
