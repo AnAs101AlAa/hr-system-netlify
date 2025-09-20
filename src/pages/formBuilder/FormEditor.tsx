@@ -19,9 +19,11 @@ export default function FormEditor() {
     const emptyForm: form = { id: "", title: "", sheetName: "", createdAt: "", updatedAt: "", pages: [] };
 
     const { data: formData, isLoading, isError, error } = useForm(formId!);
-    const createFormMutation = useCreateForm();
-    const [formDataState, setFormDataState] = useState<form>(formData ?? emptyForm);
 
+    const createFormMutation = useCreateForm();
+    const [formDataState, setFormDataState] = useState<form>(emptyForm);
+
+        
     const mainSectionRef = useRef<FormEditorHandle | null>(null);
     const pagesSectionRef = useRef<FormEditorHandle | null>(null);
 
@@ -31,7 +33,10 @@ export default function FormEditor() {
         if (isError && error) {
             toast.error(`Failed to fetch form, please try again`);
         }
-    }, [isError, error]);
+        if (formData) {
+            setFormDataState(formData);
+        }
+    }, [isError, error, formData]);
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,

@@ -9,7 +9,7 @@ import type { form, formPage, formPageError } from "@/types/form";
 import type { Question } from "@/types/question";
 import toast from "react-hot-toast";
 import { QUESTION_TYPES } from "@/constants/formConstants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BranchInfo from "./BranchInfo";
 import { forwardRef, useImperativeHandle } from "react";
 import { sanitize, addQuestionError} from "@/utils/formBuilderUtils";
@@ -20,10 +20,28 @@ interface PagesInfoProps {
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, toChange: string, index?: number, field?: string) => void;
 }
     
-const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChange }: PagesInfoProps, ref) => {
+const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChange }: PagesInfoProps, ref) => {    
     const [questionCount, setQuestionCount] = useState<number>(0);
     const [choiceTextBuffer, setChoiceTextBuffer] = useState<string>("");
-    const [branchCarrier, setBranchCarrier] = useState<{[pageIndex: number]: {questionNumber: number}}>({});
+    const [branchCarrier, setBranchCarrier] = useState<{
+    [pageIndex: number]: { questionNumber: number }}>({});
+
+    useEffect(() => {
+        if (!formDataState.pages) return;
+
+        const mapped = formDataState.pages.reduce((acc, page, pIndex) => {
+            if (page.toBranch) {
+            const firstQuestionId = Number(Object.keys(page.toBranch)[0]);
+            if (!isNaN(firstQuestionId)) {
+                acc[pIndex] = { questionNumber: firstQuestionId };
+            }
+            }
+            return acc;
+        }, {} as { [pageIndex: number]: { questionNumber: number } });
+
+        setBranchCarrier(mapped);
+    }, [formDataState.pages]);
+
     const [pageErrors, setPageErrors] = useState<{[index: number]: formPageError}>({});
     const [mainError, setMainError] = useState<string>("");
 
@@ -274,8 +292,10 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                                 <p className="text-sm text-gray-600">No choices added yet.</p>
                                         )}
                                         <div className="flex gap-2 items-end w-full justify-between">
-                                            <InputField label="Add Choice" id={`question-addchoice-${index}-${qIndex}`} value={choiceTextBuffer} placeholder="Enter choice text" onChange={(e) => setChoiceTextBuffer(e.target.value)} />
-                                            <Button type={ButtonTypes.SECONDARY} onClick={() => handleAddChoice(qIndex, index)} buttonText="Add"/>
+                                            <div className="max-w-3/4 md:max-w-none w-full">
+                                                <InputField label="Add Choice" id={`question-addchoice-${index}-${qIndex}`} value={choiceTextBuffer} placeholder="Enter choice text" onChange={(e) => setChoiceTextBuffer(e.target.value)} />
+                                            </div>
+                                            <Button type={ButtonTypes.SECONDARY} onClick={() => handleAddChoice(qIndex, index)} buttonText="+"/>
                                         </div>
                                         <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMultiSelect ? "true" : "false"} onChange={(selected) => handleQQuestionChange(qIndex, index, "isMultiSelect", selected === "true")} label="Allow Multiple Answers" />
                                         </div>

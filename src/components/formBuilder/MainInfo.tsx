@@ -12,7 +12,7 @@ interface MainInfoProps {
 
 const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChange, formDataState }, ref) => {
     const [errors, setErrors] = useState<string[]>(["", "", "", ""]);
-
+    
     const collectErrors = (): boolean => {
         const currentErrors: string[] = ["", "", "", ""];
         if (!formDataState.id || formDataState.id.trim() === "") {

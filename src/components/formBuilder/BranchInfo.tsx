@@ -47,6 +47,14 @@ export default function BranchInfo({setFormDataState, index, page, branchCarrier
                 qNum = keys.length > 0 ? Number(keys[0]) : 0;
             }
 
+            if(qNum > 0) {
+                qNum = qNum - 1;
+            }
+
+            if(targetPage !== undefined && targetPage > 0) {
+                targetPage = targetPage - 1;
+            }
+
             const existingBranch = currentPage.toBranch[qNum] || {};
 
             if (JSON.stringify(existingBranch) === JSON.stringify({})) {
@@ -84,7 +92,7 @@ export default function BranchInfo({setFormDataState, index, page, branchCarrier
                         label="Branching Question Number"
                         id={`branching-question-${index}`}
                         placeholder="e.g. 1"
-                        value={branchCarrier[index]?.questionNumber !== undefined ? String(branchCarrier[index]?.questionNumber) : ""}
+                        value={branchCarrier[index]?.questionNumber !== undefined ? String(branchCarrier[index]?.questionNumber + 1) : ""}
                         onChange={(e) => {
                             const num = e.target.value !== "" ? parseInt(e.target.value) : 0;
                             handleBranchData({ pageIndex: index, questionNumber: num });
@@ -105,7 +113,7 @@ export default function BranchInfo({setFormDataState, index, page, branchCarrier
                         label="Page to skip to"
                         id={`branching-targetpage-${index}`}
                         placeholder="e.g. 2"
-                        value={page.toBranch[branchCarrier[index]?.questionNumber]?.targetPage !== undefined ? String(page.toBranch[branchCarrier[index]?.questionNumber]?.targetPage) : ""}
+                        value={page.toBranch[branchCarrier[index]?.questionNumber]?.targetPage !== undefined ? String(page.toBranch[branchCarrier[index]?.questionNumber]?.targetPage + 1) : ""}
                         onChange={(e) => {
                             const num = e.target.value !== "" ? parseInt(e.target.value) : 0;
                             handleBranchData({ pageIndex: index, targetPage: num });
