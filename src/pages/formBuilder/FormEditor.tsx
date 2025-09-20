@@ -11,6 +11,7 @@ import MainInfo from "@/components/formBuilder/MainInfo";
 import PagesInfo from "@/components/formBuilder/PagesInfo";
 import type { FormEditorHandle } from "@/types/form";
 import { getErrorMessage } from "@/utils";
+import { useNavigate } from "react-router-dom";
 
 export default function FormEditor() {
     const { formId } = useParams<{ formId: string }>();
@@ -23,6 +24,8 @@ export default function FormEditor() {
 
     const mainSectionRef = useRef<FormEditorHandle | null>(null);
     const pagesSectionRef = useRef<FormEditorHandle | null>(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (isError && error) {
@@ -71,6 +74,9 @@ export default function FormEditor() {
                     onSuccess: () => {
                         setFormDataState(emptyForm);
                         resolve(true);
+                        setTimeout(() => {
+                            navigate("/form-builder");
+                        }, 1500);
                     },
                     onError: (error: unknown) => {
                         const errorMessage = getErrorMessage(error) || "Failed to create form";
