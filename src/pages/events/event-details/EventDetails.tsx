@@ -15,15 +15,26 @@ import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import type { Attendee, VestAttendee } from "@/types/event";
+import type { RootState } from "@/redux/store/store";
 
 const EventDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useSelector((state: any) => state.auth);
+
+  const { user } = useSelector((state: RootState) => state.auth);
   const userRole = user?.roles;
 
-  const { data: event, isLoading, error : eventError, isError: isEventError } = useEvent(id ? id : "");
-  const { data: attendees, error: attendeesError, isError: isAttendeesError } = useEventAttendees(id ? id : "");
+  const {
+    data: event,
+    isLoading,
+    error: eventError,
+    isError: isEventError,
+  } = useEvent(id ? id : "");
+  const {
+    data: attendees,
+    error: attendeesError,
+    isError: isAttendeesError,
+  } = useEventAttendees(id ? id : "");
 
   useEffect(() => {
     if (isEventError && eventError) {
@@ -56,7 +67,13 @@ const EventDetails = () => {
   }
 
   if (userRole && userRole.includes("VestAdmin")) {
-    return <VestEventDetailsView event={event} attendees={attendees as VestAttendee[]} onBack={handleBack} />;
+    return (
+      <VestEventDetailsView
+        event={event}
+        attendees={attendees as VestAttendee[]}
+        onBack={handleBack}
+      />
+    );
   }
 
   return (
@@ -65,7 +82,10 @@ const EventDetails = () => {
         <div className="max-w-6xl mx-auto">
           <EventDetailsHeader onBack={handleBack} />
           <EventInformation event={event} attendees={attendees as Attendee[]} />
-          <AttendeesList attendees={attendees as Attendee[] || []} eventEndTime={event.endDate} />
+          <AttendeesList
+            attendees={(attendees as Attendee[]) || []}
+            eventEndTime={event.endDate}
+          />
         </div>
       </div>
     </WithNavbar>

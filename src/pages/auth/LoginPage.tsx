@@ -1,5 +1,5 @@
 import tccd_logo from "@/assets/TCCD_logo.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { loginSchema, type LoginFormData } from "@/schemas/authSchemas";
 import { z } from "zod";
 import InputField from "@/components/generics/InputField";
@@ -7,6 +7,8 @@ import PasswordField from "@/components/generics/PasswordField";
 import Button from "@/components/generics/Button";
 import { useLogin } from "@/queries/users/userQueries";
 import { useNavigate } from "react-router-dom";
+import { systemApi } from "@/queries/axiosInstance";
+import LoadingPage from "@/components/generics/LoadingPage";
 
 const LoginPage = () => {
   const [loginForm, setLoginForm] = useState<LoginFormData>({
@@ -14,11 +16,29 @@ const LoginPage = () => {
     password: "",
   });
   const [errors, setErrors] = useState<
-  Partial<Record<keyof LoginFormData, string>>
+    Partial<Record<keyof LoginFormData, string>>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(true); // 🔹 new
   const { mutateAsync: login } = useLogin();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        const response = await systemApi.get("/api/v1/Auth/verify");
+        if (response.status === 200) {
+          window.location.replace("/");
+          return;
+        }
+      } catch (error) {
+        // token invalid → stay on login
+        console.log(error);
+        setIsVerifying(false); // 🔹 allow rendering
+      }
+    };
+    verifyToken();
+  }, []);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { id, value } = e.target;
@@ -62,11 +82,16 @@ const LoginPage = () => {
         navigate("/");
       }, 1000);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   }
+
+  if (isVerifying) {
+    return <LoadingPage />;
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-white to-[#f8f6f1] text-[#121212]">
       <form
@@ -131,7 +156,6 @@ const LoginPage = () => {
           </footer>
         </section>
       </form>
-     
     </main>
   );
 };

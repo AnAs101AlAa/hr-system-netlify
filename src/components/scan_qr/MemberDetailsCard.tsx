@@ -1,6 +1,14 @@
+/**
+ * Displays member details for attendance confirmation.
+ * @module MemberDetailsCard
+ */
 import { IoPersonCircle } from "react-icons/io5";
 import type { MemberData } from "@/types/attendance";
 
+/**
+ * Props for MemberDetailsCard.
+ * @property memberData - The member's attendance data.
+ */
 interface MemberDetailsCardProps {
   memberData: MemberData;
 }
@@ -43,7 +51,7 @@ const MemberDetailsCard = ({ memberData }: MemberDetailsCardProps) => {
                 : "bg-green-100 text-green-700"
             }`}
           >
-            {memberData.status === "late" ? "attended" : "attended"}
+            {memberData.status === "late" ? "Late" : "On Time"}
           </span>
         </div>
         <div className="flex justify-between">

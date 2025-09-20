@@ -81,7 +81,9 @@ export class eventsApi {
     return items && items.length > 0 ? items[0] : null;
   }
 
-  async fetchEventAttendees(eventId: string): Promise<Attendee[] | VestAttendee[]> {
+  async fetchEventAttendees(
+    eventId: string
+  ): Promise<Attendee[] | VestAttendee[]> {
     const response = await systemApi.get(
       `${EVENTS_API_URL}Attendance/${eventId}`
     );
@@ -94,8 +96,8 @@ export class eventsApi {
       email: string;
       status: string;
       attendanceDate: string;
-      lateArrivalExcuse?: { execuse: string };
-      earlyLeave?: string;
+      lateArrival?: { execuse: string; scanTime: string };
+      earlyLeave?: { execuse: string; scanTime: string };
     };
 
     const items = Array.isArray(response.data?.data)
@@ -107,7 +109,7 @@ export class eventsApi {
           email: att.email,
           status: att.status,
           arrivalTime: att.attendanceDate,
-          lateArrival: { execuse: att.lateArrivalExcuse?.execuse },
+          lateArrival: att.lateArrival,
           earlyLeave: att.earlyLeave,
         }))
       : [];
@@ -152,7 +154,10 @@ export class eventsApi {
     return response.data;
   }
 
-  async checkAttendanceStatus(memberId: string, eventId: string): Promise<{ status: number }> {
+  async checkAttendanceStatus(
+    memberId: string,
+    eventId: string
+  ): Promise<{ status: number }> {
     const response = await systemApi.post(
       EVENTS_API_URL + `Attendance/${eventId}/${memberId}/status`,
       {
@@ -162,11 +167,15 @@ export class eventsApi {
     return { status: response.data.data };
   }
 
-  async recordLateArrivalExcuse(memberId: string, eventId: string, excuse: string) {
-  // Add 3 hours to current time and format as ISO string
-  const now = new Date();
-  now.setHours(now.getHours() + 3);
-  const scanTime = now.toISOString();
+  async recordLateArrivalExcuse(
+    memberId: string,
+    eventId: string,
+    excuse: string
+  ) {
+    // Add 3 hours to current time and format as ISO string
+    const now = new Date();
+
+    const scanTime = now.toISOString();
     const response = await systemApi.post(
       EVENTS_API_URL + `Attendance/${eventId}/lateArrival/${memberId}`,
       {
@@ -178,10 +187,10 @@ export class eventsApi {
   }
 
   async recordLeaveEarly(memberId: string, eventId: string, excuse: string) {
-  // Add 3 hours to current time and format as ISO string
-  const now = new Date();
-  now.setHours(now.getHours() + 3);
-  const scanTime = now.toISOString();
+    // Add 3 hours to current time and format as ISO string
+    const now = new Date();
+
+    const scanTime = now.toISOString();
     const response = await systemApi.post(
       EVENTS_API_URL + `Attendance/${eventId}/earlyLeave/${memberId}`,
       {
