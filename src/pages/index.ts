@@ -6,5 +6,7 @@ import FormView from "./forms/FormView";
 import FormSubmissionPage from "./forms/FormSubmissionPage";
 import UnauthorizedPage from "@/components/generics/UnauthorizedPage";
 import ScanQRPage from "./scan_qr/ScanQRPage";
+import FormBuilder from "./formBuilder/FormBuilder";
+import FormEditor from "./formBuilder/FormEditor";
 
-export { LoginPage, HomePage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage,ScanQRPage };
+export { LoginPage, HomePage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage,ScanQRPage, FormBuilder, FormEditor };

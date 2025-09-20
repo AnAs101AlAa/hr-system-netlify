@@ -37,7 +37,7 @@ export default function FormView() {
   );
 
   const handleClear = () => {
-    if (!formData) return;
+    if (!formData || !formData.pages) return;
     const questionsOnPage = formData.pages[currentPage].questions;
     questionsOnPage.forEach((_, qIndex) => {
       questionRefs.current[qIndex]?.clear();
@@ -75,7 +75,7 @@ export default function FormView() {
 
     setAnswers(answerArray);
 
-    if (hasErrors) {
+    if (hasErrors || !formData || !formData.pages) {
       return;
     } else if (formData && currentPage < formData.pages.length - 1) {
       const branch = formData.pages[currentPage].toBranch;
@@ -118,7 +118,7 @@ export default function FormView() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
-    if (!formData || currentPage >= formData.pages.length) return;
+    if (!formData || !formData.pages || currentPage >= formData.pages.length) return;
     const questionsOnPage = formData.pages[currentPage].questions;
 
     questionsOnPage.forEach((question, qIndex) => {
@@ -139,7 +139,7 @@ export default function FormView() {
         />
       )}
 
-      {formData && (
+      {formData && formData.pages && (
         <div className="w-full md:w-2/3 lg:w-1/3 m-auto md:rounded-xl shadow-md p-5 flex flex-col gap-4 bg-background-primary">
           {/* Form Header */}
           <div className="space-y-4 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background">

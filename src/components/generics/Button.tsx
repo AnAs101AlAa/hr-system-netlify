@@ -10,10 +10,10 @@ interface ButtonProps {
     width?: ButtonWidths;
 }
 
-export default function Button({buttonText, onClick, type, disabled = false, loading = false, width = ButtonWidths.AUTO}: ButtonProps) {
+export default function Button({ buttonText, onClick, type, disabled = false, loading = false, width = ButtonWidths.AUTO }: ButtonProps) {
     const isDisabled = disabled || loading;
-    
-    const stylePresets : Record<ButtonTypes, string> = {
+
+    const stylePresets: Record<ButtonTypes, string> = {
         primary: "bg-primary text-text border-primary",
         secondary: "bg-secondary text-text border-secondary",
         tertiary: "bg-contrast text-text border-contrast",
@@ -22,21 +22,21 @@ export default function Button({buttonText, onClick, type, disabled = false, loa
         basic: "border-contrast"
     }
 
-    const hoverStyles : Record<ButtonTypes, string> = {
+    const hoverStyles: Record<ButtonTypes, string> = {
         primary: "hover:bg-background hover:border-primary hover:text-primary",
         secondary: "hover:bg-background hover:border-secondary hover:text-secondary",
-        tertiary: "hover:bg-background hover:border-tertiary hover:text-tertiary",
+        tertiary: "hover:bg-background hover:border-tertiary hover:text-black",
         danger: "hover:bg-primary hover:text-text",
         ghost: "hover:bg-secondary/30",
         basic: "hover:bg-contrast/30",
     }
 
     const disabledStyles = "opacity-50";
-    
-    const widthStyles : Record<ButtonWidths, string> = {
+
+    const widthStyles: Record<ButtonWidths, string> = {
         auto: "w-auto",
         small: "w-24",
-        medium: "w-32", 
+        medium: "w-32",
         large: "w-48",
         xl: "w-64",
         full: "w-full"
@@ -49,16 +49,16 @@ export default function Button({buttonText, onClick, type, disabled = false, loa
     };
 
     return (
-        <button 
-            onClick={handleClick} 
+        <button
+            onClick={handleClick}
             disabled={isDisabled}
             className={`
                 ${stylePresets[type]} 
                 ${!isDisabled ? hoverStyles[type] : ''} 
                 ${isDisabled ? disabledStyles : ''} 
                 ${widthStyles[width]}
-                mt-5 lg:mt-7 rounded-xl px-6 py-2 border font-bold text-[12px] md:text-[13px] lg:text-[14px] 
-                transition-all duration-200 ease-in-out flex items-center justify-center
+                rounded-xl px-6 py-2 border font-bold text-[12px] md:text-[13px] lg:text-[14px] 
+                transition-all duration-200 ease-in-out flex items-center justify-center h-fit
                 ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}
             `}
         >

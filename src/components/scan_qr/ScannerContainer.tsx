@@ -1,3 +1,7 @@
+/**
+ * Container for the QR scanner and all attendance states.
+ * @module ScannerContainer
+ */
 import QRCodeScanner from "./QRCodeScanner";
 import ErrorFallBack from "./ErrorFallBack";
 import AttendanceConfirmation from "./AttendanceConfirmation";
@@ -6,6 +10,21 @@ import ScannerLoading from "./ScannerLoading";
 import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
 import type { MemberData } from "@/types/attendance";
 
+/**
+ * Props for ScannerContainer.
+ * @property isScanning - Whether the scanner is active.
+ * @property error - Error message, if any.
+ * @property memberData - The member's data, if scanned.
+ * @property attendanceConfirmed - Whether attendance is confirmed.
+ * @property lateReason - Reason for late arrival.
+ * @property leaveExcuse - Reason for early leave.
+ * @property attendanceStatus - Attendance status code.
+ * @property isVerifying - Whether verification is in progress.
+ * @property onScan - Handler for QR scan event.
+ * @property onError - Handler for scanner error.
+ * @property onReasonChange - Handler for reason textarea change.
+ * @property onResetScanner - Handler for resetting the scanner.
+ */
 interface ScannerContainerProps {
   isScanning: boolean;
   error: string | null;
@@ -18,7 +37,6 @@ interface ScannerContainerProps {
   onScan: (detectedCodes: IDetectedBarcode[]) => void | Promise<void>;
   onError: (error: unknown) => void;
   onReasonChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onLeaveExcuseChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onResetScanner: () => void;
 }
 
@@ -34,7 +52,6 @@ const ScannerContainer = ({
   onScan,
   onError,
   onReasonChange,
-  onLeaveExcuseChange,
   onResetScanner,
 }: ScannerContainerProps) => {
   return (
@@ -48,7 +65,9 @@ const ScannerContainer = ({
       {isVerifying && <ScannerLoading />}
 
       {/* Error State */}
-      {error && <ErrorFallBack error={error} resetScanner={onResetScanner} />}
+      {error && !memberData && (
+        <ErrorFallBack error={error} resetScanner={onResetScanner} />
+      )}
 
       {/* Success State - Attendance Confirmation */}
       {memberData && !attendanceConfirmed && !isVerifying && (
@@ -58,7 +77,6 @@ const ScannerContainer = ({
           lateReason={lateReason}
           leaveExcuse={leaveExcuse}
           onReasonChange={onReasonChange}
-          onLeaveExcuseChange={onLeaveExcuseChange}
         />
       )}
 

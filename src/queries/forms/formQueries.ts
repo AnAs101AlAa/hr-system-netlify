@@ -10,10 +10,18 @@ const formKeys = {
     submitForm: (formId: string, formName: string) => [...formKeys.getForm(formId), "submitForm", formName] as const,
 }
 
+export const useForms = (): UseQueryResult<form[], Error> => {
+    return useQuery({
+        queryKey: formKeys.all,
+        queryFn: () => formAPI.getForms()
+    })
+}
+
 export const useForm = (id: string): UseQueryResult<form, Error> => {
     return useQuery({
         queryKey: formKeys.getForm(id),
         queryFn: () => formAPI.getForm(id),
+        enabled: id != "new",
     })
 }
 
@@ -28,5 +36,11 @@ export const useSubmitForm = (formId: string, formName: string) => {
     return useMutation( {
         mutationKey: formKeys.submitForm(formId, formName),
         mutationFn: (answers: Answer[]) => formAPI.submitForm(formId, answers, formName),
+    })
+}
+
+export const useCreateForm = () => {
+    return useMutation( {
+        mutationFn: (formData: form) => formAPI.createForm(formData),
     })
 }

@@ -1,8 +1,14 @@
 import type { Answer } from "@/types/question";
 import { formsApi } from "../axiosInstance";
-const FORMS_API_URL = formsApi.defaults.baseURL + "form/"; //Speculatory endpoint, to be changed when backend is finalized
+import type { form } from "@/types/form";
 
-//Returns everything about a specific form
+const FORMS_API_URL = formsApi.defaults.baseURL + "/form/";
+
+export async function getForms() {
+    const response = await formsApi.get(`${FORMS_API_URL}`);
+    return response.data;
+}
+
 export async function getForm(formId: string) {
     const response = await formsApi.get(`${FORMS_API_URL}${formId}`);
     return response.data
@@ -15,5 +21,10 @@ export async function saveAnswer(formId: string, questionId: number, answer: Ans
 
 export async function submitForm(formId: string, answers: Answer[], formName: string) {
     const response = await formsApi.post(`${FORMS_API_URL}${formId}/submit`, { answers, formName })
+    return response.data;
+}
+
+export async function createForm(formData: form) {
+    const response = await formsApi.post(`${FORMS_API_URL}`, formData);
     return response.data;
 }

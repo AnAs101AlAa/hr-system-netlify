@@ -3,6 +3,10 @@ export interface Choice {
   content: string;
 }
 
+export type QuestionType = "Essay" | "MCQ" | "Date" | "Number";
+
+export type questionError = {questionIndex: number, questionText?: string, questionType?: string, choices?: string};
+
 export interface EssayQuestion {
   id: number;
   type: "Essay";

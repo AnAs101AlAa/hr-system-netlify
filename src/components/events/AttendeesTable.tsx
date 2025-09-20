@@ -1,6 +1,7 @@
+import { formatDateTime } from "@/utils";
 import type { Attendee } from "../../types/event";
-import { format } from "../../utils";
 import StatusBadge from "./StatusBadge";
+import { format } from "@/utils";
 
 interface AttendeesTableProps {
   attendees: Attendee[];
@@ -8,6 +9,7 @@ interface AttendeesTableProps {
 }
 
 const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
+  console.log(attendees, eventEndTime, typeof eventEndTime);
   return (
     <div className="hidden lg:block overflow-x-auto">
       <table className="w-full">
@@ -70,24 +72,31 @@ const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
                 <td className="px-4 py-4">
                   <StatusBadge status={attendee.status} />
                 </td>
-                <td className="px-4 py-4">
+                <td className="px-4 py-4 w-40 min-w-40">
                   <div className="text-sm text-dashboard-card-text">
-                    {format(attendee.arrivalTime, "hour")}
+                    {attendee.arrivalTime &&
+                    String(attendee.arrivalTime) !== "0001-01-01T00:00:00+00:00"
+                      ? formatDateTime(new Date(attendee.arrivalTime), "full")
+                      : "N/A"}
                   </div>
                 </td>
-                <td className="px-4 py-4">
+                <td className="px-4 py-4 w-40 min-w-40">
                   <div className="text-sm text-dashboard-card-text">
                     {attendee.earlyLeave
-                      ? format(attendee.earlyLeave.scanTime, "hour")
-                      : format(eventEndTime, "hour")}
+                      ? formatDateTime(
+                          new Date(attendee.earlyLeave.scanTime),
+                          "full"
+                        )
+                      : formatDateTime(
+                          new Date(eventEndTime as string),
+                          "full"
+                        )}
                   </div>
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm text-dashboard-card-text">
                     <p className="break-words leading-relaxed">
-                      {attendee.lateArrival
-                        ? attendee.lateArrival.execuse
-                        : "N/A"}
+                      {attendee.lateArrival?.execuse || "N/A"}
                     </p>
                   </div>
                 </td>
