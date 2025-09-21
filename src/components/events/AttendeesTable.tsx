@@ -1,4 +1,3 @@
-import { formatDateTime } from "@/utils";
 import type { Attendee } from "../../types/event";
 import StatusBadge from "./StatusBadge";
 import { format } from "@/utils";
@@ -76,18 +75,18 @@ const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
                   <div className="text-sm text-dashboard-card-text">
                     {attendee.arrivalTime &&
                     String(attendee.arrivalTime) !== "0001-01-01T00:00:00+00:00"
-                      ? formatDateTime(new Date(attendee.arrivalTime), "full")
+                      ? format(new Date(attendee.arrivalTime), "full")
                       : "N/A"}
                   </div>
                 </td>
                 <td className="px-4 py-4 w-40 min-w-40">
                   <div className="text-sm text-dashboard-card-text">
                     {attendee.earlyLeave
-                      ? formatDateTime(
+                      ? format(
                           new Date(attendee.earlyLeave.scanTime),
                           "full"
                         )
-                      : formatDateTime(
+                      : format(
                           new Date(eventEndTime as string),
                           "full"
                         )}

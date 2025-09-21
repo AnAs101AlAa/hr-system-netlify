@@ -15,7 +15,7 @@ const AttendeesCardView = ({
     <div className="lg:hidden divide-y divide-gray-100">
       {attendees && attendees.length > 0 ? (
         attendees.map((attendee, index) => (
-          <div key={attendee.id || index} className="p-4 space-y-3">
+          <div key={attendee.id || index} className="p-4 space-y-5">
             <div className="flex justify-between items-start">
               <div>
                 <h4 className="font-medium text-dashboard-card-text">
@@ -25,7 +25,7 @@ const AttendeesCardView = ({
               <StatusBadge status={attendee.status} />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-2 gap-4 text-sm mt-4">
               <div>
                 <span className="font-medium text-dashboard-heading">
                   Team:
@@ -50,7 +50,10 @@ const AttendeesCardView = ({
                   Arrival:
                 </span>
                 <p className="text-dashboard-card-text text-[13px]">
-                  {format(attendee.arrivalTime, "hour")}
+                  {attendee.arrivalTime &&
+                    String(attendee.arrivalTime) !== "0001-01-01T00:00:00+00:00"
+                      ? format(new Date(attendee.arrivalTime), "full")
+                      : "N/A"}
                 </p>
               </div>
               <div>
@@ -59,8 +62,8 @@ const AttendeesCardView = ({
                 </span>
                 <p className="text-dashboard-card-text text-[13px]">
                   {attendee.earlyLeave
-                    ? format(attendee.earlyLeave.scanTime, "hour")
-                    : format(eventEndTime, "hour")}
+                    ? format(attendee.earlyLeave.scanTime, "full")
+                    : format(eventEndTime, "full")}
                 </p>
               </div>
             </div>
