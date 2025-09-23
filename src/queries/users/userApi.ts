@@ -11,7 +11,7 @@ export class UserApi {
   }
 
   async logout() {
-    const { data } = await systemApi.post(USER_API_URL + "logout");
+    const { data } = await systemApi.post(LOGIN_ROUTE + "logout");
     return data;
   }
 

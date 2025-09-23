@@ -37,7 +37,7 @@ const MemberRoute = ({
     verifyToken();
   }, []);
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user || user == null) return <Navigate to="/login" replace />;
   if (allowedRoles && !allowedRoles.some((role) => user.roles.includes(role)))
     return <Navigate to="/unauthorized" replace />;
   return <>{children}</>;
