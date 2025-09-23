@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { systemApi } from "@/queries/axiosInstance";
 import toast from "react-hot-toast";
+import { getErrorMessage } from "@/utils";
 
 interface AuthState {
   user: {
@@ -28,10 +29,10 @@ const MemberRoute = ({
       try {
         const response = await systemApi.get("/api/v1/Auth/verify");
         console.log("Token verification response:", response.data);
-        
+
       } catch (error) {
         console.error("Token verification failed:", error);
-        toast.error(error);
+        toast.error(getErrorMessage(error)) ;
         // window.location.replace("/login");
       }
     };
