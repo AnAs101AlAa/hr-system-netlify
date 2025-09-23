@@ -50,12 +50,11 @@ export const useLogout = () => {
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
 
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: () => userApiInstance.logout(),
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: userKeys.session() });
       dispatch(logoutAction());
-      toast.success("Logged out successfully!");
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -63,6 +62,11 @@ export const useLogout = () => {
       console.error("Logout failed:", error);
     },
   });
+
+  return {
+    ...mutation,
+    isLoading: mutation.isPending,
+  };
 };
 
 export const useSession = () => {

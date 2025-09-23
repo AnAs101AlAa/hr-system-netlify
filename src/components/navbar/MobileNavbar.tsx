@@ -4,24 +4,28 @@ import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 // import useCheckOngoingEvent from "@/hooks/useCheckOngoingEvent";
 import logo from "@/assets/TCCD_logo.svg";
+import { TbLogout2 } from "react-icons/tb";
+import { useState } from "react";
+import LogoutModal from "./LogoutModal";
 
 const MobileNavbar = () => {
   const { pathname } = useLocation();
-  // const checkAndNavigate = useCheckOngoingEvent();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   return (
-    <nav className="w-full bg-white relative flex justify-center gap-[65%] items-center px-5 h-16 border border-[#000]/13 rounded-t-3xl">
-      {NAV_ITEMS.map(({ icon: Icon, to, title }) => {
+    <nav className="w-full bg-white relative flex justify-between items-center px-[6%] h-16 border border-[#000]/13 rounded-t-3xl">
+      <LogoutModal showLogoutModal={showLogoutModal} setShowLogoutModal={setShowLogoutModal} />
+      {NAV_ITEMS.map(({ icon: Icon, to, title }, index) => {
         const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
         return (
           <Link
             className={`${
               active ? "text-primary" : "text-secondary"
-            } inline-flex flex-col items-center gap-1`}
+            } inline-flex flex-col items-center gap-1 ${index === 1 ? "mr-7" : index === 2 ? "ml-7" : ""} cursor-pointer`}
             key={title}
             to={to}
           >
-            <Icon size={24} />
+            <Icon size={22} />
             <span
               className={`${
                 active ? "text-muted-primary" : "text-muted-secondary"
@@ -32,16 +36,11 @@ const MobileNavbar = () => {
           </Link>
         );
       })}
+      <div className="inline-flex flex-col items-center gap-1 cursor-pointer group" onClick={() => setShowLogoutModal(true)}>
+        <TbLogout2 size={22} className="text-secondary group-hover:text-primary transition-colors duration-200" />
+        <span className="text-xs text-muted-secondary">Logout</span>
+      </div>
 
-      {/* <button
-        onClick={checkAndNavigate}
-        className="absolute left-1/2 -translate-x-1/2 top-[-1.25rem] bg-primary p-2.5 rounded-full"
-        type="button"
-      >
-        <span className="w-fit h-fit rounded-full border border-[#FEFEFE75] text-white p-2 block">
-          <IoQrCodeOutline size={25} />
-        </span>
-      </button> */}
       <div className="absolute left-1/2 -translate-x-1/2 -top-7">
         <div className="relative">
           {/* soft pedestal shadow */}

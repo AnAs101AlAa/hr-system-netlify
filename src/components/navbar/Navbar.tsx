@@ -1,11 +1,16 @@
 import { NAV_ITEMS } from "@/constants";
 import { NavLink, useLocation } from "react-router-dom";
 import logo from "@/assets/TCCD_logo.svg";
+import { useState } from "react";
+import LogoutModal from "./LogoutModal";
 
 const Navbar = () => {
   const { pathname } = useLocation();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
   return (
     <header className="w-full flex justify-center px-3 py-3">
+      <LogoutModal showLogoutModal={showLogoutModal} setShowLogoutModal={setShowLogoutModal} />
       <nav
         className="
           relative w-full max-w-xl
@@ -13,11 +18,11 @@ const Navbar = () => {
           bg-white/80
           backdrop-blur supports-[backdrop-filter]:backdrop-blur-md
           shadow-[0_6px_22px_rgba(0,0,0,0.05)]
-          px-1.5 py-1 flex items-center gap-16
+          px-1.5 py-1 flex items-center gap-4
         "
       >
         {/* Tabs */}
-        {NAV_ITEMS.map(({ to, title }) => {
+        {NAV_ITEMS.map(({ to, title }, index) => {
           const active =
             to === "/" ? pathname === "/" : pathname.startsWith(to);
           return (
@@ -35,13 +40,25 @@ const Navbar = () => {
                     ? "bg-active-tab-bg text-active-tab-text shadow-inner"
                     : "text-inactive-tab-text hover:bg-zinc-100/80 hover:text-primary"
                 }
+                ${index === 1 ? "mr-10" : index === 2 ? "ml-10" : ""}
               `}
             >
               <span className="inline-block">{title}</span>
             </NavLink>
           );
         })}
-
+        <button
+          type="button"
+          className="
+            group flex-1 text-center rounded-full px-2.5 py-1.5
+            transition-all duration-150 cursor-pointer
+            outline-none ring-0 focus-visible:ring-2 focus-visible:ring-primary/35
+            text-inactive-tab-text hover:bg-zinc-100/80 hover:text-primary
+          "
+          onClick={() => setShowLogoutModal(true)}
+        >
+          <span className="inline-block text-sm font-semibold">Logout</span>
+        </button>
         {/* Center logo — refined floating style */}
         <div className="absolute left-1/2 -translate-x-1/2 -top-7">
           <div className="relative">

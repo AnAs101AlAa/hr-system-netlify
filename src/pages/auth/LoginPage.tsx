@@ -1,5 +1,5 @@
 import tccd_logo from "@/assets/TCCD_logo.svg";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { loginSchema, type LoginFormData } from "@/schemas/authSchemas";
 import { z } from "zod";
 import InputField from "@/components/generics/InputField";
@@ -7,8 +7,6 @@ import PasswordField from "@/components/generics/PasswordField";
 import Button from "@/components/generics/Button";
 import { useLogin } from "@/queries/users/userQueries";
 import { useNavigate } from "react-router-dom";
-import { systemApi } from "@/queries/axiosInstance";
-import LoadingPage from "@/components/generics/LoadingPage";
 
 const LoginPage = () => {
   const [loginForm, setLoginForm] = useState<LoginFormData>({
@@ -19,26 +17,8 @@ const LoginPage = () => {
     Partial<Record<keyof LoginFormData, string>>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(true); // 🔹 new
   const { mutateAsync: login } = useLogin();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const verifyToken = async () => {
-      try {
-        const response = await systemApi.get("/api/v1/Auth/verify");
-        if (response.status === 200) {
-          window.location.replace("/");
-          return;
-        }
-      } catch (error) {
-        // token invalid → stay on login
-        console.log(error);
-        setIsVerifying(false); // 🔹 allow rendering
-      }
-    };
-    verifyToken();
-  }, []);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { id, value } = e.target;
@@ -86,10 +66,6 @@ const LoginPage = () => {
     } finally {
       setIsSubmitting(false);
     }
-  }
-
-  if (isVerifying) {
-    return <LoadingPage />;
   }
 
   return (
