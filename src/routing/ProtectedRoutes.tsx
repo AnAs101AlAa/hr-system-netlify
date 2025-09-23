@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { systemApi } from "@/queries/axiosInstance";
+import toast from "react-hot-toast";
 
 interface AuthState {
   user: {
@@ -26,15 +27,12 @@ const MemberRoute = ({
     const verifyToken = async () => {
       try {
         const response = await systemApi.get("/api/v1/Auth/verify");
-        console.log(response.status);
-
-        if (response.status !== 200) {
-          console.log("HEEEHHH");
-          window.location.replace("/login");
-        }
+        console.log("Token verification response:", response.data);
+        
       } catch (error) {
-        console.log(error);
-        window.location.replace("/login");
+        console.error("Token verification failed:", error);
+        toast.error(error);
+        // window.location.replace("/login");
       }
     };
     verifyToken();
