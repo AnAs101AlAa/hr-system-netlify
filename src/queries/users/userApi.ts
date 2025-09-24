@@ -1,8 +1,8 @@
 import { systemApi } from "../axiosInstance";
 import type { User } from "@/types/user";
 
-const USER_API_URL = systemApi.defaults.baseURL + "/users/";
-const LOGIN_ROUTE = systemApi.defaults.baseURL + "/v1/Auth/";
+const LOGIN_ROUTE = "/v1/Auth/";    // <-- NO /api prefix here
+const USER_API_URL = "/users/";     // <-- NO /api prefix here
 
 export class UserApi {
   async login(credentials: Partial<User>) {
@@ -21,7 +21,7 @@ export class UserApi {
   }
 
   async getMemberDetails(userId: string) {
-    const { data } = await systemApi.get(`/api/v1/Members/${userId}`);
+    const { data } = await systemApi.get(`/v1/Members/${userId}`);
     return data.data; // Access the nested data property
   }
 }

@@ -1,7 +1,7 @@
 import { systemApi } from "../axiosInstance";
 import type { Event, Attendee, VestAttendee } from "@/types/event";
 
-const EVENTS_API_URL = systemApi.defaults.baseURL + "/v1/";
+const EVENTS_API_URL = "/v1/";
 // const EVENT_TYPES_API_URL = systemApi.defaults.baseURL + "/event-types/"; // TODO: Uncomment when backend is ready
 
 export class eventsApi {
