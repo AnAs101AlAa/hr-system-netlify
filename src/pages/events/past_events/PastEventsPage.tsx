@@ -28,7 +28,7 @@ const PastEventsPage = () => {
   const { data, error: eventsError, isLoading, isError: isEventsError } = usePastEvents(selectedEventType, searchTerm, currentPage, eventsPerPage);
   const pastEvents = data?.items ?? [];
   const totalCount = data?.total ?? 0;
-  const totalFilteredPages = Math.ceil(totalCount / eventsPerPage);
+  const totalFilteredPages = Math.max(1, Math.ceil(totalCount / eventsPerPage));
   
   // Update events per page on window resize
   useEffect(() => {
