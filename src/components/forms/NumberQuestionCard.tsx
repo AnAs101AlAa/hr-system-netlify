@@ -25,7 +25,6 @@ const NumberQuestionCard = forwardRef<QuestionCardHandle, NumberQuestionCardProp
           setErrors(["This field is required"]);
           return true;
         }
-
         if (answer !== "" && !isNaN(Number(answer))) {
           schema.parse(numValue);
         }
