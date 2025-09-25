@@ -25,7 +25,7 @@ const MemberRoute = ({
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const response = await systemApi.get("/api/v1/Auth/verify");
+        const response = await systemApi.get("/v1/Auth/verify");
 
         if (response.status !== 200) {
           window.location.replace("/login");

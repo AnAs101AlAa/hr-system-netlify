@@ -1,5 +1,9 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" },
+    {
+      "source": "/api/:path*",
+      "destination": "https://test-prod.runasp.net/api/:path*"
+    }
   ]
 }
