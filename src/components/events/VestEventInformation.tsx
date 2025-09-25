@@ -45,15 +45,15 @@ const VestEventInformation = ({ event, attendees }: VestEventInformationProps) =
                         </div>
                         <div className="bg-green-100 rounded-lg p-2 sm:p-3 lg:p-4">
                             <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-contrast">
-                                {attendees.filter((a) => a.vestStatus === "assigned").length}
+                                {attendees.filter((a) => a.status === "Received").length}
                             </div>
                             <div className="text-xs sm:text-sm lg:text-base text-dashboard-description">
-                                Assigned
+                                Received
                             </div>
                         </div>
                         <div className="bg-blue-100 rounded-lg p-2 sm:p-3 lg:p-4">
                             <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-secondary">
-                                {attendees.filter((a) => a.vestStatus === "returned").length}
+                                {attendees.filter((a) => a.status === "Returned").length}
                             </div>
                             <div className="text-xs sm:text-sm lg:text-base text-dashboard-description">
                                 Returned
@@ -61,10 +61,10 @@ const VestEventInformation = ({ event, attendees }: VestEventInformationProps) =
                         </div>
                         <div className="bg-red-100 rounded-lg p-2 sm:p-3 lg:p-4">
                             <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-primary">
-                                {attendees.filter((a) => a.vestStatus === "unassigned").length}
+                                {attendees.filter((a) => a.status === "NotReceived").length}
                             </div>
                             <div className="text-xs sm:text-sm lg:text-base text-dashboard-description">
-                                Unassigned
+                                Not Received
                             </div>
                         </div>
                     </div>

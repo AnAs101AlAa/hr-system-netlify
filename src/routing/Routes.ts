@@ -1,10 +1,10 @@
 import { HomePage, LoginPage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage, FormBuilder, FormEditor } from "@/pages";
 
 const routes: { path: string; Component: React.FC; protected?: boolean; roles?: string[] }[] = [
-  { path: "/", Component: HomePage, protected: true, roles: ["HR", "Head", "HighBoard", "Admin"]},
+  { path: "/", Component: HomePage, protected: true, roles: ["HR", "Head", "HighBoard", "Admin", "Vest"]},
   { path: "/login", Component: LoginPage },
-  { path: "/events/:id", Component: EventDetails, protected: true, roles: ["HR", "Head", "HighBoard", "Admin"] },
-  { path: "/events", Component: PastEventsPage, protected: true, roles: ["HR", "Head", "HighBoard", "Admin"] },
+  { path: "/events/:id", Component: EventDetails, protected: true, roles: ["HR", "Head", "HighBoard", "Admin", "Vest"] },
+  { path: "/events", Component: PastEventsPage, protected: true, roles: ["HR", "Head", "HighBoard", "Admin", "Vest"] },
   { path: "/form/:formId", Component: FormView },
   { path: "/form/finish", Component: FormSubmissionPage },
   { path: "/unauthorized", Component: UnauthorizedPage },

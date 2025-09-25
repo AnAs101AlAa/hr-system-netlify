@@ -5,10 +5,10 @@ import { format } from "@/utils";
 interface AttendeesTableProps {
   attendees: Attendee[];
   eventEndTime?: string;
+  setAttendee: (data: Attendee) => void
 }
 
-const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
-  console.log(attendees, eventEndTime, typeof eventEndTime);
+const AttendeesTable = ({ attendees, eventEndTime, setAttendee }: AttendeesTableProps) => {
   return (
     <div className="hidden lg:block overflow-x-auto">
       <table className="w-full">
@@ -38,6 +38,9 @@ const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
             </th>
             <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
               Early Leaving Reason
+            </th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
+              Actions
             </th>
           </tr>
         </thead>
@@ -104,6 +107,13 @@ const AttendeesTable = ({ attendees, eventEndTime }: AttendeesTableProps) => {
                     <p className="break-words leading-relaxed">
                       {attendee.earlyLeave?.execuse || "N/A"}
                     </p>
+                  </div>
+                </td>
+                <td className="px-4 py-4">
+                  <div
+                    onClick={() => setAttendee(attendee)}
+                    className={`px-3 py-2 rounded-full cursor-pointer text-xs font-bold capitalize whitespace-nowrap text-white bg-secondary shadow-sm`}>
+                    View Timeline
                   </div>
                 </td>
               </tr>

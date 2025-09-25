@@ -167,14 +167,35 @@ export const useOngoingEvent = (toDate: string) => {
   });
 };
 
-export const useEventAttendees = (eventId: string) => {
+export const useEventAttendees = (eventId: string, roles: string[]) => {
   return useQuery({
     queryKey: eventKeys.eventAttendees(eventId),
     queryFn: async () => {
-      const data = await eventsApiInstance.fetchEventAttendees(eventId);
+      let data;
+      if (roles && roles.includes("Vest")) {
+        data = await eventsApiInstance.fetchVestEventAttendees(eventId);
+      } else {
+        data = await eventsApiInstance.fetchEventAttendees(eventId);
+      }
       return data;
     },
     enabled: !!eventId,
+  });
+};
+
+export const useUpdateVestStatus = () => {
+  return useMutation({
+    mutationFn: async ({
+      eventId,
+      memberId,
+      action,
+    }: {
+      eventId: string;
+      memberId: string;
+      action: "Returned" | "Received";
+    }) => {
+      await eventsApiInstance.updateVestStatus(memberId, eventId, action);
+    },
   });
 };
 

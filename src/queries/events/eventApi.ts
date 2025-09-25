@@ -117,6 +117,30 @@ export class eventsApi {
     return items;
   }
 
+  async fetchVestEventAttendees(eventId: string): Promise<VestAttendee[]> {
+    const response = await systemApi.get(
+      `${EVENTS_API_URL}Vest/members`, { params: { eventId: eventId, pageSize: 200 } }
+    );
+
+    const items = response.data.data.data.map((att: any) => ({
+          id: att.memberId,
+          name: att.name,
+          phoneNumber: att.phoneNumber,
+          committee: att.committee,
+          email: att.email,
+          status: att.status,
+        }))
+    
+    return items;
+  }
+
+  async updateVestStatus(memberId: string, eventId: string, action: "Returned" | "Received") {
+    await systemApi.put(
+      `${EVENTS_API_URL}Vest/status`,
+      { status: action, memberId: memberId, eventId: eventId }
+    );
+  }
+  
   async fetchPastEvents(
     eventType: string,
     title: string,

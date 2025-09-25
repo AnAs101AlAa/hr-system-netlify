@@ -6,16 +6,17 @@ interface VestEventDetailsViewProps {
     event: Event;
     attendees: VestAttendee[];
     onBack: () => void;
+    setAttendees: (data: VestAttendee[]) => void;
 }
 
-const VestEventDetailsView: React.FC<VestEventDetailsViewProps> = ({ event, attendees, onBack }) => {
+const VestEventDetailsView: React.FC<VestEventDetailsViewProps> = ({ event, attendees, onBack, setAttendees }) => {
     return (
         <WithNavbar>
             <div className="min-h-screen bg-background p-4">
                 <div className="max-w-6xl mx-auto">
                     <EventDetailsHeader onBack={onBack} />
                     <VestEventInformation event={event} attendees={attendees} />
-                    <VestAttendeesList attendees={attendees || []} />
+                    <VestAttendeesList attendees={attendees || []} eventId={event.id} setAttendees={setAttendees} />
                 </div>
             </div>
         </WithNavbar>

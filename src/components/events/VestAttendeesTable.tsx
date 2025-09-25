@@ -1,16 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { VestAttendee } from "@/types/event";
 import { format } from "@/utils";
 import { ButtonTypes, ButtonWidths } from "@/constants/presets";
 import Button from "@/components/generics/Button";
 import VestStatusBadge from "./VestStatusBadge";
 import VestActionModal from "./VestActionModal";
+import { useUpdateVestStatus } from "@/queries/events";
+import toast from "react-hot-toast";
 
 interface VestAttendeesTableProps {
     attendees: VestAttendee[];
+    eventId?: string;
+    setAttendees: (data: VestAttendee[]) => void;
 }
 
-const VestAttendeesTable = ({ attendees }: VestAttendeesTableProps) => {
+const VestAttendeesTable = ({ attendees, eventId, setAttendees }: VestAttendeesTableProps) => {
+    const updateEventStatus = useUpdateVestStatus();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const [modalState, setModalState] = useState<{
         isOpen: boolean;
         attendee: VestAttendee | null;
@@ -37,17 +44,48 @@ const VestAttendeesTable = ({ attendees }: VestAttendeesTableProps) => {
         });
     };
 
-    const handleModalConfirm = () => {
-        if (modalState.attendee && modalState.action) {
-            // TODO: Implement the actual vest status update logic here
-            console.log(`${modalState.action} vest for ${modalState.attendee.name}`);
+    useEffect(() => {
+        if(!isSubmitting) return;
+
+        const handleModalConfirm = async () => {
+            if (modalState.attendee && modalState.action) {
+                try {
+                    await updateEventStatus.mutateAsync({
+                        eventId: eventId || "",
+                        memberId: modalState.attendee.id || "",
+                        action: modalState.action === "assign" ? "Received" : "Returned",
+                    });
+
+                    setAttendees(
+                        attendees.map((attendee: VestAttendee) => {
+                            if (attendee.id === modalState.attendee?.id) {
+                                return {
+                                    ...attendee,
+                                    status: modalState.action === "assign" ? "Received" : "Returned",
+                                };
+                            }
+                            return attendee;
+                        })
+                    )
+
+                    toast.success(`Vest ${modalState.action === "assign" ? "assigned" : "returned"} successfully.`);
+                    setTimeout(() => {
+                        setIsSubmitting(false);
+                        handleModalClose();
+                    }, 500);
+                } catch(error) {
+                    console.error("Error updating vest status:", error);
+                    toast.error("Failed to update vest status. Please try again.");
+                }
+            };
         }
-        handleModalClose();
-    };
+
+        handleModalConfirm();
+    }, [isSubmitting]);
 
     const renderActionButton = (attendee: VestAttendee) => {
-        switch (attendee.vestStatus) {
-            case "unassigned":
+        switch (attendee.status) {
+            case "NotReceived":
                 return (
                     <div className="flex items-center">
                         <div className="[&>button]:!mt-0 [&>button]:!lg:mt-0">
@@ -60,7 +98,7 @@ const VestAttendeesTable = ({ attendees }: VestAttendeesTableProps) => {
                         </div>
                     </div>
                 );
-            case "assigned":
+            case "Received":
                 return (
                     <div className="flex items-center">
                         <div className="[&>button]:!mt-0 [&>button]:!lg:mt-0">
@@ -73,7 +111,7 @@ const VestAttendeesTable = ({ attendees }: VestAttendeesTableProps) => {
                         </div>
                     </div>
                 );
-            case "returned":
+            case "Returned":
                 return (
                     <div className="text-sm text-gray-600 italic">
                         Vest Returned
@@ -136,7 +174,7 @@ const VestAttendeesTable = ({ attendees }: VestAttendeesTableProps) => {
                                     </div>
                                 </td>
                                 <td className="px-4 py-4">
-                                    <VestStatusBadge status={attendee.vestStatus} />
+                                    <VestStatusBadge status={attendee.status} />
                                 </td>
                                 <td className="px-4 py-4">
                                     {renderActionButton(attendee)}
@@ -162,7 +200,8 @@ const VestAttendeesTable = ({ attendees }: VestAttendeesTableProps) => {
             <VestActionModal
                 isOpen={modalState.isOpen}
                 onClose={handleModalClose}
-                onConfirm={handleModalConfirm}
+                isSubmitting={isSubmitting}
+                onConfirm={() => setIsSubmitting(true)}
                 attendeeName={modalState.attendee?.name || ""}
                 action={modalState.action || "assign"}
             />

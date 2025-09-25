@@ -22,8 +22,6 @@ const EventCard: React.FC<{ event: Omit<Event, "attendees"> }> = ({
   const isEventTodayAndStarted =
     now >= eventStart && now < eventEnd;
 
-    console.log(eventEnd,"HHEHHWHWHWHWHW", endDate)
-
   return (
     <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4 h-full relative">
       <div className="flex items-center gap-3">

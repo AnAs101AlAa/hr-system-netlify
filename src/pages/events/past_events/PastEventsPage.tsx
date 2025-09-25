@@ -67,7 +67,7 @@ const PastEventsPage = () => {
       setCurrentPage(currentPage + 1);
     }
   };
-  console.log('past events,',pastEvents)
+  
   return (
     <WithNavbar>
       <section className="flex flex-col min-h-screen mb-3">

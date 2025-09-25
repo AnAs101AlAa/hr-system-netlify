@@ -11,10 +11,12 @@ export interface Attendee extends member {
   departureTime?: Date;
   lateArrivalReason?: string;
   earlyLeavingReason?: string;
+  arrivals?: string[];
+  leavings?: string[];
 }
 
 export interface VestAttendee extends member {
-  vestStatus: "assigned" | "returned" | "unassigned";
+  status: "NotReceived" | "Received" | "Returned";
 }
 
 export interface EventType {
