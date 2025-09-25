@@ -6,10 +6,11 @@ interface VestActionModalProps {
     onClose: () => void;
     onConfirm: () => void;
     attendeeName: string;
+    isSubmitting: boolean;
     action: "assign" | "return";
 }
 
-const VestActionModal = ({ isOpen, onClose, onConfirm, attendeeName, action }: VestActionModalProps) => {
+const VestActionModal = ({ isOpen, onClose, onConfirm, attendeeName, isSubmitting, action }: VestActionModalProps) => {
     if (!isOpen) return null;
 
     const actionText = action === "assign" ? "assign vest to" : "return vest from";
@@ -25,22 +26,33 @@ const VestActionModal = ({ isOpen, onClose, onConfirm, attendeeName, action }: V
                     Are you sure you want to {actionText} <strong>{attendeeName}</strong>?
                 </p>
                 <div className="flex justify-end space-x-3">
-                    <div className="mt-0">
+                    {isSubmitting ? ( <div className="mt-0">
                         <Button
-                            buttonText="Cancel"
-                            onClick={onClose}
-                            type={ButtonTypes.GHOST}
-                            width={ButtonWidths.AUTO}
+                            buttonText="Submitting..."
+                            onClick={() => {}}
+                            type={ButtonTypes.PRIMARY}
+                            disabled={true}
                         />
-                    </div>
-                    <div className="mt-0">
-                        <Button
-                            buttonText="Confirm"
-                            onClick={onConfirm}
-                            type={action === "assign" ? ButtonTypes.TERTIARY : ButtonTypes.SECONDARY}
-                            width={ButtonWidths.AUTO}
-                        />
-                    </div>
+                    </div> ) : (
+                        <>
+                        <div className="mt-0">
+                            <Button
+                                buttonText="Cancel"
+                                onClick={onClose}
+                                type={ButtonTypes.GHOST}
+                                width={ButtonWidths.AUTO}
+                            />
+                        </div>
+                        <div className="mt-0">
+                            <Button
+                                buttonText="Confirm"
+                                onClick={() => onConfirm()}
+                                type={ButtonTypes.PRIMARY}
+                                width={ButtonWidths.AUTO}
+                            />
+                        </div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

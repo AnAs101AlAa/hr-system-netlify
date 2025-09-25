@@ -4,9 +4,11 @@ import VestAttendeesCardView from "./VestAttendeesCardView";
 
 interface VestAttendeesListProps {
     attendees: VestAttendee[];
+    eventId?: string;
+    setAttendees: (data: VestAttendee[]) => void;
 }
 
-const VestAttendeesList = ({ attendees }: VestAttendeesListProps) => {
+const VestAttendeesList = ({ attendees, eventId, setAttendees }: VestAttendeesListProps) => {
     return (
         <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
             <div className="p-4 border-b border-dashboard-border">
@@ -16,10 +18,10 @@ const VestAttendeesList = ({ attendees }: VestAttendeesListProps) => {
             </div>
 
             {/* Desktop Table View */}
-            <VestAttendeesTable attendees={attendees} />
+            <VestAttendeesTable attendees={attendees} eventId={eventId} setAttendees={setAttendees} />
 
             {/* Mobile Card View */}
-            <VestAttendeesCardView attendees={attendees} />
+            <VestAttendeesCardView attendees={attendees} eventId={eventId} setAttendees={setAttendees} />
         </div>
     );
 };

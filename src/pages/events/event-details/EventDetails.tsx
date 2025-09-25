@@ -11,7 +11,7 @@ import { useEvent } from "@/queries/events/eventQueries";
 import { useParams } from "react-router-dom";
 import LoadingPage from "@/components/generics/LoadingPage";
 import { useEventAttendees } from "@/queries/events/eventQueries";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import type { Attendee, VestAttendee } from "@/types/event";
@@ -30,11 +30,14 @@ const EventDetails = () => {
     error: eventError,
     isError: isEventError,
   } = useEvent(id ? id : "");
+
   const {
     data: attendees,
     error: attendeesError,
     isError: isAttendeesError,
-  } = useEventAttendees(id ? id : "");
+  } = useEventAttendees(id ? id : "", userRole ? userRole : []);
+
+  const [displayedAttendees, setDisplayedAttendees] = useState<Attendee[] | VestAttendee[]>([]);
 
   useEffect(() => {
     if (isEventError && eventError) {
@@ -43,7 +46,11 @@ const EventDetails = () => {
     if (isAttendeesError && attendeesError) {
       toast.error(`Failed to fetch event attendees, please try again`);
     }
-  }, [isEventError, eventError, isAttendeesError, attendeesError]);
+
+    if (attendees) {
+      setDisplayedAttendees(attendees);
+    }
+  }, [isEventError, eventError, isAttendeesError, attendeesError, attendees]);
 
   const handleBack = () => {
     navigate(-1);
@@ -66,12 +73,13 @@ const EventDetails = () => {
     return <EventNotFound />;
   }
 
-  if (userRole && userRole.includes("VestAdmin")) {
+  if (userRole && userRole.includes("Vest")) {
     return (
       <VestEventDetailsView
         event={event}
-        attendees={attendees as VestAttendee[]}
+        attendees={displayedAttendees as VestAttendee[]}
         onBack={handleBack}
+        setAttendees={setDisplayedAttendees}
       />
     );
   }
@@ -81,9 +89,9 @@ const EventDetails = () => {
       <div className="min-h-screen bg-background p-4">
         <div className="max-w-6xl mx-auto">
           <EventDetailsHeader onBack={handleBack} />
-          <EventInformation event={event} attendees={attendees as Attendee[]} />
+          <EventInformation event={event} attendees={displayedAttendees as Attendee[]} />
           <AttendeesList
-            attendees={(attendees as Attendee[]) || []}
+            attendees={(displayedAttendees as Attendee[]) || []}
             eventEndTime={event.endDate}
           />
         </div>

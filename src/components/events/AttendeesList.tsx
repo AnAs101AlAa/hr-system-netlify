@@ -3,6 +3,8 @@ import AttendeesTable from "./AttendeesTable";
 import AttendeesCardView from "./AttendeesCardView";
 import { useEffect, useState } from "react";
 import SearchField from "../generics/SearchField";
+import AttendeeTimelineModal from "./AttendeeTimelineModal";
+
 interface AttendeesListProps {
   attendees: Attendee[];
   eventEndTime?: string;
@@ -12,6 +14,7 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
   const [displayedAttendees, setDisplayedAttendees] =
     useState<Attendee[]>(attendees);
   const [searchKey, setSearchKey] = useState<string>("");
+  const [attendeeTimeline, setAttendeeTimeline] = useState<Attendee | null>(null);
 
   useEffect(() => {
     if (searchKey.trim() === "") {
@@ -27,6 +30,7 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
+      {attendeeTimeline !== null && (<AttendeeTimelineModal onCLose={() => setAttendeeTimeline(null)} Attendee={attendeeTimeline}/>)}
       <div className="p-4 border-b border-dashboard-border flex md:flex-row flex-col gap-2 md:gap-4 items-center">
         <h3 className="text-lg font-bold text-[#727477]">
           Attendees {attendees?.length ? `(${attendees.length})` : ""}
@@ -40,6 +44,7 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
       {/* Desktop Table View */}
       <AttendeesTable
         attendees={displayedAttendees}
+        setAttendee={(data) => setAttendeeTimeline(data)}
         eventEndTime={eventEndTime}
       />
 

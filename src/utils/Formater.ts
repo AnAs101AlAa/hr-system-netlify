@@ -58,7 +58,6 @@ const formatPhone = (phone: string | undefined | null): string => {
 };
 
 const format = (data: unknown, mode: FormatMode): string => {
-  console.log(data);
   try {
     switch (mode) {
       case "phone":
