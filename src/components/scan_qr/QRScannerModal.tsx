@@ -4,7 +4,6 @@ import ReasonPopup from "@/components/QR/ReasonPopup";
 import { useAttendanceFlow } from "@/hooks/useAttendanceFlow";
 import type { Event } from "@/types/event";
 import { useState, useEffect, useRef } from "react";
-import toast from "react-hot-toast";
 
 /**
  * Modal for scanning QR codes and handling attendance flow.
@@ -63,12 +62,6 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
       setReasonPopupOpen("early");
     } else {
       setReasonPopupOpen(null);
-    }
-
-    // Show toast for 2004 (already left)
-    if (attendanceStatus === 2004) {
-      toast.error("Member already registered and left early");
-      reset();
     }
   }, [attendanceStatus, lateReason, leaveExcuse, reset]);
 

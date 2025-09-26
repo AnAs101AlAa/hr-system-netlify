@@ -83,34 +83,16 @@ export class eventsApi {
 
   async fetchEventAttendees(
     eventId: string
-  ): Promise<Attendee[] | VestAttendee[]> {
+  ): Promise<Attendee[]> {
     const response = await systemApi.get(
       `${EVENTS_API_URL}Attendance/${eventId}`
     );
-    // Define a type for the expected attendee object structure
-    type RawAttendee = {
-      memberId: string;
-      fullName: string;
-      phoneNumber: string;
-      committee: string;
-      email: string;
-      status: string;
-      attendanceDate: string;
-      lateArrival?: { execuse: string; scanTime: string };
-      earlyLeave?: { execuse: string; scanTime: string };
-    };
 
     const items = Array.isArray(response.data?.data)
-      ? response.data.data.map((att: RawAttendee) => ({
-          id: att.memberId,
+      ? response.data.data.map((att: any) => ({
+          ...att,
           name: att.fullName,
-          phoneNumber: att.phoneNumber,
-          committee: att.committee,
-          email: att.email,
-          status: att.status,
-          arrivalTime: att.attendanceDate,
-          lateArrival: att.lateArrival,
-          earlyLeave: att.earlyLeave,
+          id: att.memberId,
         }))
       : [];
 

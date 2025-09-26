@@ -76,36 +76,34 @@ const AttendeesTable = ({ attendees, eventEndTime, setAttendee }: AttendeesTable
                 </td>
                 <td className="px-4 py-4 w-40 min-w-40">
                   <div className="text-sm text-dashboard-card-text">
-                    {attendee.arrivalTime &&
-                    String(attendee.arrivalTime) !== "0001-01-01T00:00:00+00:00"
-                      ? format(new Date(attendee.arrivalTime), "full")
+                    {attendee.attendanceRecords.length > 0 &&
+                    String(attendee.attendanceRecords[0].checkInTime) !== "0001-01-01T00:00:00+00:00"
+                      ? format(new Date(attendee.attendanceRecords[0].checkInTime), "full")
                       : "N/A"}
                   </div>
                 </td>
                 <td className="px-4 py-4 w-40 min-w-40">
                   <div className="text-sm text-dashboard-card-text">
-                    {attendee.earlyLeave
-                      ? format(
-                          new Date(attendee.earlyLeave.scanTime),
-                          "full"
-                        )
-                      : format(
-                          new Date(eventEndTime as string),
-                          "full"
-                        )}
+                    {attendee.attendanceRecords.length > 0 && attendee.attendanceRecords[attendee.attendanceRecords.length - 1].checkOutTime
+                      ? format(new Date(attendee.attendanceRecords[attendee.attendanceRecords.length - 1].checkOutTime!), "full")
+                      : eventEndTime
+                        ? new Date() < new Date(eventEndTime)
+                          ? `Still checked in`
+                          : format(new Date(eventEndTime), "full")
+                        : "N/A"}
                   </div>
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm text-dashboard-card-text">
                     <p className="break-words leading-relaxed">
-                      {attendee.lateArrival?.execuse || "N/A"}
+                      {attendee.attendanceRecords[0]?.lateArrivalExcuse || "N/A"}
                     </p>
                   </div>
                 </td>
                 <td className="px-4 py-4">
                   <div className="text-sm text-dashboard-card-text">
                     <p className="break-words leading-relaxed">
-                      {attendee.earlyLeave?.execuse || "N/A"}
+                      {attendee.attendanceRecords[attendee.attendanceRecords.length - 1]?.earlyLeaveExcuse || "N/A"}
                     </p>
                   </div>
                 </td>

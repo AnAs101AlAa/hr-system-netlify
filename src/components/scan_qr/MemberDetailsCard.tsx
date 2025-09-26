@@ -14,6 +14,7 @@ interface MemberDetailsCardProps {
 }
 
 const MemberDetailsCard = ({ memberData }: MemberDetailsCardProps) => {
+  console.log("Member Data:", memberData);
   return (
     <div className="bg-[var(--color-dashboard-border)] rounded-xl p-4 mb-6 text-left">
       <div className="flex items-center gap-2 mb-3">
