@@ -2,17 +2,12 @@ import type { member } from "./member";
 
 export interface Attendee extends member {
   status: "Attended" | "Absent" | "Left";
-  arrivalTime?: Date;
-  leaveTime?: Date;
-  lateArrival?: {
-    execuse:string
-  };
-  earlyLeave?: { scanTime: string; execuse: string};
-  departureTime?: Date;
-  lateArrivalReason?: string;
-  earlyLeavingReason?: string;
-  arrivals?: string[];
-  leavings?: string[];
+  attendanceRecords: {
+    checkInTime: string;
+    checkOutTime: string | null;
+    lateArrivalExcuse: string | null;
+    earlyLeaveExcuse: string | null;
+  }[];
 }
 
 export interface VestAttendee extends member {

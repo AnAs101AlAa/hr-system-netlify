@@ -51,6 +51,7 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
       {/* Mobile Card View */}
       <AttendeesCardView
         attendees={displayedAttendees}
+        setAttendee={(data) => setAttendeeTimeline(data)}
         eventEndTime={eventEndTime}
       />
     </div>
