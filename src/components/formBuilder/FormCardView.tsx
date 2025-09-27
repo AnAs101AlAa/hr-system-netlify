@@ -47,6 +47,11 @@ const FormCardView = ({
 
             <div className="mt-4 flex justify-end items-center gap-3">
                 <Button
+                  type={ButtonTypes.TERTIARY}
+                  onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/form/${form.id}`); toast.success("Form link copied to clipboard") }}
+                  buttonText="Copy Link"
+                />
+                <Button
                     type={ButtonTypes.SECONDARY}
                     onClick={() => navigate(`/form-builder/${form.id}`)}
                     buttonText="Edit"
