@@ -3,6 +3,7 @@ import Button from "../generics/Button";
 import Format from "@/utils/Formater";
 import { ButtonTypes } from "@/constants/presets";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 interface FormsTableProps {
     forms: form[];
@@ -57,6 +58,11 @@ const FormTable = ({ forms }: FormsTableProps) => {
                 </td>
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-2">
+                    <Button
+                      type={ButtonTypes.TERTIARY}
+                      onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/form/${form.id}`); toast.success("Form link copied to clipboard") }}
+                      buttonText="Copy Link"
+                    />
                     <Button
                       type={ButtonTypes.SECONDARY}
                       onClick={() => navigate(`/form-builder/${form.id}`)}
