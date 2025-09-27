@@ -1,6 +1,6 @@
 import { QuestionCardComponent } from "@/components/forms";
 import { useForm, useSubmitForm } from "@/queries/forms/formQueries";
-import type { Answer } from "@/types/question";
+import type { Answer, Question } from "@/types/question";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
@@ -39,8 +39,8 @@ export default function FormView() {
   const handleClear = () => {
     if (!formData || !formData.pages) return;
     const questionsOnPage = formData.pages[currentPage].questions;
-    questionsOnPage.forEach((_, qIndex) => {
-      questionRefs.current[qIndex]?.clear();
+    questionsOnPage.forEach((question) => {
+      questionRefs.current[question.questionNumber]?.clear();
     });
   };
 
@@ -118,15 +118,17 @@ export default function FormView() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
+
     if (!formData || !formData.pages || currentPage >= formData.pages.length) return;
     const questionsOnPage = formData.pages[currentPage].questions;
 
-    questionsOnPage.forEach((question, qIndex) => {
-      const answer = answers.find((a) => a.qid === question.id);
+    questionsOnPage.forEach((question) => {
+      const answer = answers.find((a) => a.qid === question.questionNumber);
       if (answer) {
-        questionRefs.current[qIndex]?.reassign(answer);
+        questionRefs.current[question.questionNumber]?.reassign(answer);
       }
     });
+    
   }, [currentPage, formData, answers]);
 
   return (
@@ -192,11 +194,11 @@ export default function FormView() {
 
               {/* Questions */}
               {formData.pages[currentPage].questions.map(
-                (question: any, qIndex: number) => (
-                  <div key={qIndex} className="w-full">
+                (question: Question) => (
+                  <div key={question.questionNumber} className="w-full">
                     <QuestionCardComponent
                       ref={(el) => {
-                        questionRefs.current[question.id] = el;
+                        questionRefs.current[question.questionNumber] = el;
                       }}
                       question={question}
                     />
@@ -205,7 +207,7 @@ export default function FormView() {
               )}
             </div>
           )}
-          <div className="flex justify-between gap-1.5 md:gap-3 -mt-3 md:mt-8">
+          <div className="flex justify-between gap-1.5 md:gap-3 md:mt-8">
             <Button
               buttonText="Clear"
               type="ghost"

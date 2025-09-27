@@ -45,7 +45,7 @@ const FormCardView = ({
               </div>
             </div>
 
-            <div className="mt-4 flex justify-center items-center gap-3">
+            <div className="mt-4 flex justify-end items-center gap-3">
                 <Button
                     type={ButtonTypes.SECONDARY}
                     onClick={() => navigate(`/form-builder/${form.id}`)}

@@ -12,11 +12,12 @@ import PagesInfo from "@/components/formBuilder/PagesInfo";
 import type { FormEditorHandle } from "@/types/form";
 import { getErrorMessage } from "@/utils";
 import { useNavigate } from "react-router-dom";
+import ErrorComponent from "@/components/generics/Error";
 
 export default function FormEditor() {
     const { formId } = useParams<{ formId: string }>();
     const isEditMode = formId !== "new";
-    const emptyForm: form = { id: "", title: "", sheetName: "", createdAt: "", updatedAt: "", pages: [] };
+    const emptyForm: form = { id: "", title: "", sheetName: "", pages: [], description: "", googleSheetId: "", createdAt: "", updatedAt: "" };
 
     const { data: formData, isLoading, isError, error } = useForm(formId!);
 
@@ -103,6 +104,10 @@ export default function FormEditor() {
 
     if (isLoading) {
         return <LoadingPage />;
+    }
+
+    if(isError) {
+        return <ErrorComponent title="Error loading form" message="failed to fetch form data please try again later or contact IT team" />;
     }
 
     return (

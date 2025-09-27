@@ -4,6 +4,8 @@ import { useForms } from "@/queries/forms/formQueries";
 import LoadingPage from "@/components/generics/LoadingPage";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
+import Button from "@/components/generics/Button";
+import { ButtonTypes } from "@/constants/presets";
 
 export default function FormBuilder() {
 
@@ -28,6 +30,9 @@ export default function FormBuilder() {
         <div className="min-h-screen bg-background p-4">
             <div className="max-w-6xl mx-auto">
             <h1 className="lg:text-[24px] md:text-[22px] text-[20px] font-bold mb-4">Form Builder</h1>
+                <div className="w-full my-4">
+                <Button buttonText="New Form" onClick={() => window.location.href = "/form-builder/new"} type={ButtonTypes.PRIMARY} width="small" />
+                </div>
                 <FormList Forms={Forms || []} />
             </div>
         </div>

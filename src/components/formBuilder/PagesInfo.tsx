@@ -9,7 +9,7 @@ import type { form, formPage, formPageError } from "@/types/form";
 import type { Question } from "@/types/question";
 import toast from "react-hot-toast";
 import { QUESTION_TYPES } from "@/constants/formConstants";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import BranchInfo from "./BranchInfo";
 import { forwardRef, useImperativeHandle } from "react";
 import { sanitize, addQuestionError} from "@/utils/formBuilderUtils";
@@ -20,27 +20,9 @@ interface PagesInfoProps {
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, toChange: string, index?: number, field?: string) => void;
 }
     
-const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChange }: PagesInfoProps, ref) => {    
+const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChange }: PagesInfoProps, ref) => {
     const [questionCount, setQuestionCount] = useState<number>(0);
     const [choiceTextBuffer, setChoiceTextBuffer] = useState<string>("");
-    const [branchCarrier, setBranchCarrier] = useState<{
-    [pageIndex: number]: { questionNumber: number }}>({});
-
-    useEffect(() => {
-        if (!formDataState.pages) return;
-
-        const mapped = formDataState.pages.reduce((acc, page, pIndex) => {
-            if (page.toBranch) {
-            const firstQuestionId = Number(Object.keys(page.toBranch)[0]);
-            if (!isNaN(firstQuestionId)) {
-                acc[pIndex] = { questionNumber: firstQuestionId };
-            }
-            }
-            return acc;
-        }, {} as { [pageIndex: number]: { questionNumber: number } });
-
-        setBranchCarrier(mapped);
-    }, [formDataState.pages]);
 
     const [pageErrors, setPageErrors] = useState<{[index: number]: formPageError}>({});
     const [mainError, setMainError] = useState<string>("");
@@ -57,7 +39,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
             const updatedPages = [...prev.pages];
-            const newQuestion : Question = { id: questionCount + 1, question: "", type: "Essay", isMandatory: false };
+            const newQuestion : Question = { questionNumber: questionCount + 1, questionText: "", questionType: "Essay", isMandatory: false };
             updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: [...(updatedPages[pageIndex].questions || []), newQuestion] };
             setQuestionCount(questionCount + 1);
             return { ...prev, pages: updatedPages };
@@ -70,7 +52,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
             const updatedPages = [...prev.pages];
             const updatedQuestions = (updatedPages[pageIndex].questions || [])
                 .filter((_, idx) => idx !== questionIndex)
-                .map((q, idx) => ({ ...q, id: idx + 1 })); // Re-assign ids
+                .map((q, idx) => ({ ...q, questionNumber: idx + 1 })); // Re-assign ids
             updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
             return { ...prev, pages: updatedPages };
         });
@@ -105,23 +87,40 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
             const updatedPages = [...prev.pages];
             const updatedQuestions = [...(updatedPages[pageIndex].questions || [])];
             const question = updatedQuestions[questionIndex];
-            if (question.type !== "MCQ") {
+            if (question.questionType !== "MCQ") {
                 toast.error("Choices can only be added to MCQ type questions");
                 return prev;
             }
-            const newChoice = { id: (question.choices ? question.choices.length : 0) + 1, content: choiceTextBuffer };
+            const newChoice = { text: choiceTextBuffer };
             updatedQuestions[questionIndex] = { ...question, choices: [...(question.choices || []), newChoice] };
             updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
             return { ...prev, pages: updatedPages };
-        }
-        );
+        });
         setChoiceTextBuffer("");
+    }
+
+    const handleRemoveChoice = (questionIndex: number, pageIndex: number, choiceIndex: number) => {
+        setFormDataState((prev) => {
+            if (!prev || !prev.pages) return prev;
+            const updatedPages = [...prev.pages];
+            const updatedQuestions = [...(updatedPages[pageIndex].questions || [])];
+            const question = updatedQuestions[questionIndex];
+            if (question.questionType !== "MCQ" || !question.choices) {
+                toast.error("Invalid operation");
+                return prev;
+            }
+            const updatedChoices = question.choices.filter((_, idx) => idx !== choiceIndex);
+            updatedQuestions[questionIndex] = { ...question, choices: updatedChoices };
+            updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
+            return { ...prev, pages: updatedPages };
+        });
     }
 
     const validatePages = (): boolean => {
         const currentPageErrors: formPageError[] = [];
-        const sanitizedPages = formDataState.pages?.map((page) => ({...page,questions: page.questions?.map((q) => sanitize(q, q.type))})) || [];
 
+        const sanitizedPages = formDataState.pages?.map((page) => ({...page,questions: page.questions?.map((q) => sanitize(q, q.questionType))})) || [];
+        
         if(!formDataState.pages || formDataState.pages.length === 0) {
             setMainError("At least one page is required.");
             return true;
@@ -148,17 +147,17 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
             }
 
             page.questions?.forEach((question, qIndex) => {
-                if (!question.question || question.question.trim() === "") {
+                if (!question.questionText || question.questionText.trim() === "") {
                     addQuestionError(currentPageErrors, pIndex, qIndex, {
                     questionText: "Question text is required.",
                     });
                 }
-                if (!question.type || !QUESTION_TYPES.includes(question.type)) {
+                if (!question.questionType || !QUESTION_TYPES.includes(question.questionType)) {
                     addQuestionError(currentPageErrors, pIndex, qIndex, {
                     questionType: "Invalid question type.",
                     });
                 }
-                if (question.type === "MCQ" && (!question.choices || question.choices.length === 0)) {
+                if (question.questionType === "MCQ" && (!question.choices || question.choices.length === 0)) {
                     addQuestionError(currentPageErrors, pIndex, qIndex, {
                     choices: "Question must have at least one choice.",
                     });
@@ -167,6 +166,8 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
 
             if (page.toBranch) {
                 const branchTargets = Object.values(page.toBranch) as {assertOn: string; targetPage: number;}[];
+                const questionNumbers = Object.keys(page.toBranch).map((qNum) => parseInt(qNum));
+
                 if (branchTargets.some((branch) => branch.targetPage >= formDataState.pages!.length)) {
                     currentPageErrors[pIndex] = {
                     ...(currentPageErrors[pIndex] || {}),
@@ -177,7 +178,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                     };
                 }
 
-                if (branchTargets.some((branch) => !page.questions.some((q) => q.id === parseInt(branch.assertOn)))) {
+                if (questionNumbers.some((qNum) => !page.questions.some((q) => q.questionNumber === qNum))) {
                     currentPageErrors[pIndex] = {
                     ...(currentPageErrors[pIndex] || {}),
                     toBranchErrors: [
@@ -209,29 +210,12 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     }));
 
 
-    const handleRemoveChoice = (questionIndex: number, pageIndex: number, choiceIndex: number) => {
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            const updatedPages = [...prev.pages];
-            const updatedQuestions = [...(updatedPages[pageIndex].questions || [])];
-            const question = updatedQuestions[questionIndex];
-            if (question.type !== "MCQ" || !question.choices) {
-                toast.error("Invalid operation");
-                return prev;
-            }
-            const updatedChoices = question.choices.filter((_, idx) => idx !== choiceIndex);
-            updatedQuestions[questionIndex] = { ...question, choices: updatedChoices };
-            updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
-            return { ...prev, pages: updatedPages };
-        });
-    }
 
     const handleAddBranch = (pageIndex: number) => {
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
             const updatedPages = [...prev.pages];
             updatedPages[pageIndex] = { ...updatedPages[pageIndex], toBranch: {0: {assertOn: "example answer", targetPage: pageIndex}} };
-            setBranchCarrier((prev) => ({ ...prev, [pageIndex]: { questionNumber: 0 } }));
             return { ...prev, pages: updatedPages };
         });
     }
@@ -260,14 +244,14 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                 <div key={qIndex} className="p-3 border border-gray-200 rounded-md bg-white space-y-3 flex flex-wrap lg:gap-[2%] relative">
                                     <FaXmark className="text-primary cursor-pointer size-4 md:size-5 absolute right-4 top-4" onClick={() => handleRemoveQuestion(index, qIndex)} />
                                     <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Question {qIndex + 1}</p>
-                                    <InputField label="Question Text" id={`question-text-${index}-${qIndex}`} value={question.question} placeholder="Enter question text" onChange={(e) => handleQQuestionChange(qIndex, index, "question", e.target.value)} error={pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""} />
+                                    <InputField label="Question Text" id={`question-text-${index}-${qIndex}`} value={question.questionText} placeholder="Enter question text" onChange={(e) => handleQQuestionChange(qIndex, index, "questionText", e.target.value)} error={pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""} />
                                     <div className="w-full lg:w-[49%]">
-                                        <DropdownMenu options={QUESTION_TYPES.map((type) => ({ label: type, value: type }))} value={question.type} onChange={(selected) => handleQQuestionChange(qIndex, index, "type", selected)} label="Question Type" />
+                                        <DropdownMenu options={QUESTION_TYPES.map((type) => ({ label: type, value: type }))} value={question.questionType} onChange={(selected) => handleQQuestionChange(qIndex, index, "questionType", selected)} label="Question Type" />
                                     </div>
                                     <div className="w-full lg:w-[49%]">
                                         <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMandatory ? "true" : "false"} onChange={(selected) => handleQQuestionChange(qIndex, index, "isMandatory", selected === "true")} label="Is Required" />
                                     </div>
-                                    {question.type === "Essay" && (
+                                    {question.questionType === "Essay" && (
                                         <>
                                         <div className="w-full lg:w-[49%]">
                                             <DropdownMenu options={[{ label: "multiline", value: "true" }, { label: "single line", value: "false" }]} value={question.isTextArea ? "true" : "false"} onChange={(selected) => handleQQuestionChange(qIndex, index, "isTextArea", selected === "true")} label="Answer Format" />
@@ -277,14 +261,14 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                         </div>
                                         </>
                                     )}
-                                    {question.type === "MCQ" && (
+                                    {question.questionType === "MCQ" && (
                                         <div className="w-full space-y-3">
                                         <p className="text-label text-[14px] md:text-[15px] lg:text-[16px] mb-2 font-semibold">Added Choices</p>
                                         {question.choices && question.choices.length > 0 ? (
                                             <div className="w-full mb-2">
                                             {question.choices.map((choice, cIndex) => (
                                                 <div key={cIndex} className="flex items-center justify-between w-full gap-2 my-3">
-                                                    <p className="text-[14px] md:text-[15px] lg:text-[16px]">{cIndex+1 + ". " + choice.content}</p>
+                                                    <p className="text-[14px] md:text-[15px] lg:text-[16px]">{cIndex+1 + ". " + choice.text}</p>
                                                     <FaXmark className="text-primary cursor-pointer size-4 md:size-5" onClick={() => handleRemoveChoice(qIndex, index, cIndex)} />
                                                 </div>
                                             ))}
@@ -293,7 +277,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                         )}
                                         <div className="flex gap-2 items-end w-full justify-between">
                                             <div className="max-w-3/4 md:max-w-none w-full">
-                                                <InputField label="Add Choice" id={`question-addchoice-${index}-${qIndex}`} value={choiceTextBuffer} placeholder="Enter choice text" onChange={(e) => setChoiceTextBuffer(e.target.value)} />
+                                                <InputField label="Add Choice" id={`question-add-choice-${index}-${qIndex}`} value={choiceTextBuffer} placeholder="Enter choice text" onChange={(e) => setChoiceTextBuffer(e.target.value)} />
                                             </div>
                                             <Button type={ButtonTypes.SECONDARY} onClick={() => handleAddChoice(qIndex, index)} buttonText="+"/>
                                         </div>
@@ -311,7 +295,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                             <p className="text-sm text-gray-600">No questions added yet. Click "Add Question" to create your first question.</p>
                         )}
                         {page.toBranch && (
-                            <BranchInfo setFormDataState={setFormDataState} index={index} page={page} branchCarrier={branchCarrier} setBranchCarrier={setBranchCarrier} />
+                            <BranchInfo setFormDataState={setFormDataState} index={index} page={page} />
                         )}  
                         <div className="flex gap-3 items-center">
                             <Button type={ButtonTypes.PRIMARY} onClick={() => handleAddQuestion(index)} buttonText="Add Question"/>
