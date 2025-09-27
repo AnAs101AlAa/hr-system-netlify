@@ -2,7 +2,7 @@ import type { Answer } from "@/types/question";
 import { systemApi } from "../axiosInstance";
 import type { serverRequestForm } from "@/types/form";
 
-const FORMS_API_URL = systemApi.defaults.baseURL + "/v1/Form";
+const FORMS_API_URL = "/v1/Form";
 
 export async function getForms() {
     const response = await systemApi.get(`${FORMS_API_URL}`);
