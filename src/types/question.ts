@@ -1,43 +1,38 @@
-export interface Choice {
-  id: number;
-  content: string;
-}
-
 export type QuestionType = "Essay" | "MCQ" | "Date" | "Number";
 
 export type questionError = {questionIndex: number, questionText?: string, questionType?: string, choices?: string};
 
 export interface EssayQuestion {
-  id: number;
-  type: "Essay";
-  question: string;
+  questionType: "Essay";
+  questionNumber: number;
+  questionText: string;
   maxLength?: number;
   isMandatory: boolean;
   isTextArea?: boolean;
 }
 
 export interface MCQQuestion {
-  id: number;
-  type: "MCQ";
-  question: string;
-  choices: Choice[];
+  questionType: "MCQ";
+  questionNumber: number;
+  questionText: string;
+  choices: {text: string}[];
   isMandatory: boolean;
   isMultiSelect: boolean;
 }
 
 export interface DateQuestion {
-  id: number;
-  type: "Date";
-  question: string;
+  questionType: "Date";
+  questionNumber: number;
+  questionText: string;
   minDate?: string; 
   maxDate?: string; 
   isMandatory: boolean;
 }
 
 export interface NumberQuestion {
-  id: number;
-  type: "Number";
-  question: string;
+  questionType: "Number";
+  questionNumber: number;
+  questionText: string;
   isInteger?: boolean; 
   isMandatory: boolean;
 }

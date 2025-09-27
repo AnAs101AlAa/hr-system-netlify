@@ -17,10 +17,10 @@ type AllowedFields = {
 
 
 const ALLOWED_FIELDS: AllowedFields = {
-    Essay: ["question", "type", "maxLength", "isMandatory", "isTextArea", "id"],
-    MCQ: ["question", "type", "choices", "isMandatory", "isMultiSelect", "id"],
-    Date: ["question", "type", "minDate", "maxDate", "isMandatory", "id"],
-    Number: ["question", "type", "isInteger", "isMandatory", "id"],
+    Essay: ["questionText", "questionType", "maxLength", "isMandatory", "isTextArea", "questionNumber"],
+    MCQ: ["questionText", "questionType", "choices", "isMandatory", "isMultiSelect", "questionNumber"],
+    Date: ["questionText", "questionType", "minDate", "maxDate", "isMandatory", "questionNumber"],
+    Number: ["questionText", "questionType", "isInteger", "isMandatory", "questionNumber"],
 }
 
 export { SUBMISSION_CATCHER, QUESTION_TYPES, ALLOWED_FIELDS };

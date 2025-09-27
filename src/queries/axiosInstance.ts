@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const systemApi = axios.create({
-  baseURL: "/api",
+  baseURL: "https://test-prod.runasp.net/api",
   timeout: 10000,
   withCredentials: true,
   headers: {
@@ -10,9 +10,9 @@ export const systemApi = axios.create({
 });
 
 export const formsApi = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "https://test-prod.runasp.net/api",
   timeout: 10000,
-  withCredentials: false,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },

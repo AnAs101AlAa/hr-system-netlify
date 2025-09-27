@@ -43,7 +43,7 @@ const NumberQuestionCard = forwardRef<QuestionCardHandle, NumberQuestionCardProp
 
     useImperativeHandle(ref, () => ({
       validate: validateQuestion,
-      collect: () => { return { qid: question.id, answer: Number(answer) } },
+      collect: () => { return { qid: question.questionNumber, answer: Number(answer) } },
       clear: () => setAnswer(''),
       reassign: (ans) => { if (typeof ans.answer === 'number') setAnswer(ans.answer.toString()); }
     }));
@@ -54,7 +54,7 @@ const NumberQuestionCard = forwardRef<QuestionCardHandle, NumberQuestionCardProp
                 <FaQuestionCircle className="text-secondary text-md md:text-lg mt-1 flex-shrink-0" />
                 <div className="flex-1 flex items-center gap-1">
                     <h3 className="font-bold text-gray-800 text-[14px] md:text-[16px] lg:text-[18px] flex items-center gap-2">
-                        {question.question}
+                        {question.questionText}
                     </h3>
                     {question.isMandatory && (
                         <FaAsterisk className="text-primary size-2" />
@@ -65,7 +65,7 @@ const NumberQuestionCard = forwardRef<QuestionCardHandle, NumberQuestionCardProp
             <div>
                 <NumberField
                     label=""
-                    id={`question-${question.id}`}
+                    id={`question-${question.questionNumber}`}
                     value={answer}
                     placeholder="Enter a number..."
                     onChange={(e) => setAnswer(e.target.value)}

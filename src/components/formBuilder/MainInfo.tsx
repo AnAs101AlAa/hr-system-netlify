@@ -15,7 +15,7 @@ const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChang
     
     const collectErrors = (): boolean => {
         const currentErrors: string[] = ["", "", "", ""];
-        if (!formDataState.id || formDataState.id.trim() === "") {
+        if (!formDataState.googleSheetId || formDataState.googleSheetId.trim() === "") {
             currentErrors[0] = "Sheet Id is required.";
         }
         if (!formDataState.sheetName || formDataState.sheetName.trim() === "") {
@@ -51,9 +51,9 @@ const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChang
             <InputField
                 label="Sheet Id"
                 id="form-id"
-                value={formDataState?.id || ""}
+                value={formDataState?.googleSheetId || ""}
                 placeholder="enter id here"
-                onChange={(e) => handleInputChange(e, "id")}
+                onChange={(e) => handleInputChange(e, "googleSheetId")}
                 error={errors[0]}
             />
             {errors[0] && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{errors[0]}</p>}

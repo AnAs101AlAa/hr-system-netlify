@@ -36,7 +36,7 @@ const DateQuestionCard = forwardRef<QuestionCardHandle, DateQuestionCardProps>((
 
     useImperativeHandle(ref, () => ({
       validate: validateQuestion,
-      collect: () => { return { qid: question.id, answer: answer } },
+      collect: () => { return { qid: question.questionNumber, answer: answer } },
       clear: () => setAnswer(''),
       reassign: (ans) => { if (typeof ans.answer === 'string') setAnswer(ans.answer); }
     }));
@@ -46,7 +46,7 @@ const DateQuestionCard = forwardRef<QuestionCardHandle, DateQuestionCardProps>((
                 <FaQuestionCircle className="text-secondary text-md md:text-lg mt-1 flex-shrink-0" />
                 <div className="flex-1 flex items-center gap-1">
                     <h3 className="font-bold text-gray-800 text-[14px] md:text-[16px] lg:text-[18px] flex items-center gap-2">
-                        {question.question}
+                        {question.questionText}
                     </h3>
                     {question.isMandatory && (
                         <FaAsterisk className="text-primary size-2" />
@@ -57,7 +57,7 @@ const DateQuestionCard = forwardRef<QuestionCardHandle, DateQuestionCardProps>((
             <div>
                 <DatePicker
                     label=""
-                    id={`question-${question.id}`}
+                    id={`question-${question.questionNumber}`}
                     value={answer}
                     onChange={(date) => setAnswer(date)}
                     minDate={question.minDate}

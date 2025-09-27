@@ -15,9 +15,8 @@ const QuestionCardComponent = forwardRef<QuestionCardHandle, QuestionCardCompone
   question,
   initialValue,
 }, ref) => {
-
-
-  if (question.type === 'Essay') {
+  
+  if (question.questionType === 'Essay') {
     const essayInitialValue = initialValue && typeof initialValue === 'string'
       ? initialValue
       : undefined;
@@ -31,7 +30,7 @@ const QuestionCardComponent = forwardRef<QuestionCardHandle, QuestionCardCompone
     );
   }
 
-  if (question.type === 'MCQ') {
+  if (question.questionType === 'MCQ') {
     const mcqInitialValue = initialValue && typeof initialValue === 'string'
       ? initialValue
       : undefined;
@@ -45,7 +44,7 @@ const QuestionCardComponent = forwardRef<QuestionCardHandle, QuestionCardCompone
     );
   }
 
-  if (question.type === 'Date') {
+  if (question.questionType === 'Date') {
     const dateInitialValue = initialValue && typeof initialValue === 'string'
       ? initialValue
       : undefined;
@@ -59,7 +58,7 @@ const QuestionCardComponent = forwardRef<QuestionCardHandle, QuestionCardCompone
     );
   }
 
-  if (question.type === 'Number') {
+  if (question.questionType === 'Number') {
     const numberInitialValue = initialValue && typeof initialValue === 'number'
       ? initialValue
       : undefined;

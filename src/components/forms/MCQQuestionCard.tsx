@@ -56,7 +56,7 @@ const MCQQuestionCard = forwardRef<QuestionCardHandle, MCQQuestionCardProps>(({
 
     useImperativeHandle(ref, () => ({
         validate: validateQuestion,
-        collect: () => { return { qid: question.id, answer: answer } },
+        collect: () => { return { qid: question.questionNumber, answer: answer } },
         clear: clearSelection,
         reassign: (ans) => { if (typeof ans.answer === 'string' || Array.isArray(ans.answer)) setAnswer(ans.answer); }
     }));
@@ -67,7 +67,7 @@ const MCQQuestionCard = forwardRef<QuestionCardHandle, MCQQuestionCardProps>(({
                 <FaQuestionCircle className="text-secondary text-md md:text-lg mt-1 flex-shrink-0" />
                 <div className="flex-1 flex items-center gap-1">
                     <h3 className="font-bold text-gray-800 text-[14px] md:text-[16px] lg:text-[18px] flex items-center gap-2">
-                        {question.question}
+                        {question.questionText}
                     </h3>
                     {question.isMandatory && (
                         <FaAsterisk className="text-primary size-2" />
@@ -77,11 +77,11 @@ const MCQQuestionCard = forwardRef<QuestionCardHandle, MCQQuestionCardProps>(({
             <div>
                 {question.isMultiSelect ? (
                     <div className="flex flex-col gap-3 md:gap-4">
-                    {question.choices.map((choice) =>
-                        choice.content.toLowerCase() === 'other' ? (
+                    {question.choices.map((choice, index) =>
+                        choice.text.toLowerCase() === 'other' ? (
                             <InputField
-                                key={choice.id}
-                                id={`other-${choice.id}`}
+                                key={index}
+                                id={`other-${index}`}
                                 label="Other"
                                 value={Array.isArray(answer) ? answer.find(ans => ans.startsWith('Other: '))?.replace('Other: ', '') || '' : ''}
                                 onChange={(e) => {
@@ -96,21 +96,21 @@ const MCQQuestionCard = forwardRef<QuestionCardHandle, MCQQuestionCardProps>(({
                             />
                         ) : (
                             <Checkbox
-                                key={choice.id}
-                                label={choice.content}
-                                checked={answer.includes(choice.content)}
-                                onChange={() => handleAnswerChange(choice.content)}
+                                key={index}
+                                label={choice.text}
+                                checked={answer.includes(choice.text)}
+                                onChange={() => handleAnswerChange(choice.text)}
                             />
                         )
                     )}
                     </div>
                 ) : (
                     <div className="flex flex-col gap-3 md:gap-4">
-                        {question.choices.map((choice) => (
-                            choice.content.toLowerCase() === 'other' ? (
+                        {question.choices.map((choice, index) => (
+                            choice.text.toLowerCase() === 'other' ? (
                                 <InputField
-                                    key={choice.id}
-                                    id={`other-${choice.id}`}
+                                    key={index}
+                                    id={`other-${index}`}
                                     label="Other"
                                     value={typeof answer === 'string' && answer.startsWith('Other: ') ? answer.replace('Other: ', '') : ''}
                                     onChange={(e) => {
@@ -121,10 +121,10 @@ const MCQQuestionCard = forwardRef<QuestionCardHandle, MCQQuestionCardProps>(({
                                 />
                             ) : (
                             <Radiobutton
-                                key={choice.id}
-                                label={choice.content}
-                                checked={answer === choice.content}
-                                onChange={() => handleAnswerChange(choice.content)}
+                                key={index}
+                                label={choice.text}
+                                checked={answer === choice.text}
+                                onChange={() => handleAnswerChange(choice.text)}
                             />
                         )))}
                     </div>
