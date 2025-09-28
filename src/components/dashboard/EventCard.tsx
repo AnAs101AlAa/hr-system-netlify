@@ -19,8 +19,8 @@ const EventCard: React.FC<{ event: Omit<Event, "attendees"> }> = ({
   const eventEnd = new Date(endDate);
   // Compare both date and time for event status
   const isPastEvent = now >= eventEnd;
-  const isEventTodayAndStarted =
-    now >= eventStart && now < eventEnd;
+  const scanButtonStart = new Date(eventStart.getTime() - 30 * 60 * 1000); // 15 minutes before start
+  const isScanAvailable = now >= scanButtonStart && now < eventEnd;
 
   return (
     <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4 h-full relative">
@@ -48,8 +48,7 @@ const EventCard: React.FC<{ event: Omit<Event, "attendees"> }> = ({
       </div>
 
       <div className="flex justify-end items-center gap-3 mt-1 absolute bottom-4 right-5 w-auto">
-        {/* you can later adjust the onClick for the detail and scanQR however you want */}
-        {(isPastEvent || isEventTodayAndStarted) && (
+        {(isPastEvent || isScanAvailable) && (
           <Button
             buttonText="Details"
             onClick={() => navigate(`/events/${id}`)}
@@ -58,7 +57,7 @@ const EventCard: React.FC<{ event: Omit<Event, "attendees"> }> = ({
           />
         )}
 
-        {isEventTodayAndStarted && (
+        {isScanAvailable && (
           <Button
             buttonText="Scan QR"
             onClick={() => setIsQRModalOpen(true)}
@@ -67,7 +66,7 @@ const EventCard: React.FC<{ event: Omit<Event, "attendees"> }> = ({
           />
         )}
         {/* fallback */}
-        {!isPastEvent && !isEventTodayAndStarted && (
+        {!isPastEvent && !isScanAvailable && (
           <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-xs">
             see you soon
           </span>
