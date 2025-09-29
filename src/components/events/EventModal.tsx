@@ -126,13 +126,19 @@ const EventModal: React.FC<EventModalProps> = ({
       return;
     }
 
+    const convertToUTC = (dateString: string): string => {
+      if (!dateString) return dateString;
+      const localDate = new Date(dateString);
+      return localDate.toISOString().slice(0, -1);
+    };
+
     const eventData: Omit<Event, "id"> = {
       title: formData.title.trim(),
       description: formData.description.trim(),
       location: formData.location.trim(),
       type: formData.type,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
+      startDate: convertToUTC(formData.startDate),
+      endDate: convertToUTC(formData.endDate),
     };
 
     try {
@@ -160,12 +166,9 @@ const EventModal: React.FC<EventModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black bg-opacity-50"
-        onClick={handleClose}
-      />
+      <div className="absolute inset-0" onClick={handleClose} />
 
       {/* Modal */}
       <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden">
