@@ -23,7 +23,7 @@ export interface EventType {
 export interface Event {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   location: string;
   type: string;
   startDate: string;

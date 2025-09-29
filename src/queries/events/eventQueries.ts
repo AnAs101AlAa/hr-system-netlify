@@ -1,7 +1,8 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { eventsApiInstance } from "./eventApi";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {eventsApiInstance } from "./eventApi";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@/utils";
+import type { Event } from "@/types/event";
 
 export const eventKeys = {
   all: ["events"] as const,
@@ -146,6 +147,63 @@ export const useUpcomingEvents = (
       const data = await eventsApiInstance.fetchUpcomingEvents(page, pageSize);
       const count = await eventsApiInstance.fetchEventsCount(fromDate);
       return { items: data, total: count };
+    },
+  });
+};
+
+export const useAddEvent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (eventData: Omit<Event, "id">) => 
+       eventsApiInstance.createEvent(eventData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
+      toast.success("Event created successfully");
+    },
+    onError: (error) => {
+      const errorMessage = getErrorMessage(error);
+      console.error("Error creating event:", errorMessage);
+      toast.error("Failed to create event: " + errorMessage);
+    },
+  });
+};
+
+export const useUpdateEvent = () =>{
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      eventId,
+      eventData,
+    }: {
+      eventId: string;
+      eventData: Omit<Event, "id">;
+    }) => eventsApiInstance.updateEvent(eventId, eventData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
+      toast.success("Event updated successfully");
+    },
+    onError: (error) => {
+      const errorMessage = getErrorMessage(error);
+      console.error("Error updating event: ", errorMessage);
+      toast.error("Failed to update event: " + errorMessage);
+    },
+  });
+};
+
+export const useDeleteEvent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (eventId: string) => eventsApiInstance.deleteEvent(eventId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
+      toast.success("Event deleted successfully");
+    },
+    onError: (error) => {
+      const errorMessage = getErrorMessage(error);
+      console.error("Error deleting event: ", errorMessage);
+      toast.error("Failed to delete event: " + errorMessage);
     },
   });
 };
