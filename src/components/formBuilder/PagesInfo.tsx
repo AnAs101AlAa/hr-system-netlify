@@ -91,7 +91,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                 toast.error("Choices can only be added to MCQ type questions");
                 return prev;
             }
-            const newChoice = { text: choiceTextBuffer };
+            const newChoice = { text: choiceTextBuffer, choiceNumber: (question.choices ? question.choices.length : 0) + 1 };
             updatedQuestions[questionIndex] = { ...question, choices: [...(question.choices || []), newChoice] };
             updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
             return { ...prev, pages: updatedPages };
@@ -109,7 +109,10 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                 toast.error("Invalid operation");
                 return prev;
             }
-            const updatedChoices = question.choices.filter((_, idx) => idx !== choiceIndex);
+            // Remove the choice and reassign choiceNumber
+            const updatedChoices = question.choices
+                .filter((_, idx) => idx !== choiceIndex)
+                .map((choice, idx) => ({ ...choice, choiceNumber: idx + 1 }));
             updatedQuestions[questionIndex] = { ...question, choices: updatedChoices };
             updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
             return { ...prev, pages: updatedPages };
@@ -208,8 +211,6 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     useImperativeHandle(ref, () => ({
         collect: validatePages
     }));
-
-
 
     const handleAddBranch = (pageIndex: number) => {
         setFormDataState((prev) => {
