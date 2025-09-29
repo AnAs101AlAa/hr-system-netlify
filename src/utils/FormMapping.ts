@@ -114,7 +114,7 @@ export const formResponseMapper = (formData: serverResponseForm) => {
         pages: mappedPages,
         googleSheetId: formData.googleSheetId,
         sheetName: formData.sheetName,
-        createdAt: "",
-        updatedAt: "",
+        createdAt: formData.CreatedAt,
+        updatedAt: formData.UpdatedAt,
     } as form;
     };
