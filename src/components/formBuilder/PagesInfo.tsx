@@ -168,7 +168,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                 const branchTargets = Object.values(page.toBranch) as {assertOn: string; targetPage: number;}[];
                 const questionNumbers = Object.keys(page.toBranch).map((qNum) => parseInt(qNum));
 
-                if (branchTargets.some((branch) => branch.targetPage >= formDataState.pages!.length)) {
+                if (branchTargets.some((branch) => branch.targetPage > formDataState.pages!.length)) {
                     currentPageErrors[pIndex] = {
                     ...(currentPageErrors[pIndex] || {}),
                     toBranchErrors: [
