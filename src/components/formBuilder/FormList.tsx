@@ -11,7 +11,7 @@ interface FormsTableProps {
 const FormList = ({ Forms }: FormsTableProps) => {
     const [searchKey, setSearchKey] = useState<string>("");
     const [displayedForms, setDisplayedForms] = useState<form[]>(Forms);
-
+    
     useEffect(() => {
         if (searchKey.trim() === "") {
             setDisplayedForms(Forms);

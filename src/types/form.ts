@@ -33,8 +33,8 @@ export interface serverResponseForm {
     description: string;
     pages: formPage[];
     branches: serverResponseBranch[];
-    CreatedAt: string;
-    UpdatedAt: string;
+    createdAt: string;
+    updatedOn: string;
 };
 
 export interface serverResponseBranch {

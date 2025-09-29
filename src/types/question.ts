@@ -15,7 +15,7 @@ export interface MCQQuestion {
   questionType: "MCQ";
   questionNumber: number;
   questionText: string;
-  choices: {text: string}[];
+  choices: {text: string, choiceNumber: number}[];
   isMandatory: boolean;
   isMultiSelect: boolean;
 }
