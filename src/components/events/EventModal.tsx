@@ -21,7 +21,7 @@ interface EventFormData {
   title: string;
   description: string;
   location: string;
-  type: string;
+  eventType: string;
   startDate: string;
   endDate: string;
 }
@@ -36,7 +36,7 @@ const EventModal: React.FC<EventModalProps> = ({
     title: "",
     description: "",
     location: "",
-    type: "",
+    eventType: "",
     startDate: "",
     endDate: "",
   });
@@ -56,7 +56,7 @@ const EventModal: React.FC<EventModalProps> = ({
           title: event.title || "",
           description: event.description || "",
           location: event.location || "",
-          type: event.type || "",
+          eventType: event.eventType || "",
           startDate: event.startDate || "",
           endDate: event.endDate || "",
         });
@@ -66,7 +66,7 @@ const EventModal: React.FC<EventModalProps> = ({
           title: "",
           description: "",
           location: "",
-          type: "",
+          eventType: "",
           startDate: "",
           endDate: "",
         });
@@ -94,8 +94,8 @@ const EventModal: React.FC<EventModalProps> = ({
       newErrors.location = "Location is required";
     }
 
-    if (!formData.type) {
-      newErrors.type = "Event type is required";
+    if (!formData.eventType) {
+      newErrors.eventType = "Event type is required";
     }
 
     if (!formData.startDate) {
@@ -136,7 +136,7 @@ const EventModal: React.FC<EventModalProps> = ({
       title: formData.title.trim(),
       description: formData.description.trim(),
       location: formData.location.trim(),
-      type: formData.type,
+      eventType: formData.eventType,
       startDate: convertToUTC(formData.startDate),
       endDate: convertToUTC(formData.endDate),
     };
@@ -256,11 +256,11 @@ const EventModal: React.FC<EventModalProps> = ({
               <DropdownMenu
                 placeholder="Select event type"
                 options={EVENT_TYPES}
-                value={formData.type}
-                onChange={(value) => handleInputChange("type", value)}
+                value={formData.eventType}
+                onChange={(value) => handleInputChange("eventType", value)}
               />
-              {errors.type && (
-                <p className="mt-1 text-sm text-red-600">{errors.type}</p>
+              {errors.eventType && (
+                <p className="mt-1 text-sm text-red-600">{errors.eventType}</p>
               )}
             </div>
 

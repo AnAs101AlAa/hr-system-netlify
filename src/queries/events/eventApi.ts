@@ -30,6 +30,7 @@ class eventsApi {
   }
 
   async createEvent(eventData: Omit<Event, "id">) {
+    console.log("Creating event with data:", eventData);
     const response = await systemApi.post(
       EVENTS_API_URL + `Events/`,
       eventData
