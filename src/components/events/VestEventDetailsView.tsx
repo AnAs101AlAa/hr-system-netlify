@@ -3,8 +3,10 @@ import {
   EventDetailsHeader,
   VestEventInformation,
   VestAttendeesList,
+  EventModal,
 } from "@/components/events";
 import type { Event, VestAttendee } from "@/types/event";
+import { useState } from "react";
 
 interface VestEventDetailsViewProps {
   event: Event;
@@ -23,6 +25,21 @@ const VestEventDetailsView: React.FC<VestEventDetailsViewProps> = ({
   onDelete,
   setAttendees,
 }) => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+
+  const handleEdit = (eventId: string) => {
+    if (event && event.id === eventId) {
+      setEditingEvent(event);
+      setIsEditModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsEditModalOpen(false);
+    setEditingEvent(null);
+  };
+
   return (
     <WithNavbar>
       <div className="min-h-screen bg-background p-4">
@@ -31,7 +48,7 @@ const VestEventDetailsView: React.FC<VestEventDetailsViewProps> = ({
           <VestEventInformation
             event={event}
             attendees={attendees}
-            onEdit={onEdit}
+            onEdit={onEdit ? handleEdit : undefined}
             onDelete={onDelete}
           />
           <VestAttendeesList
@@ -41,6 +58,12 @@ const VestEventDetailsView: React.FC<VestEventDetailsViewProps> = ({
           />
         </div>
       </div>
+      <EventModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseModal}
+        event={editingEvent}
+        mode="edit"
+      />
     </WithNavbar>
   );
 };

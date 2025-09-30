@@ -23,7 +23,9 @@ interface EventFormData {
   location: string;
   eventType: string;
   startDate: string;
+  startTime: string;
   endDate: string;
+  endTime: string;
 }
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -38,7 +40,9 @@ const EventModal: React.FC<EventModalProps> = ({
     location: "",
     eventType: "",
     startDate: "",
+    startTime: "",
     endDate: "",
+    endTime: "",
   });
 
   const [errors, setErrors] = useState<Partial<EventFormData>>({});
@@ -48,27 +52,58 @@ const EventModal: React.FC<EventModalProps> = ({
 
   const isLoading = addEventMutation.isPending || updateEventMutation.isPending;
 
+  // Function to format datetime string for date and time inputs
+  const formatDateTimeForInput = (dateTimeString: string) => {
+    try {
+      const date = new Date(dateTimeString);
+      const dateStr =
+        date.getFullYear() +
+        "-" +
+        String(date.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(date.getDate()).padStart(2, "0");
+      const timeStr =
+        String(date.getHours()).padStart(2, "0") +
+        ":" +
+        String(date.getMinutes()).padStart(2, "0");
+      return { date: dateStr, time: timeStr };
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return { date: "", time: "" };
+    }
+  };
+
   // Initialize form data when modal opens or event changes
   useEffect(() => {
     if (isOpen) {
       if (mode === "edit" && event) {
+        const eventTypeValue =
+          EVENT_TYPES.find((type) => type.value === event.eventType)?.value ||
+          "";
+
+        const startDateTime = formatDateTimeForInput(event.startDate);
+        const endDateTime = formatDateTimeForInput(event.endDate);
+
         setFormData({
           title: event.title || "",
           description: event.description || "",
           location: event.location || "",
-          eventType: event.eventType || "",
-          startDate: event.startDate || "",
-          endDate: event.endDate || "",
+          eventType: eventTypeValue,
+          startDate: startDateTime.date,
+          startTime: startDateTime.time,
+          endDate: endDateTime.date,
+          endTime: endDateTime.time,
         });
       } else {
-        // Reset form for create mode
         setFormData({
           title: "",
           description: "",
           location: "",
           eventType: "",
           startDate: "",
+          startTime: "",
           endDate: "",
+          endTime: "",
         });
       }
       setErrors({});
@@ -90,6 +125,10 @@ const EventModal: React.FC<EventModalProps> = ({
       newErrors.title = "Title is required";
     }
 
+    if (!formData.description.trim()) {
+      newErrors.description = "Description is required";
+    }
+
     if (!formData.location.trim()) {
       newErrors.location = "Location is required";
     }
@@ -102,16 +141,34 @@ const EventModal: React.FC<EventModalProps> = ({
       newErrors.startDate = "Start date is required";
     }
 
+    if (!formData.startTime) {
+      newErrors.startTime = "Start time is required";
+    }
+
     if (!formData.endDate) {
       newErrors.endDate = "End date is required";
     }
 
-    if (formData.startDate && formData.endDate) {
-      const startDate = new Date(formData.startDate);
-      const endDate = new Date(formData.endDate);
+    if (!formData.endTime) {
+      newErrors.endTime = "End time is required";
+    }
 
-      if (endDate <= startDate) {
-        newErrors.endDate = "End date must be after start date";
+    // Check if end date/time is after start date/time
+    if (
+      formData.startDate &&
+      formData.startTime &&
+      formData.endDate &&
+      formData.endTime
+    ) {
+      const startDateTime = new Date(
+        `${formData.startDate}T${formData.startTime}`
+      );
+      const endDateTime = new Date(`${formData.endDate}T${formData.endTime}`);
+
+      if (endDateTime <= startDateTime) {
+        newErrors.endDate =
+          "End date and time must be after start date and time";
+        newErrors.endTime = "End time must be after start time";
       }
     }
 
@@ -119,26 +176,27 @@ const EventModal: React.FC<EventModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
+  // Function to convert local date/time to UTC
+  const convertToUTC = (date: string, time: string): string => {
+    const localDateTime = new Date(`${date}T${time}`);
+    return localDateTime.toISOString();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Form submitted with data:", formData);
 
     if (!validateForm()) {
       return;
     }
-
-    const convertToUTC = (dateString: string): string => {
-      if (!dateString) return dateString;
-      const localDate = new Date(dateString);
-      return localDate.toISOString().slice(0, -1);
-    };
 
     const eventData: Omit<Event, "id"> = {
       title: formData.title.trim(),
       description: formData.description.trim(),
       location: formData.location.trim(),
       eventType: formData.eventType,
-      startDate: convertToUTC(formData.startDate),
-      endDate: convertToUTC(formData.endDate),
+      startDate: convertToUTC(formData.startDate, formData.startTime),
+      endDate: convertToUTC(formData.endDate, formData.endTime),
     };
 
     try {
@@ -147,20 +205,18 @@ const EventModal: React.FC<EventModalProps> = ({
       } else if (mode === "edit" && event) {
         await updateEventMutation.mutateAsync({
           eventId: event.id,
-          eventData,
+          eventData: eventData,
         });
       }
       onClose();
     } catch (error) {
-      // Error is handled by the mutation's onError callback
       console.error("Failed to save event:", error);
     }
   };
 
   const handleClose = () => {
-    if (!isLoading) {
-      onClose();
-    }
+    setErrors({});
+    onClose();
   };
 
   return (
@@ -173,138 +229,131 @@ const EventModal: React.FC<EventModalProps> = ({
       <form
         id="event-form"
         onSubmit={handleSubmit}
-        className="flex-1 overflow-y-auto"
+        className="flex flex-col gap-4 p-1"
       >
-        <div className="space-y-6">
-          {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Title *
+        {/* Title */}
+        <InputField
+          label="Event Title"
+          id="title"
+          value={formData.title}
+          onChange={(e) => handleInputChange("title", e.target.value)}
+          error={errors.title}
+          placeholder="Enter event title"
+        />
+
+        {/* Description */}
+        <TextAreaField
+          label="Description"
+          id="description"
+          value={formData.description}
+          onChange={(e) => handleInputChange("description", e.target.value)}
+          error={errors.description}
+          placeholder="Enter event description"
+        />
+
+        {/* Location */}
+        <InputField
+          label="Location"
+          id="location"
+          value={formData.location}
+          onChange={(e) => handleInputChange("location", e.target.value)}
+          error={errors.location}
+          placeholder="Enter event location"
+        />
+
+        {/* Event Type */}
+        <DropdownMenu
+          label="Event Type"
+          id="eventType"
+          value={formData.eventType}
+          onChange={(value) => handleInputChange("eventType", value)}
+          options={EVENT_TYPES}
+          error={errors.eventType}
+          disabled={isLoading}
+          placeholder="Select event type"
+        />
+
+        {/* Start Date and Time */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <DatePicker
+            label="Start Date"
+            id="startDate"
+            value={formData.startDate}
+            onChange={(value) => handleInputChange("startDate", value)}
+            error={errors.startDate}
+            disabled={isLoading}
+          />
+
+          <div className="flex flex-col w-full">
+            <label className="text-label text-[14px] md:text-[15px] lg:text-[16px] mb-2 font-semibold">
+              Start Time
             </label>
-            <InputField
-              label=""
-              id="event-title"
-              value={formData.title}
-              onChange={(e) => handleInputChange("title", e.target.value)}
-              placeholder="Enter event title"
+            <input
+              type="time"
+              id="startTime"
+              value={formData.startTime}
+              onChange={(e) => handleInputChange("startTime", e.target.value)}
+              disabled={isLoading}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed text-[14px] md:text-[15px] lg:text-[16px]"
             />
-            {errors.title && (
-              <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+            {errors.startTime && (
+              <span className="text-red-500 text-sm mt-1">
+                {errors.startTime}
+              </span>
             )}
           </div>
+        </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
+        {/* End Date and Time */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <DatePicker
+            label="End Date"
+            id="endDate"
+            value={formData.endDate}
+            onChange={(value) => handleInputChange("endDate", value)}
+            error={errors.endDate}
+            disabled={isLoading}
+          />
+
+          <div className="flex flex-col w-full">
+            <label className="text-label text-[14px] md:text-[15px] lg:text-[16px] mb-2 font-semibold">
+              End Time
             </label>
-            <TextAreaField
-              label=""
-              id="event-description"
-              value={formData.description}
-              onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Enter event description (optional)"
+            <input
+              type="time"
+              id="endTime"
+              value={formData.endTime}
+              onChange={(e) => handleInputChange("endTime", e.target.value)}
+              disabled={isLoading}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed text-[14px] md:text-[15px] lg:text-[16px]"
             />
-            {errors.description && (
-              <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+            {errors.endTime && (
+              <span className="text-red-500 text-sm mt-1">
+                {errors.endTime}
+              </span>
             )}
           </div>
-
-          {/* Location */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Location *
-            </label>
-            <InputField
-              label=""
-              id="event-location"
-              value={formData.location}
-              onChange={(e) => handleInputChange("location", e.target.value)}
-              placeholder="Enter event location"
+        </div>
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 mt-6">
+            <Button
+            buttonText="Cancel"
+            type={ButtonTypes.SECONDARY}
+            width={ButtonWidths.FULL}
+            onClick={handleClose}
+            disabled={isLoading}
             />
-            {errors.location && (
-              <p className="mt-1 text-sm text-red-600">{errors.location}</p>
-            )}
-          </div>
-
-          {/* Event Type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Event Type *
-            </label>
-            <DropdownMenu
-              placeholder="Select event type"
-              options={EVENT_TYPES}
-              value={formData.eventType}
-              onChange={(value) => handleInputChange("eventType", value)}
+            <Button
+            buttonText={mode === "create" ? "Create Event" : "Save Changes"}
+            type={ButtonTypes.PRIMARY}
+            width={ButtonWidths.FULL}
+            disabled={isLoading}
+            loading={isLoading}
+            onClick={()=>{}}
             />
-            {errors.eventType && (
-              <p className="mt-1 text-sm text-red-600">{errors.eventType}</p>
-            )}
-          </div>
-
-          {/* Date and Time */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Start Date & Time *
-              </label>
-              <DatePicker
-                label=""
-                id="event-start-date"
-                value={formData.startDate}
-                onChange={(value) => handleInputChange("startDate", value)}
-                disabled={isLoading}
-              />
-              {errors.startDate && (
-                <p className="mt-1 text-sm text-red-600">{errors.startDate}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                End Date & Time *
-              </label>
-              <DatePicker
-                label=""
-                id="event-end-date"
-                value={formData.endDate}
-                onChange={(value) => handleInputChange("endDate", value)}
-                disabled={isLoading}
-              />
-              {errors.endDate && (
-                <p className="mt-1 text-sm text-red-600">{errors.endDate}</p>
-              )}
-            </div>
-          </div>
         </div>
       </form>
 
-      {/* Footer */}
-      <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
-        <Button
-          buttonText="Cancel"
-          onClick={handleClose}
-          type={ButtonTypes.GHOST}
-          width={ButtonWidths.AUTO}
-          disabled={isLoading}
-        />
-        <Button
-          buttonText={mode === "create" ? "Create Event" : "Save Changes"}
-          onClick={() => {
-            const form = document.getElementById(
-              "event-form"
-            ) as HTMLFormElement;
-            if (form) {
-              form.requestSubmit();
-            }
-          }}
-          type={ButtonTypes.PRIMARY}
-          width={ButtonWidths.AUTO}
-          loading={isLoading}
-          disabled={isLoading}
-        />
-      </div>
     </Modal>
   );
 };

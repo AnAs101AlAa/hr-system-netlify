@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {eventsApiInstance } from "./eventApi";
+import { eventsApiInstance } from "./eventApi";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@/utils";
 import type { Event } from "@/types/event";
@@ -154,10 +154,13 @@ export const useUpcomingEvents = (
 export const useAddEvent = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (eventData: Omit<Event, "id">) => 
-       eventsApiInstance.createEvent(eventData),
+    mutationFn: async (eventData: Omit<Event, "id">) =>
+      eventsApiInstance.createEvent(eventData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.upcomingEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.pastEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.eventTypes() });
       toast.success("Event created successfully");
     },
     onError: (error) => {
@@ -168,7 +171,7 @@ export const useAddEvent = () => {
   });
 };
 
-export const useUpdateEvent = () =>{
+export const useUpdateEvent = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -179,8 +182,17 @@ export const useUpdateEvent = () =>{
       eventId: string;
       eventData: Omit<Event, "id">;
     }) => eventsApiInstance.updateEvent(eventId, eventData),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.upcomingEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.pastEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.eventTypes() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.details() });
+      if (variables?.eventId) {
+        queryClient.invalidateQueries({
+          queryKey: eventKeys.detail(variables.eventId),
+        });
+      }
       toast.success("Event updated successfully");
     },
     onError: (error) => {
@@ -196,8 +208,15 @@ export const useDeleteEvent = () => {
 
   return useMutation({
     mutationFn: (eventId: string) => eventsApiInstance.deleteEvent(eventId),
-    onSuccess: () => {
+    onSuccess: (_data, eventId) => {
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.upcomingEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.pastEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.eventTypes() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.details() });
+      if (eventId) {
+        queryClient.invalidateQueries({ queryKey: eventKeys.detail(eventId) });
+      }
       toast.success("Event deleted successfully");
     },
     onError: (error) => {

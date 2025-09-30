@@ -30,11 +30,12 @@ class eventsApi {
   }
 
   async createEvent(eventData: Omit<Event, "id">) {
-    console.log("Creating event with data:", eventData);
+    console.log("Creating event with data:", eventData); // Debug log
     const response = await systemApi.post(
       EVENTS_API_URL + `Events/`,
       eventData
     );
+    console.log("Create Event Response:", response); // Debug log
     return response.data;
   }
 
