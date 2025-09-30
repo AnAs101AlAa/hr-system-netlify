@@ -27,31 +27,33 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
   const isScanAvailable = now >= scanButtonStart && now < eventEnd;
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4 h-full relative">
-      <div className="flex items-center gap-3">
-        <h3 className="font-bold text-gray-800 text-[20px] md:text-[22px] lg:text-[24px]">
-          {title}
-        </h3>
+    <div className="bg-white rounded-xl shadow-md p-5 flex flex-col h-full relative justify-between gap-4">
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <h3 className="font-bold text-gray-800 text-[20px] md:text-[22px] lg:text-[24px]">
+            {title}
+          </h3>
+        </div>
+
+        <div className="flex flex-col text-sm text-gray-500 gap-1 text-[13px] md:text-[14px] lg:text-[15px]">
+          <span className="flex gap-1 items-center">
+            <FaCalendarAlt className="text-primary text-md mr-1" />
+            <span className="font-semibold">Start Date:</span>{" "}
+            {format(startDate, "full")}
+          </span>
+          <span className="flex gap-1 aitems-center">
+            <FaCalendarAlt className="text-primary text-md mr-1" />
+            <span className="font-semibold">End Date:</span>{" "}
+            {format(endDate, "full")}
+          </span>
+          <span className="flex gap-1">
+            <IoIosPin className="text-primary size-5 -ml-0.5" />
+            <span className="font-semibold">Location:</span> {location}
+          </span>
+        </div>
       </div>
 
-      <div className="flex flex-col text-sm text-gray-500 gap-1 text-[13px] md:text-[14px] lg:text-[15px]">
-        <span className="flex gap-1 items-center">
-          <FaCalendarAlt className="text-primary text-md mr-1" />
-          <span className="font-semibold">Start Date:</span>{" "}
-          {format(startDate, "full")}
-        </span>
-        <span className="flex gap-1 aitems-center">
-          <FaCalendarAlt className="text-primary text-md mr-1" />
-          <span className="font-semibold">End Date:</span>{" "}
-          {format(endDate, "full")}
-        </span>
-        <span className="flex gap-1">
-          <IoIosPin className="text-primary size-5 -ml-0.5" />
-          <span className="font-semibold">Location:</span> {location}
-        </span>
-      </div>
-
-      <div className="flex justify-between items-center mt-1 absolute bottom-4 left-5 right-5">
+      <div className="flex justify-between items-center mt-1">
         {/* Left side - Admin buttons */}
         <div className="flex gap-2">
           {onEdit && (

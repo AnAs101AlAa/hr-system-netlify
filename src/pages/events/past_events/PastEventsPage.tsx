@@ -100,7 +100,7 @@ const PastEventsPage = () => {
                   title="Past Events"
                 />
               </div>
-              <div className="flex lg:flex-row flex-col lg:justify-between items-center lg:gap-4 lg:mb-0 mb-4 w-full">
+              <div className="flex lg:flex-row flex-col lg:justify-between items-center gap-4 lg:mb-0 mb-4 w-full">
                 <SearchField
                   value={searchTerm}
                   onChange={setSearchTerm}

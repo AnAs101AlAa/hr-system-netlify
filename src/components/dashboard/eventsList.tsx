@@ -62,7 +62,7 @@ const EventsList = ({ events, userRole = [] }: EventsListProps) => {
         ) : (
           eventsArray.map((event: Omit<Event, "attendees">) => (
             <div
-              className="w-full md:w-[49.5%] min-h-[220px] md:min-h-[240px] lg:min-h-[260px]"
+              className="w-full md:w-[49.5%]"
               key={event.id}
             >
               <EventCard
