@@ -34,13 +34,11 @@ export function useAttendanceFlow(eventId: string) {
       const userInstance = new UserApi();
       const userResponse = await userInstance.getMemberDetails(userId);
       const eventResponse = await eventsApiInstance.fetchEventById(eventId);
-      console.log('EVENT RESPONSE',eventResponse.eventType)
       // Get attendance status for this member/event
       const res = await checkAttendanceStatus.mutateAsync({
         memberId: userId,
         eventId,
       });
-      console.log('STATTSTSTTSTSTS',res)
       setEventType(eventResponse.eventType)
       setAttendanceStatus(res.status);
       const eventStartDate = new Date(eventResponse.startDate);
