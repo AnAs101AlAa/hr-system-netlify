@@ -2,8 +2,12 @@
  * Renders action buttons and reason inputs for the scanner flow.
  * @module ScannerActions
  */
+import { useState } from "react";
+import toast from "react-hot-toast";
 import Button from "@/components/generics/Button";
 import { ButtonTypes, ButtonWidths } from "@/constants/presets";
+import { useUpdateVestStatus } from "@/queries/events";
+import { getErrorMessage } from "@/utils";
 import type { MemberData } from "@/types/attendance";
 
 /**
@@ -30,7 +34,16 @@ interface ScannerActionsProps {
   onReturnToEvents: () => void;
   onResetScanner: () => void;
   onReasonChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  eventType: string;
+  eventId: string;
 }
+
+// Attendance status constants
+const STATUS = {
+  ON_TIME: 2001,
+  LATE: 2002,
+  LEAVING_EARLY: 2003,
+} as const;
 
 const ScannerActions = ({
   attendanceConfirmed,
@@ -42,8 +55,67 @@ const ScannerActions = ({
   onResetScanner,
   attendanceStatus = null,
   leaveExcuse = "",
-  onReasonChange,
+  eventType,
+  eventId,
 }: ScannerActionsProps) => {
+  const vestStatus = useUpdateVestStatus();
+  const isNotMeeting = eventType !== "Meeting";
+  const [vestButtonDisabled, setVestButtonDisabled] = useState(false);
+  const [isVestLoading, setIsVestLoading] = useState(false);
+
+  const handleVestStatus = async () => {
+    if (!memberData?.id) return;
+
+    const action =
+      attendanceStatus === STATUS.ON_TIME || attendanceStatus === STATUS.LATE
+        ? "Received"
+        : "Received";
+
+    setIsVestLoading(true);
+    vestStatus.mutate(
+      {
+        memberId: memberData.id,
+        eventId,
+        action,
+      },
+      {
+        onSuccess: () => {
+          setVestButtonDisabled(true);
+          setIsVestLoading(false);
+        },
+        onError: (error) => {
+          setVestButtonDisabled(false);
+          setIsVestLoading(false);
+          toast.error(getErrorMessage(error));
+        },
+      }
+    );
+  };
+
+  const getVestButtonText = () => {
+    return attendanceStatus === STATUS.ON_TIME || attendanceStatus === STATUS.LATE
+      ? "Assign Vest"
+      : "Return Vest";
+  };
+
+  const getConfirmButtonText = () => {
+    if (isConfirming) return "Confirming...";
+
+    if (attendanceStatus === STATUS.LATE) return "Confirm Late Arrival";
+    if (attendanceStatus === STATUS.LEAVING_EARLY) return "Confirm Leave Early";
+
+    return "Confirm Attendance";
+  };
+
+  const isConfirmDisabled = () => {
+    const isLate = attendanceStatus === STATUS.LATE;
+    const isLeavingEarly = attendanceStatus === STATUS.LEAVING_EARLY;
+    const reasonValue = isLate ? lateReason : leaveExcuse || "";
+
+    return (isLate || isLeavingEarly) && !reasonValue.trim();
+  };
+
+  // Render confirmed state
   if (attendanceConfirmed) {
     return (
       <div className="space-y-3">
@@ -63,77 +135,28 @@ const ScannerActions = ({
     );
   }
 
+  // Render member scanned state
   if (memberData) {
-    if (attendanceStatus === 2001) {
-      // On time attendance
-      return (
-        <div className="space-y-3">
-          <Button
-            buttonText={isConfirming ? "Confirming..." : "Confirm Attendance"}
-            onClick={onConfirmAttendance}
-            type={ButtonTypes.SECONDARY}
-            width={ButtonWidths.FULL}
-            loading={isConfirming}
-          />
-          <Button
-            buttonText="Scan Another QR Code"
-            onClick={onResetScanner}
-            type={ButtonTypes.GHOST}
-            width={ButtonWidths.FULL}
-          />
-        </div>
-      );
-    } else if (attendanceStatus === 2002 || attendanceStatus === 2003) {
-      // Late arrival or leaving early
-      const isLate = attendanceStatus === 2002;
-      const reasonValue = isLate ? lateReason : leaveExcuse || "";
-      return (
-        <div className="space-y-3">
-          <textarea
-            value={reasonValue}
-            onChange={onReasonChange}
-            placeholder={
-              isLate
-                ? "Enter reason for late arrival..."
-                : "Enter reason for leaving early..."
-            }
-            className="w-full p-2 border rounded"
-          />
-          <Button
-            buttonText={
-              isConfirming
-                ? isLate
-                  ? "Confirming..."
-                  : "Confirming..."
-                : isLate
-                ? "Confirm Late Arrival"
-                : "Confirm Leave Early"
-            }
-            onClick={onConfirmAttendance}
-            type={ButtonTypes.SECONDARY}
-            width={ButtonWidths.FULL}
-            disabled={!reasonValue.trim()}
-            loading={isConfirming}
-          />
-          <Button
-            buttonText="Scan Another QR Code"
-            onClick={onResetScanner}
-            type={ButtonTypes.GHOST}
-            width={ButtonWidths.FULL}
-          />
-        </div>
-      );
-    }
-    // Default case if status is not set yet
     return (
       <div className="space-y-3">
         <Button
-          buttonText="Confirm Attendance"
+          buttonText={getConfirmButtonText()}
           onClick={onConfirmAttendance}
           type={ButtonTypes.SECONDARY}
           width={ButtonWidths.FULL}
+          disabled={isConfirmDisabled()}
           loading={isConfirming}
         />
+        {isNotMeeting && (
+          <Button
+            buttonText={getVestButtonText()}
+            onClick={handleVestStatus}
+            type={ButtonTypes.PRIMARY}
+            width={ButtonWidths.FULL}
+            disabled={vestButtonDisabled}
+            loading={isVestLoading}
+          />
+        )}
         <Button
           buttonText="Scan Another QR Code"
           onClick={onResetScanner}
@@ -144,6 +167,7 @@ const ScannerActions = ({
     );
   }
 
+  // Render idle/waiting state
   return (
     <div className="text-center">
       <div className="flex items-center justify-center space-x-2 text-[var(--color-dashboard-description)]">
