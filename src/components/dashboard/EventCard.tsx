@@ -19,8 +19,17 @@ const EventCard: React.FC<{ event: Omit<Event, "attendees"> }> = ({
   const eventEnd = new Date(endDate);
   // Compare both date and time for event status
   const isPastEvent = now >= eventEnd;
-  const scanButtonStart = new Date(eventStart.getTime() - 30 * 60 * 1000); // 15 minutes before start
-  const isScanAvailable = now >= scanButtonStart && now < eventEnd;
+
+  // Check if start date is today (ignoring time)
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const eventStartDate = new Date(
+    eventStart.getFullYear(),
+    eventStart.getMonth(),
+    eventStart.getDate()
+  );
+  const isStartDateToday = todayStart.getTime() === eventStartDate.getTime();
+
+  const isScanAvailable = isStartDateToday && now < eventEnd;
 
   return (
     <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4 h-full relative">
