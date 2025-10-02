@@ -29,10 +29,11 @@ export default function ReasonPopup({
   }, [isOpen, initialReason]);
 
   function handleCancel() {
-    onClose(1); // status.CANCELLED
+    onClose(1); // status.CANCELLED - allow closing without reason
   }
 
   function handleSubmit() {
+    if (reason.trim() === "") return; // Prevent submission if reason is empty
     onClose(0, reason); // status.SUBMITTED
   }
 
@@ -52,12 +53,16 @@ export default function ReasonPopup({
         />
 
         <div className="flex justify-between mt-6">
-          <Button buttonText="Cancel" onClick={handleCancel} type="ghost" />
+          <Button 
+            buttonText="Cancel" 
+            onClick={handleCancel} 
+            type="ghost"
+          />
           <Button
             buttonText="Submit"
             onClick={handleSubmit}
             type="primary"
-            disabled={reason === ""}
+            disabled={reason.trim() === ""}
           />
         </div>
       </div>
