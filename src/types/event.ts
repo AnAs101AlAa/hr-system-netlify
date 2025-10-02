@@ -25,7 +25,7 @@ export interface Event {
   title: string;
   description: string;
   location: string;
-  type: string;
+  eventType: string;
   startDate: string;
   endDate: string;
   attendees?: Attendee[] | VestAttendee[];
