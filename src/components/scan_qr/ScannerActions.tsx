@@ -69,7 +69,7 @@ const ScannerActions = ({
     const action =
       attendanceStatus === STATUS.ON_TIME || attendanceStatus === STATUS.LATE
         ? "Received"
-        : "Received";
+        : "Returned";
 
     setIsVestLoading(true);
     vestStatus.mutate(
@@ -82,6 +82,12 @@ const ScannerActions = ({
         onSuccess: () => {
           setVestButtonDisabled(true);
           setIsVestLoading(false);
+          toast.success(
+            attendanceStatus === STATUS.ON_TIME ||
+              attendanceStatus === STATUS.LATE
+              ? "Vest Assigned Sucessfully!"
+              : "Vest Returned Sucessfully"
+          );
         },
         onError: (error) => {
           setVestButtonDisabled(false);
@@ -93,7 +99,8 @@ const ScannerActions = ({
   };
 
   const getVestButtonText = () => {
-    return attendanceStatus === STATUS.ON_TIME || attendanceStatus === STATUS.LATE
+    return attendanceStatus === STATUS.ON_TIME ||
+      attendanceStatus === STATUS.LATE
       ? "Assign Vest"
       : "Return Vest";
   };
@@ -111,6 +118,7 @@ const ScannerActions = ({
     const isLate = attendanceStatus === STATUS.LATE;
     const isLeavingEarly = attendanceStatus === STATUS.LEAVING_EARLY;
     const reasonValue = isLate ? lateReason : leaveExcuse || "";
+    console.log(reasonValue);
 
     return (isLate || isLeavingEarly) && !reasonValue.trim();
   };
