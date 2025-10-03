@@ -33,7 +33,7 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
     handleScan,
     confirmAttendance,
     reset,
-    eventType
+    eventType,
   } = useAttendanceFlow(event.id);
 
   // Which reason popup is currently open
@@ -137,14 +137,15 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
                 attendanceStatus={attendanceStatus}
                 isConfirming={isConfirming}
                 lateReason={lateReason}
+                leaveExcuse={leaveExcuse}
                 onConfirmAttendance={confirmAttendance}
                 onReturnToEvents={handleReturnToEvent}
                 onResetScanner={() => {
                   dismissedRef.current = false;
                   reset();
                 }}
-    eventType={eventType}
-    eventId={event.id}
+                eventType={eventType}
+                eventId={event.id}
               />
             </div>
           </div>
