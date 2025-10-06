@@ -1,10 +1,12 @@
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
+import { Button, ButtonTypes, ButtonWidths } from "tccd-ui";
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPrevious: () => void;
   onNext: () => void;
+  onAdd?: () => void;
   title: string;
 }
 
@@ -13,6 +15,7 @@ const Pagination = ({
   totalPages,
   onPrevious,
   onNext,
+  onAdd,
   title,
 }: PaginationProps) => {
   const isFirstPage = currentPage === 1;
@@ -21,12 +24,21 @@ const Pagination = ({
   return (
     <div className="relative mx-auto my-8 sm:my-9 md:my-10">
       <div className="h-full w-full relative gap-6 flex flex-col ">
-        <div className="">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
           <h3 className="text-dashboard-heading font-bold text-[18px] sm:text-[22px] md:text-[25px] lg:text-[28px]">
             {title}
           </h3>
+          {onAdd && (
+            <div className="w-full sm:w-auto mt-2 sm:mt-0">
+              <Button
+                buttonText="Add"
+                onClick={onAdd}
+                type={ButtonTypes.PRIMARY}
+                width={ButtonWidths.FULL}
+              />
+            </div>
+          )}
         </div>
-
         <div className="flex justify-center gap-5 md:gap-10 items-center">
           <button
             className={`w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px] lg:w-[24px] lg:h-[24px] flex items-center justify-center rounded cursor-pointer transition-all duration-200 hover:scale-110 ${

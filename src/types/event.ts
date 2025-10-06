@@ -23,9 +23,9 @@ export interface EventType {
 export interface Event {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   location: string;
-  type: string;
+  eventType: string;
   startDate: string;
   endDate: string;
   attendees?: Attendee[] | VestAttendee[];

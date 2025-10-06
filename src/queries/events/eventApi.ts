@@ -4,7 +4,7 @@ import type { Event, Attendee, VestAttendee } from "@/types/event";
 const EVENTS_API_URL = "/v1/";
 // const EVENT_TYPES_API_URL = systemApi.defaults.baseURL + "/event-types/"; // TODO: Uncomment when backend is ready
 
-export class eventsApi {
+class eventsApi {
   async fetchEventById(id: string): Promise<Event> {
     const response = await systemApi.get(`${EVENTS_API_URL}Events/${id}`);
     return response.data.data;
@@ -26,6 +26,31 @@ export class eventsApi {
       response.data
     );
     return [];
+  }
+
+  async createEvent(eventData: Omit<Event, "id">) {
+    console.log("Creating event with data:", eventData); // Debug log
+    const response = await systemApi.post(
+      EVENTS_API_URL + `Events/`,
+      eventData
+    );
+    console.log("Create Event Response:", response); // Debug log
+    return response.data;
+  }
+
+  async updateEvent(eventId: string, eventData: Omit<Event, "id">) {
+    const response = await systemApi.put(
+      EVENTS_API_URL + `Events/${eventId}`,
+      eventData
+    );
+    return response.data;
+  }
+
+  async deleteEvent(eventId: string) {
+    const response = await systemApi.delete(
+      EVENTS_API_URL + `Events/${eventId}`
+    );
+    return response.data;
   }
 
   async fetchEventsCount(fromDate: string): Promise<number> {
@@ -80,9 +105,7 @@ export class eventsApi {
     return items && items.length > 0 ? items[0] : null;
   }
 
-  async fetchEventAttendees(
-    eventId: string
-  ): Promise<Attendee[]> {
+  async fetchEventAttendees(eventId: string): Promise<Attendee[]> {
     const response = await systemApi.get(
       `${EVENTS_API_URL}Attendance/${eventId}`
     );
@@ -99,19 +122,19 @@ export class eventsApi {
   }
 
   async fetchVestEventAttendees(eventId: string): Promise<VestAttendee[]> {
-    const response = await systemApi.get(
-      `${EVENTS_API_URL}Vest/members`, { params: { eventId: eventId, pageSize: 200 } }
-    );
+    const response = await systemApi.get(`${EVENTS_API_URL}Vest/members`, {
+      params: { eventId: eventId, pageSize: 200 },
+    });
 
     const items = response.data.data.data.map((att: any) => ({
-          id: att.memberId,
-          name: att.name,
-          phoneNumber: att.phoneNumber,
-          committee: att.committee,
-          email: att.email,
-          status: att.status,
-        }))
-    
+      id: att.memberId,
+      name: att.name,
+      phoneNumber: att.phoneNumber,
+      committee: att.committee,
+      email: att.email,
+      status: att.status,
+    }));
+
     return items;
   }
 
