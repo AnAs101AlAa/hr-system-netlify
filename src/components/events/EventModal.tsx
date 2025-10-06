@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Button from "@/components/generics/Button";
-import Modal from "@/components/generics/Modal";
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
-import InputField from "@/components/generics/InputField";
-import TextAreaField from "@/components/generics/TextAreaField";
-import DatePicker from "@/components/generics/DatePicker";
-import DropdownMenu from "@/components/generics/dropDownMenu";
 import EVENT_TYPES from "@/constants/eventTypes";
 import type { Event } from "@/types/event";
 import { useAddEvent, useUpdateEvent } from "@/queries/events/eventQueries";
+import { Button, Modal, InputField, TextAreaField, DatePicker, DropdownMenu, ButtonTypes, ButtonWidths } from "tccd-ui";
 
 interface EventModalProps {
   isOpen: boolean;

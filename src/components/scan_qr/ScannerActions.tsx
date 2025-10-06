@@ -4,8 +4,7 @@
  */
 import { useState } from "react";
 import toast from "react-hot-toast";
-import Button from "@/components/generics/Button";
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
+import { ButtonTypes, ButtonWidths, Button } from "tccd-ui";
 import { useUpdateVestStatus } from "@/queries/events";
 import { getErrorMessage } from "@/utils";
 import type { MemberData } from "@/types/attendance";

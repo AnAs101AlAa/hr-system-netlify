@@ -1,5 +1,5 @@
 import type { form } from "@/types/form";
-import SearchField from "../generics/SearchField";
+import { SearchField } from "tccd-ui";
 import { useState, useEffect } from "react";
 import FormTable from "./FormTable";
 import FormCardView from "./FormCardView";

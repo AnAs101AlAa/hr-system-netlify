@@ -1,7 +1,6 @@
 import type { Event, VestAttendee } from "@/types/event";
 import { format } from "@/utils";
-import Button from "@/components/generics/Button";
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
+import { ButtonTypes, ButtonWidths, Button } from "tccd-ui";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store/store";
 

@@ -2,7 +2,7 @@ import type { VestAttendee } from "@/types/event";
 import VestAttendeesTable from "./VestAttendeesTable";
 import VestAttendeesCardView from "./VestAttendeesCardView";
 import { useState, useEffect } from "react";
-import SearchField from "../generics/SearchField";
+import { SearchField } from "tccd-ui";
 
 interface VestAttendeesListProps {
     attendees: VestAttendee[];

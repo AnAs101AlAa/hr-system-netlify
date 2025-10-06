@@ -1,9 +1,9 @@
-import Modal from "@/components/generics/Modal";
 import { ScannerContainer, ScannerActions } from "@/components/scan_qr";
 import ReasonPopup from "@/components/QR/ReasonPopup";
 import { useAttendanceFlow } from "@/hooks/useAttendanceFlow";
 import type { Event } from "@/types/event";
 import { useState, useEffect, useRef } from "react";
+import { Modal } from "tccd-ui";
 
 /**
  * Modal for scanning QR codes and handling attendance flow.

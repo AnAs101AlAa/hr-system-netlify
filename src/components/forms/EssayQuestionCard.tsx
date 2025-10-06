@@ -1,7 +1,6 @@
 import React, { useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { FaQuestionCircle, FaAsterisk } from 'react-icons/fa';
-import InputField from '@/components/generics/InputField';
-import TextAreaField from '@/components/generics/TextAreaField';
+import { InputField, TextAreaField } from 'tccd-ui';
 import type { EssayQuestion } from '@/types/question';
 import { createEssayValidationSchema } from '@/schemas/questionSchemas';
 import type { QuestionCardHandle } from '@/types/form';

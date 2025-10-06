@@ -1,10 +1,10 @@
-import type { Event } from "../../types/event";
-import { format } from "../../utils";
-import type { Attendee } from "../../types/event";
-import Button from "@/components/generics/Button";
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
+import type { Event } from "@/types/event";
+import { format } from "@/utils";
+import type { Attendee } from "@/types/event";
+import { Button, ButtonTypes, ButtonWidths } from "tccd-ui";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store/store";
+
 interface EventInformationProps {
   event: Event;
   attendees?: Attendee[];

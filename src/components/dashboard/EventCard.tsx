@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaCalendarAlt } from "react-icons/fa";
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
 import type { Event } from "@/types/event";
 import QRScannerModal from "@/components/scan_qr/QRScannerModal";
 import format from "@/utils/Formater";
 import { IoIosPin } from "react-icons/io";
-import { Button } from "tccd-ui";
+import { Button, ButtonTypes, ButtonWidths } from "tccd-ui";
 
 interface EventCardProps {
   event: Omit<Event, "attendees">;

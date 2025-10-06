@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import type { VestAttendee } from "@/types/event";
 import { format } from "@/utils";
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
-import Button from "@/components/generics/Button";
+import { ButtonTypes, ButtonWidths, Button } from "tccd-ui";
 import VestStatusBadge from "./VestStatusBadge";
 import VestActionModal from "./VestActionModal";
 import VestTimelineModal from "./VestTimelineModal";

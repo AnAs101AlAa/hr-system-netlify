@@ -4,8 +4,8 @@ import EventDetails from "./events/event-details/EventDetails";
 import PastEventsPage from "./events/past_events/PastEventsPage";
 import FormView from "./forms/FormView";
 import FormSubmissionPage from "./forms/FormSubmissionPage";
-import UnauthorizedPage from "@/components/generics/UnauthorizedPage";
 import FormBuilder from "./formBuilder/FormBuilder";
 import FormEditor from "./formBuilder/FormEditor";
+import { UnauthorizedPage } from "tccd-ui";
 
 export { LoginPage, HomePage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage, FormBuilder, FormEditor };

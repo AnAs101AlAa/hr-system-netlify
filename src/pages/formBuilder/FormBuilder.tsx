@@ -1,11 +1,9 @@
 import WithNavbar from "@/components/hoc/WithNavbar";
 import FormList from "@/components/formBuilder/FormList";
 import { useForms } from "@/queries/forms/formQueries";
-import LoadingPage from "@/components/generics/LoadingPage";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
-import Button from "@/components/generics/Button";
-import { ButtonTypes } from "@/constants/presets";
+import { ButtonTypes, LoadingPage, Button } from "tccd-ui";
 
 export default function FormBuilder() {
 

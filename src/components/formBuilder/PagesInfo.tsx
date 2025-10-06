@@ -1,10 +1,5 @@
-import InputField from "@/components/generics/InputField";
-import TextAreaField from "@/components/generics/TextAreaField";
-import NumberField from "@/components/generics/NumberField";
-import DropdownMenu from "@/components/generics/dropDownMenu";
-import Button from "@/components/generics/Button";
+import { DropdownMenu, InputField, NumberField, TextAreaField, Button, ButtonTypes } from "tccd-ui";
 import { FaXmark } from "react-icons/fa6";
-import { ButtonTypes } from "@/constants/presets";
 import type { form, formPage, formPageError } from "@/types/form";
 import type { Question } from "@/types/question";
 import toast from "react-hot-toast";

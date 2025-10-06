@@ -2,10 +2,8 @@ import { useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { FaQuestionCircle, FaAsterisk } from 'react-icons/fa';
 import type { MCQQuestion } from '@/types/question';
 import { createMCQValidationSchema } from '@/schemas/questionSchemas';
-import Checkbox from '../generics/Checkbox';
-import Radiobutton from '../generics/Radiobutton';
 import type { QuestionCardHandle } from '@/types/form';
-import InputField from '../generics/InputField';
+import { RadioButton, Checkbox, InputField } from 'tccd-ui';
 
 interface MCQQuestionCardProps {
     question: MCQQuestion;
@@ -120,7 +118,7 @@ const MCQQuestionCard = forwardRef<QuestionCardHandle, MCQQuestionCardProps>(({
                                     placeholder="Please specify"
                                 />
                             ) : (
-                            <Radiobutton
+                            <RadioButton
                                 key={index}
                                 label={choice.text}
                                 checked={answer === choice.text}

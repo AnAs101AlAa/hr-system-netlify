@@ -1,7 +1,6 @@
 import { EventsList, Pagination } from "@/components/dashboard";
 import WithNavbar from "@/components/hoc/WithNavbar";
-import SearchField from "@/components/generics/SearchField";
-import DropdownMenu from "@/components/generics/dropDownMenu";
+import { SearchField, DropdownMenu } from "tccd-ui";
 import { EventModal } from "@/components/events";
 import { useState, useEffect } from "react";
 import { usePastEvents } from "@/queries/events/eventQueries";

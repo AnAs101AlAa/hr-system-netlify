@@ -1,9 +1,9 @@
 import { useState, useCallback, forwardRef, useImperativeHandle  } from 'react';
 import { FaQuestionCircle, FaAsterisk } from 'react-icons/fa';
-import DatePicker from '@/components/generics/DatePicker';
 import type { DateQuestion } from '@/types/question';
 import { createDateValidationSchema } from '@/schemas/questionSchemas';
 import type { QuestionCardHandle } from '@/types/form';
+import { DatePicker } from 'tccd-ui';
 
 interface DateQuestionCardProps {
     question: DateQuestion;

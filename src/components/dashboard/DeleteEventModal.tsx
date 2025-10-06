@@ -1,8 +1,6 @@
-import Modal from "@/components/generics/Modal";
-import Button from "@/components/generics/Button";
-import { ButtonTypes } from "@/constants/presets";
 import { TbLoader2 } from "react-icons/tb";
 import type { FC } from "react";
+import { Modal, Button, ButtonTypes } from "tccd-ui";
 
 interface DeleteEventModalProps {
   isOpen: boolean;

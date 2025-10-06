@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import Modal from "../generics/Modal";
-import TextAreaField from "../generics/TextAreaField";
-import Button from "../generics/Button";
+import { Modal, TextAreaField, Button } from "tccd-ui";
 
 interface ReasonPopupProps {
   isOpen: boolean;

@@ -1,10 +1,8 @@
-import Modal from "@/components/generics/Modal";
 import format from "@/utils/Formater";
 import { useVestTimeline } from "@/queries/events";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
-import Button from "@/components/generics/Button";
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
+import { ButtonTypes, ButtonWidths, Button, Modal } from "tccd-ui";
 
 interface VestActivity {
     activityId: string;

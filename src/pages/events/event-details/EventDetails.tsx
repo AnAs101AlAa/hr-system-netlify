@@ -10,7 +10,7 @@ import {
 import WithNavbar from "@/components/hoc/WithNavbar";
 import { useEvent } from "@/queries/events/eventQueries";
 import { useParams } from "react-router-dom";
-import LoadingPage from "@/components/generics/LoadingPage";
+import { LoadingPage } from "tccd-ui";
 import {
   useEventAttendees,
   useDeleteEvent,

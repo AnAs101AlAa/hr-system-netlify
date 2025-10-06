@@ -1,6 +1,4 @@
-import Modal from "@/components/generics/Modal";
-import Button from "@/components/generics/Button";
-import { ButtonTypes } from "@/constants/presets";
+import { Modal, Button, ButtonTypes } from "tccd-ui";
 import { useLogout } from "@/queries/users";
 import { TbLoader2 } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
