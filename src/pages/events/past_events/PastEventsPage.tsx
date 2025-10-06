@@ -2,18 +2,26 @@ import { EventsList, Pagination } from "@/components/dashboard";
 import WithNavbar from "@/components/hoc/WithNavbar";
 import SearchField from "@/components/generics/SearchField";
 import DropdownMenu from "@/components/generics/dropDownMenu";
+import { EventModal } from "@/components/events";
 import { useState, useEffect } from "react";
 import { usePastEvents } from "@/queries/events/eventQueries";
 import EVENT_TYPES from "@/constants/eventTypes";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store/store";
 
 const PastEventsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEventType, setSelectedEventType] = useState("");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-    // Responsive events per page - fewer on mobile, more on desktop
+  const { user } = useSelector((state: RootState) => state.auth);
+  const userRole = user?.roles || [];
+  const isAdmin = userRole.includes("Admin");
+
+  // Responsive events per page - fewer on mobile, more on desktop
   const getEventsPerPage = () => {
     if (typeof window !== "undefined") {
       if (window.innerWidth < 640) return 4; // Mobile: 4 events
@@ -25,11 +33,16 @@ const PastEventsPage = () => {
   };
 
   const [eventsPerPage, setEventsPerPage] = useState(getEventsPerPage());
-  const { data, error: eventsError, isLoading, isError: isEventsError } = usePastEvents(selectedEventType, searchTerm, currentPage, eventsPerPage);
+  const {
+    data,
+    error: eventsError,
+    isLoading,
+    isError: isEventsError,
+  } = usePastEvents(selectedEventType, searchTerm, currentPage, eventsPerPage);
   const pastEvents = data?.items ?? [];
   const totalCount = data?.total ?? 0;
   const totalFilteredPages = Math.max(1, Math.ceil(totalCount / eventsPerPage));
-  
+
   // Update events per page on window resize
   useEffect(() => {
     const handleResize = () => {
@@ -43,13 +56,12 @@ const PastEventsPage = () => {
       return () => window.removeEventListener("resize", handleResize);
     }
   }, []);
-  
+
   useEffect(() => {
     if (isEventsError && eventsError) {
       toast.error(`Failed to fetch past events, please try again`);
     }
   }, [isEventsError, eventsError]);
-
 
   // Reset to first page when search term or event type changes
   useEffect(() => {
@@ -67,7 +79,11 @@ const PastEventsPage = () => {
       setCurrentPage(currentPage + 1);
     }
   };
-  
+
+  const onAdd = () => {
+    setIsAddModalOpen(true);
+  };
+
   return (
     <WithNavbar>
       <section className="flex flex-col min-h-screen mb-3">
@@ -80,10 +96,11 @@ const PastEventsPage = () => {
                   totalPages={totalFilteredPages}
                   onPrevious={handlePrevious}
                   onNext={handleNext}
+                  onAdd={isAdmin ? onAdd : undefined}
                   title="Past Events"
                 />
               </div>
-              <div className="flex lg:flex-row flex-col lg:justify-between items-center lg:gap-4 lg:mb-0 mb-4 w-full">
+              <div className="flex lg:flex-row flex-col lg:justify-between items-center gap-4 lg:mb-0 mb-4 w-full">
                 <SearchField
                   value={searchTerm}
                   onChange={setSearchTerm}
@@ -100,7 +117,7 @@ const PastEventsPage = () => {
               </div>
 
               {/* Error state */}
-              {(eventsError) && (
+              {eventsError && (
                 <div className="text-center py-8">
                   <p className="text-primary text-lg">
                     Failed to load events. Please try again later.
@@ -143,11 +160,19 @@ const PastEventsPage = () => {
               )}
               {/* Events list */}
               {!eventsError && pastEvents.length > 0 && (
-                <EventsList events={pastEvents} />
+                <EventsList events={pastEvents} userRole={userRole} />
               )}
             </div>
           </div>
         </div>
+
+        {/* Add Event Modal */}
+        <EventModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          event={null}
+          mode="create"
+        />
       </section>
     </WithNavbar>
   );
