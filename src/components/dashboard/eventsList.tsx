@@ -3,6 +3,7 @@ import EventCard from "./EventCard";
 import { useState } from "react";
 import { EventModal } from "@/components/events";
 import { useDeleteEvent } from "@/queries/events/eventQueries";
+import DeleteEventModal from "./DeleteEventModal";
 
 interface EventsListProps {
   events: Omit<Event, "attendees">[];
@@ -16,13 +17,13 @@ const EventsList = ({ events, userRole = [] }: EventsListProps) => {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [eventIdToDelete, setEventIdToDelete] = useState<string | null>(null);
 
   const deleteEventMutation = useDeleteEvent();
 
   const isAdmin = userRole.includes("Admin");
   console.log("isAdmin:", isAdmin);
-
-  
 
   const handleEdit = (eventId: string) => {
     const eventToEdit = eventsArray.find((event) => event.id === eventId);
@@ -33,17 +34,19 @@ const EventsList = ({ events, userRole = [] }: EventsListProps) => {
     }
   };
 
-  const handleDelete = async (eventId: string) => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this event? This action cannot be undone."
-      )
-    ) {
-      try {
-        await deleteEventMutation.mutateAsync(eventId);
-      } catch (error) {
-        console.error("Failed to delete event:", error);
-      }
+  const handleDelete = (eventId: string) => {
+    setEventIdToDelete(eventId);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!eventIdToDelete) return;
+    try {
+      await deleteEventMutation.mutateAsync(eventIdToDelete);
+      setDeleteModalOpen(false);
+      setEventIdToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete event:", error);
     }
   };
 
@@ -68,7 +71,7 @@ const EventsList = ({ events, userRole = [] }: EventsListProps) => {
               <EventCard
                 event={event}
                 onEdit={isAdmin ? handleEdit : undefined}
-                onDelete={isAdmin ? handleDelete : undefined}
+                onDelete={isAdmin ? () => handleDelete(event.id) : undefined}
               />
             </div>
           ))
@@ -81,6 +84,17 @@ const EventsList = ({ events, userRole = [] }: EventsListProps) => {
         onClose={handleCloseModal}
         event={editingEvent}
         mode={modalMode}
+      />
+
+      {/* Delete Event Modal */}
+      <DeleteEventModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setEventIdToDelete(null);
+        }}
+        onDelete={confirmDelete}
+        isLoading={deleteEventMutation.status === "pending"}
       />
     </>
   );
