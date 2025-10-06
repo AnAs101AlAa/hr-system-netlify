@@ -11,6 +11,7 @@ export { default as VestAttendeesTable } from "./VestAttendeesTable";
 export { default as VestAttendeesCardView } from "./VestAttendeesCardView";
 export { default as VestAttendeesList } from "./VestAttendeesList";
 export { default as VestActionModal } from "./VestActionModal";
+export { default as VestTimelineModal } from "./VestTimelineModal";
 export { default as VestEventLoadingSkeleton } from "./VestEventLoadingSkeleton";
 export { default as EventNotFound } from "./EventNotFound";
 export { default as VestEventDetailsView } from "./VestEventDetailsView";
