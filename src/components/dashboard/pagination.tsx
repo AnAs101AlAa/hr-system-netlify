@@ -1,6 +1,5 @@
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
-import Button from "../generics/Button";
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
+import { Button, ButtonTypes, ButtonWidths } from "tccd-ui";
 
 interface PaginationProps {
   currentPage: number;
