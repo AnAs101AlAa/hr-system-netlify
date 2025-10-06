@@ -14,3 +14,4 @@ export { default as VestActionModal } from "./VestActionModal";
 export { default as VestEventLoadingSkeleton } from "./VestEventLoadingSkeleton";
 export { default as EventNotFound } from "./EventNotFound";
 export { default as VestEventDetailsView } from "./VestEventDetailsView";
+export { default as EventModal } from "./EventModal";

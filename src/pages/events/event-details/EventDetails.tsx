@@ -5,16 +5,20 @@ import {
   AttendeesList,
   EventNotFound,
   VestEventDetailsView,
+  EventModal,
 } from "@/components/events";
 import WithNavbar from "@/components/hoc/WithNavbar";
 import { useEvent } from "@/queries/events/eventQueries";
 import { useParams } from "react-router-dom";
 import LoadingPage from "@/components/generics/LoadingPage";
-import { useEventAttendees } from "@/queries/events/eventQueries";
+import {
+  useEventAttendees,
+  useDeleteEvent,
+} from "@/queries/events/eventQueries";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
-import type { Attendee, VestAttendee } from "@/types/event";
+import type { Attendee, VestAttendee, Event } from "@/types/event";
 import type { RootState } from "@/redux/store/store";
 
 const EventDetails = () => {
@@ -23,6 +27,7 @@ const EventDetails = () => {
 
   const { user } = useSelector((state: RootState) => state.auth);
   const userRole = user?.roles;
+  const isAdmin = userRole?.includes("Admin") || false;
 
   const {
     data: event,
@@ -37,14 +42,20 @@ const EventDetails = () => {
     isError: isAttendeesError,
   } = useEventAttendees(id ? id : "", userRole ? userRole : []);
 
-  const [displayedAttendees, setDisplayedAttendees] = useState<Attendee[] | VestAttendee[]>([]);
+  const deleteEventMutation = useDeleteEvent();
+
+  const [displayedAttendees, setDisplayedAttendees] = useState<
+    Attendee[] | VestAttendee[]
+  >([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   useEffect(() => {
     if (isEventError && eventError) {
-      toast.error(`Failed to fetch event details, please try again`);
+      toast.error("Failed to fetch event details, please try again");
     }
     if (isAttendeesError && attendeesError) {
-      toast.error(`Failed to fetch event attendees, please try again`);
+      toast.error("Failed to fetch event attendees, please try again");
     }
 
     if (attendees) {
@@ -54,6 +65,33 @@ const EventDetails = () => {
 
   const handleBack = () => {
     navigate(-1);
+  };
+
+  const handleEdit = (eventId: string) => {
+    if (event && event.id === eventId) {
+      setEditingEvent(event);
+      setIsEditModalOpen(true);
+    }
+  };
+
+  const handleDelete = async (eventId: string) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this event? This action cannot be undone."
+      )
+    ) {
+      try {
+        await deleteEventMutation.mutateAsync(eventId);
+        navigate(-1);
+      } catch (error) {
+        console.error("Failed to delete event:", error);
+      }
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsEditModalOpen(false);
+    setEditingEvent(null);
   };
 
   if (isLoading) {
@@ -79,6 +117,8 @@ const EventDetails = () => {
         event={event}
         attendees={displayedAttendees as VestAttendee[]}
         onBack={handleBack}
+        onEdit={isAdmin ? handleEdit : undefined}
+        onDelete={isAdmin ? handleDelete : undefined}
         setAttendees={setDisplayedAttendees}
       />
     );
@@ -89,13 +129,24 @@ const EventDetails = () => {
       <div className="min-h-screen bg-background p-4">
         <div className="max-w-6xl mx-auto">
           <EventDetailsHeader onBack={handleBack} />
-          <EventInformation event={event} attendees={displayedAttendees as Attendee[]} />
+          <EventInformation
+            event={event}
+            attendees={displayedAttendees as Attendee[]}
+            onEdit={isAdmin ? handleEdit : undefined}
+            onDelete={isAdmin ? handleDelete : undefined}
+          />
           <AttendeesList
             attendees={(displayedAttendees as Attendee[]) || []}
             eventEndTime={event.endDate}
           />
         </div>
       </div>
+      <EventModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseModal}
+        event={editingEvent}
+        mode="edit"
+      />
     </WithNavbar>
   );
 };

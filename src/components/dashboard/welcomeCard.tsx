@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store/store";
-import LazyImageLoader from "@/components/generics/LazyImageLoader";
+import { LazyImageLoader } from "tccd-ui";
 
 const WelcomeCard = () => {
   const { user } = useSelector((state: RootState) => state.auth);
