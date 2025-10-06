@@ -16,7 +16,6 @@ export class eventsApi {
       `${EVENTS_API_URL}Events/filtered?fromDate=${nowDate}&page=${page}&count=${pageSize}`
     );
 
-    // Access the array using the correct structure: response.data.data.items
     const items = response.data?.data?.items;
     if (Array.isArray(items)) {
       return items;
@@ -120,7 +119,37 @@ export class eventsApi {
     await systemApi.put(
       `${EVENTS_API_URL}Vest/status`,
       { status: action, memberId: memberId, eventId: eventId }
+     );
+  }
+
+  async fetchVestTimeline(memberId: string, eventId: string, pageNumber: number = 1, pageSize: number = 100) {
+    const response = await systemApi.get(
+      `${EVENTS_API_URL}Vest/activity`,
+      {
+        params: {
+          MemberId: memberId,
+          EventId: eventId,
+          PageNumber: pageNumber,
+          PageSize: pageSize
+        }
+      }
     );
+    
+    // The API now returns member data with nested activities array
+    // Extract the activities array from the first member (should only be one member matching the memberId)
+    const memberData = response.data?.data?.data?.[0];
+    if (memberData && Array.isArray(memberData.activities)) {
+      return {
+        ...response.data.data,
+        data: memberData.activities
+      };
+    }
+    
+    // Return empty structure if no activities found
+    return {
+      ...response.data.data,
+      data: []
+    };
   }
   
   async fetchPastEvents(
