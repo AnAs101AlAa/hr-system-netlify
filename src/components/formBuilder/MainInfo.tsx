@@ -1,5 +1,4 @@
-import InputField from "@/components/generics/InputField";
-import TextAreaField from "@/components/generics/TextAreaField";
+import { InputField, TextAreaField } from "tccd-ui";
 import type { form } from "@/types/form";
 import { forwardRef, useImperativeHandle } from "react";
 import type { FormEditorHandle } from "@/types/form";

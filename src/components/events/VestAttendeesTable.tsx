@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import type { VestAttendee } from "@/types/event";
 import { format } from "@/utils";
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
-import Button from "@/components/generics/Button";
+import { ButtonTypes, ButtonWidths, Button } from "tccd-ui";
 import VestStatusBadge from "./VestStatusBadge";
 import VestActionModal from "./VestActionModal";
+import VestTimelineModal from "./VestTimelineModal";
 import { useUpdateVestStatus } from "@/queries/events";
 import toast from "react-hot-toast";
 
@@ -28,11 +28,26 @@ const VestAttendeesTable = ({ attendees, eventId, setAttendees }: VestAttendeesT
         action: null,
     });
 
+    const [timelineModal, setTimelineModal] = useState<{
+        isOpen: boolean;
+        attendee: VestAttendee | null;
+    }>({
+        isOpen: false,
+        attendee: null,
+    });
+
     const handleActionClick = (attendee: VestAttendee, action: "assign" | "return") => {
         setModalState({
             isOpen: true,
             attendee,
             action,
+        });
+    };
+
+    const handleTimelineClick = (attendee: VestAttendee) => {
+        setTimelineModal({
+            isOpen: true,
+            attendee,
         });
     };
 
@@ -44,8 +59,15 @@ const VestAttendeesTable = ({ attendees, eventId, setAttendees }: VestAttendeesT
         });
     };
 
+    const handleTimelineClose = () => {
+        setTimelineModal({
+            isOpen: false,
+            attendee: null,
+        });
+    };
+
     useEffect(() => {
-        if(!isSubmitting) return;
+        if (!isSubmitting) return;
 
         const handleModalConfirm = async () => {
             if (modalState.attendee && modalState.action) {
@@ -73,7 +95,7 @@ const VestAttendeesTable = ({ attendees, eventId, setAttendees }: VestAttendeesT
                         setIsSubmitting(false);
                         handleModalClose();
                     }, 500);
-                } catch(error) {
+                } catch (error) {
                     console.error("Error updating vest status:", error);
                     toast.error("Failed to update vest status. Please try again.");
                 }
@@ -84,48 +106,60 @@ const VestAttendeesTable = ({ attendees, eventId, setAttendees }: VestAttendeesT
     }, [isSubmitting]);
 
     const renderActionButton = (attendee: VestAttendee) => {
-        switch (attendee.status) {
-            case "NotReceived":
-                return (
-                    <div className="flex items-center">
-                        <div className="[&>button]:!mt-0 [&>button]:!lg:mt-0">
-                            <Button
-                                buttonText="Assign Vest"
-                                onClick={() => handleActionClick(attendee, "assign")}
-                                type={ButtonTypes.TERTIARY}
-                                width={ButtonWidths.AUTO}
-                            />
-                        </div>
-                    </div>
-                );
-            case "Received":
-                return (
-                    <div className="flex items-center">
-                        <div className="[&>button]:!mt-0 [&>button]:!lg:mt-0">
-                            <Button
-                                buttonText="Return Vest"
-                                onClick={() => handleActionClick(attendee, "return")}
-                                type={ButtonTypes.SECONDARY}
-                                width={ButtonWidths.AUTO}
-                            />
-                        </div>
-                    </div>
-                );
-            case "Returned":
-                return (
-                    <div className="text-sm text-gray-600 italic">
-                        Vest Returned
-                    </div>
-                );
-            default:
-                return null;
-        }
+        const actionButton = () => {
+            switch (attendee.status) {
+                case "NotReceived":
+                    return (
+                        <Button
+                            buttonText="Assign Vest"
+                            onClick={() => handleActionClick(attendee, "assign")}
+                            type={ButtonTypes.TERTIARY}
+                            width={ButtonWidths.AUTO}
+                        />
+                    );
+                case "Received":
+                    return (
+                        <Button
+                            buttonText="Return Vest"
+                            onClick={() => handleActionClick(attendee, "return")}
+                            type={ButtonTypes.SECONDARY}
+                            width={ButtonWidths.AUTO}
+                        />
+                    );
+                case "Returned":
+                    return (
+                        <Button
+                            buttonText="Assign Vest"
+                            onClick={() => handleActionClick(attendee, "assign")}
+                            type={ButtonTypes.TERTIARY}
+                            width={ButtonWidths.AUTO}
+                        />
+                    );
+                default:
+                    return null;
+            }
+        };
+
+        return (
+            <div className="flex items-center gap-2">
+                <div className="[&>button]:!mt-0 [&>button]:!lg:mt-0">
+                    {actionButton()}
+                </div>
+                <div className="[&>button]:!mt-0 [&>button]:!lg:mt-0">
+                    <Button
+                        buttonText="Timeline"
+                        onClick={() => handleTimelineClick(attendee)}
+                        type={ButtonTypes.GHOST}
+                        width={ButtonWidths.AUTO}
+                    />
+                </div>
+            </div>
+        );
     };
 
     return (
         <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
-                {/* Table Header */}
                 <thead className="bg-gray-50">
                     <tr>
                         <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
@@ -141,13 +175,12 @@ const VestAttendeesTable = ({ attendees, eventId, setAttendees }: VestAttendeesT
                         <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
                             Vest Status
                         </th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
+                        <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap min-w-[200px]">
                             Actions
                         </th>
                     </tr>
                 </thead>
 
-                {/* Table Body */}
                 <tbody className="divide-y divide-gray-100">
                     {attendees && attendees.length > 0 ? (
                         attendees.map((attendee, index) => (
@@ -196,7 +229,6 @@ const VestAttendeesTable = ({ attendees, eventId, setAttendees }: VestAttendeesT
                 </tbody>
             </table>
 
-            {/* Modal */}
             <VestActionModal
                 isOpen={modalState.isOpen}
                 onClose={handleModalClose}
@@ -204,6 +236,14 @@ const VestAttendeesTable = ({ attendees, eventId, setAttendees }: VestAttendeesT
                 onConfirm={() => setIsSubmitting(true)}
                 attendeeName={modalState.attendee?.name || ""}
                 action={modalState.action || "assign"}
+            />
+
+            <VestTimelineModal
+                isOpen={timelineModal.isOpen}
+                onClose={handleTimelineClose}
+                attendeeName={timelineModal.attendee?.name || ""}
+                memberId={String(timelineModal.attendee?.id || "")}
+                eventId={eventId || ""}
             />
         </div>
     );

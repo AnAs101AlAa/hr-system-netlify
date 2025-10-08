@@ -1,7 +1,6 @@
 import { format } from "../../utils";
 import type { form } from "@/types/form";
-import Button from "../generics/Button";
-import { ButtonTypes } from "@/constants/presets";
+import { ButtonTypes, Button } from "tccd-ui";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 

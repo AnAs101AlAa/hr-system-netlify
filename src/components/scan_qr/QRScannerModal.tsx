@@ -1,9 +1,9 @@
-import Modal from "@/components/generics/Modal";
 import { ScannerContainer, ScannerActions } from "@/components/scan_qr";
 import ReasonPopup from "@/components/QR/ReasonPopup";
 import { useAttendanceFlow } from "@/hooks/useAttendanceFlow";
 import type { Event } from "@/types/event";
 import { useState, useEffect, useRef } from "react";
+import { Modal } from "tccd-ui";
 
 /**
  * Modal for scanning QR codes and handling attendance flow.
@@ -33,6 +33,7 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
     handleScan,
     confirmAttendance,
     reset,
+    eventType,
   } = useAttendanceFlow(event.id);
 
   // Which reason popup is currently open
@@ -64,6 +65,13 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
       setReasonPopupOpen(null);
     }
   }, [attendanceStatus, lateReason, leaveExcuse, reset]);
+
+  // Reset dismissedRef when memberData becomes null (after reset)
+  useEffect(() => {
+    if (!memberData) {
+      dismissedRef.current = false;
+    }
+  }, [memberData]);
 
   // After a successful submit closed the popup and queued confirm, run it.
   useEffect(() => {
@@ -126,14 +134,18 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
               <ScannerActions
                 attendanceConfirmed={attendanceConfirmed}
                 memberData={memberData}
+                attendanceStatus={attendanceStatus}
                 isConfirming={isConfirming}
                 lateReason={lateReason}
+                leaveExcuse={leaveExcuse}
                 onConfirmAttendance={confirmAttendance}
                 onReturnToEvents={handleReturnToEvent}
                 onResetScanner={() => {
                   dismissedRef.current = false;
                   reset();
                 }}
+                eventType={eventType}
+                eventId={event.id}
               />
             </div>
           </div>
@@ -156,8 +168,8 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
         onClose={(status, reason) => {
           setReasonPopupOpen(null);
           if (status === 1) {
-            // User canceled -> don't re-open automatically for the same scan
-            dismissedRef.current = true;
+            // User canceled -> reset scanner and allow rescan
+            reset();
           }
           if (status === 0 && reason) {
             // User submitted
@@ -177,7 +189,8 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
         onClose={(status, reason) => {
           setReasonPopupOpen(null);
           if (status === 1) {
-            dismissedRef.current = true; // canceled -> don't re-open instantly
+            // User canceled -> reset scanner and allow rescan
+            reset();
           }
           if (status === 0 && reason) {
             dismissedRef.current = false;

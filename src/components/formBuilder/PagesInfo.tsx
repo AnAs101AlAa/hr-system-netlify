@@ -1,10 +1,5 @@
-import InputField from "@/components/generics/InputField";
-import TextAreaField from "@/components/generics/TextAreaField";
-import NumberField from "@/components/generics/NumberField";
-import DropdownMenu from "@/components/generics/dropDownMenu";
-import Button from "@/components/generics/Button";
+import { DropdownMenu, InputField, NumberField, TextAreaField, Button, ButtonTypes } from "tccd-ui";
 import { FaXmark } from "react-icons/fa6";
-import { ButtonTypes } from "@/constants/presets";
 import type { form, formPage, formPageError } from "@/types/form";
 import type { Question } from "@/types/question";
 import toast from "react-hot-toast";
@@ -58,7 +53,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         });
     }
 
-    const handleQQuestionChange = (index: number, pageIndex: number, field: string, value: string | boolean | number | null) => {
+    const handleQQuestionChange = (index: number, pageIndex: number, field: string, value: string | string[] | boolean | number | null) => {
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
             if (value === null) {
@@ -284,6 +279,19 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                         </div>
                                         <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMultiSelect ? "true" : "false"} onChange={(selected) => handleQQuestionChange(qIndex, index, "isMultiSelect", selected === "true")} label="Allow Multiple Answers" />
                                         </div>
+                                    )}
+                                    {question.questionType === "Upload" && (
+                                        <>
+                                        <div className="w-full lg:w-[49%]">
+                                            <NumberField label="Max File Size (MB)" id={`question-maxfilesize-${index}-${qIndex}`} value={question.maxFileSizeMB ? question.maxFileSizeMB.toString() : ""} placeholder="e.g. 5" onChange={(e) => handleQQuestionChange(qIndex, index, "maxFileSizeMB", e.target.value !== "" ? parseInt(e.target.value) : null)} />
+                                        </div>
+                                        <div className="w-full lg:w-[49%]">
+                                            <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.allowMultiple ? "true" : "false"} onChange={(selected) => handleQQuestionChange(qIndex, index, "allowMultiple", selected === "true")} label="Allow Multiple Files" />
+                                        </div>
+                                        <div className="w-full">
+                                            <InputField label="Allowed File Types (comma separated, e.g. .pdf, .docx)" id={`question-allowedfiletypes-${index}-${qIndex}`} value={question.allowedFileTypes ? question.allowedFileTypes.join(", ") : ""} placeholder="e.g. .pdf, .docx" onChange={(e) => handleQQuestionChange(qIndex, index, "allowedFileTypes", e.target.value !== "" ? e.target.value.split(", ").map(type => type.trim()) : [])} />
+                                        </div>
+                                        </>
                                     )}
                                     <div className="space-y-2">
                                         <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""}</p>

@@ -2,8 +2,8 @@ import type { Attendee } from "../../types/event";
 import AttendeesTable from "./AttendeesTable";
 import AttendeesCardView from "./AttendeesCardView";
 import { useEffect, useState } from "react";
-import SearchField from "../generics/SearchField";
 import AttendeeTimelineModal from "./AttendeeTimelineModal";
+import { SearchField } from "tccd-ui";
 
 interface AttendeesListProps {
   attendees: Attendee[];

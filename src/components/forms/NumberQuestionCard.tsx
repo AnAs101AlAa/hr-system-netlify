@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
 import { FaQuestionCircle, FaAsterisk } from 'react-icons/fa';
-import NumberField from '@/components/generics/NumberField';
 import type { NumberQuestion } from '@/types/question';
 import { createNumberValidationSchema } from '@/schemas/questionSchemas';
 import { forwardRef, useImperativeHandle } from "react";
 import type { QuestionCardHandle } from '@/types/form';
+import { NumberField } from 'tccd-ui';
 
 interface NumberQuestionCardProps {
   question: NumberQuestion;

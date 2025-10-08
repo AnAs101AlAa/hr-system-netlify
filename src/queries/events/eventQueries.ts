@@ -1,7 +1,8 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { eventsApiInstance } from "./eventApi";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@/utils";
+import type { Event } from "@/types/event";
 
 export const eventKeys = {
   all: ["events"] as const,
@@ -26,6 +27,8 @@ export const eventKeys = {
     ["recordLateArrivalExcuse", eventId, memberId] as const,
   recordLeaveEarly: (eventId: string, memberId: string) =>
     ["recordLeaveEarly", eventId, memberId] as const,
+  vestTimeline: (eventId: string, memberId: string) =>
+    ["vestTimeline", eventId, memberId] as const,
 };
 // Mutation: Request Attendance
 export const useRequestAttendance = () => {
@@ -150,6 +153,82 @@ export const useUpcomingEvents = (
   });
 };
 
+export const useAddEvent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (eventData: Omit<Event, "id">) =>
+      eventsApiInstance.createEvent(eventData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.upcomingEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.pastEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.eventTypes() });
+      toast.success("Event created successfully");
+    },
+    onError: (error) => {
+      const errorMessage = getErrorMessage(error);
+      console.error("Error creating event:", errorMessage);
+      toast.error("Failed to create event: " + errorMessage);
+    },
+  });
+};
+
+export const useUpdateEvent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      eventId,
+      eventData,
+    }: {
+      eventId: string;
+      eventData: Omit<Event, "id">;
+    }) => eventsApiInstance.updateEvent(eventId, eventData),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.upcomingEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.pastEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.eventTypes() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.details() });
+      if (variables?.eventId) {
+        queryClient.invalidateQueries({
+          queryKey: eventKeys.detail(variables.eventId),
+        });
+      }
+      toast.success("Event updated successfully");
+    },
+    onError: (error) => {
+      const errorMessage = getErrorMessage(error);
+      console.error("Error updating event: ", errorMessage);
+      toast.error("Failed to update event: " + errorMessage);
+    },
+  });
+};
+
+export const useDeleteEvent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (eventId: string) => eventsApiInstance.deleteEvent(eventId),
+    onSuccess: (_data, eventId) => {
+      queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.upcomingEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.pastEvents() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.eventTypes() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.details() });
+      if (eventId) {
+        queryClient.invalidateQueries({ queryKey: eventKeys.detail(eventId) });
+      }
+      toast.success("Event deleted successfully");
+    },
+    onError: (error) => {
+      const errorMessage = getErrorMessage(error);
+      console.error("Error deleting event: ", errorMessage);
+      toast.error("Failed to delete event: " + errorMessage);
+    },
+  });
+};
+
 export const useOngoingEvent = (toDate: string) => {
   return useQuery({
     queryKey: [...eventKeys.ongoingEvent(toDate)],
@@ -221,5 +300,17 @@ export const usePastEvents = (
       );
       return { items: data, total: count };
     },
+  });
+};
+
+// Hook to fetch vest timeline
+export const useVestTimeline = (memberId: string, eventId: string) => {
+  return useQuery({
+    queryKey: eventKeys.vestTimeline(eventId, memberId),
+    queryFn: async () => {
+      const data = await eventsApiInstance.fetchVestTimeline(memberId, eventId);
+      return data;
+    },
+    enabled: !!memberId && !!eventId,
   });
 };

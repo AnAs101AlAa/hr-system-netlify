@@ -21,6 +21,7 @@ export function useAttendanceFlow(eventId: string) {
   const [leaveExcuse, setLeaveExcuse] = useState("");
   const [isConfirming, setIsConfirming] = useState(false);
   const [attendanceConfirmed, setAttendanceConfirmed] = useState(false);
+  const [eventType,setEventType]=useState('')
 
   const requestAttendance = useRequestAttendance();
   const checkAttendanceStatus = useCheckAttendanceStatus();
@@ -38,6 +39,7 @@ export function useAttendanceFlow(eventId: string) {
         memberId: userId,
         eventId,
       });
+      setEventType(eventResponse.eventType)
       setAttendanceStatus(res.status);
       const eventStartDate = new Date(eventResponse.startDate);
       const eventStartTime = eventStartDate.toLocaleTimeString("en-US", {
@@ -134,6 +136,7 @@ export function useAttendanceFlow(eventId: string) {
       }
       setAttendanceConfirmed(true);
       toast.success("Attendance confirmed!");
+      setEventType('')
     } catch (error) {
       setError(getErrorMessage(error));
     } finally {
@@ -167,5 +170,7 @@ export function useAttendanceFlow(eventId: string) {
     checkStatus,
     confirmAttendance,
     reset,
+    setEventType,
+    eventType
   };
 }

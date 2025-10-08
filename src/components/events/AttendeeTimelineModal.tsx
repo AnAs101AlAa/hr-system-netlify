@@ -1,6 +1,6 @@
 import type { Attendee } from "@/types/event";
-import Modal from "../generics/Modal";
 import format from "@/utils/Formater";
+import { Modal } from "tccd-ui";
 
 export default function AttendeeTimelineModal ({Attendee, onCLose} : {Attendee: Attendee, onCLose: () => void}) {
     return (

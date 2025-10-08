@@ -1,6 +1,5 @@
 import { FaXmark } from "react-icons/fa6";
-import NumberField from "@/components/generics/NumberField";
-import InputField from "@/components/generics/InputField";
+import { InputField, NumberField } from "tccd-ui";
 import type { form, formPage } from "@/types/form";
 
 export default function BranchInfo({

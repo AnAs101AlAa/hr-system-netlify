@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import type { VestAttendee } from "@/types/event";
 import { format } from "@/utils";
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
-import Button from "@/components/generics/Button";
+import { ButtonTypes, ButtonWidths, Button } from "tccd-ui";
 import VestStatusBadge from "./VestStatusBadge";
 import VestActionModal from "./VestActionModal";
+import VestTimelineModal from "./VestTimelineModal";
 import { useUpdateVestStatus } from "@/queries/events";
 import toast from "react-hot-toast";
 
@@ -28,11 +28,26 @@ const VestAttendeesCardView = ({ attendees, eventId, setAttendees }: VestAttende
         action: null,
     });
 
+    const [timelineModal, setTimelineModal] = useState<{
+        isOpen: boolean;
+        attendee: VestAttendee | null;
+    }>({
+        isOpen: false,
+        attendee: null,
+    });
+
     const handleActionClick = (attendee: VestAttendee, action: "assign" | "return") => {
         setModalState({
             isOpen: true,
             attendee,
             action,
+        });
+    };
+
+    const handleTimelineClick = (attendee: VestAttendee) => {
+        setTimelineModal({
+            isOpen: true,
+            attendee,
         });
     };
 
@@ -44,8 +59,15 @@ const VestAttendeesCardView = ({ attendees, eventId, setAttendees }: VestAttende
         });
     };
 
+    const handleTimelineClose = () => {
+        setTimelineModal({
+            isOpen: false,
+            attendee: null,
+        });
+    };
+
     useEffect(() => {
-        if(!isSubmitting) return;
+        if (!isSubmitting) return;
 
         const handleModalConfirm = async () => {
             if (modalState.attendee && modalState.action) {
@@ -73,7 +95,7 @@ const VestAttendeesCardView = ({ attendees, eventId, setAttendees }: VestAttende
                         setIsSubmitting(false);
                         handleModalClose();
                     }, 500);
-                } catch(error) {
+                } catch (error) {
                     console.error("Error updating vest status:", error);
                     toast.error("Failed to update vest status. Please try again.");
                 }
@@ -84,38 +106,55 @@ const VestAttendeesCardView = ({ attendees, eventId, setAttendees }: VestAttende
     }, [isSubmitting]);
 
     const renderActionButton = (attendee: VestAttendee) => {
-        switch (attendee.status) {
-            case "NotReceived":
-                return (
-                    <div className="[&>button]:!mt-0 [&>button]:!lg:mt-0">
+        const actionButton = () => {
+            switch (attendee.status) {
+                case "NotReceived":
+                    return (
                         <Button
                             buttonText="Assign Vest"
                             onClick={() => handleActionClick(attendee, "assign")}
                             type={ButtonTypes.TERTIARY}
                             width={ButtonWidths.FULL}
                         />
-                    </div>
-                );
-            case "Received":
-                return (
-                    <div className="[&>button]:!mt-0 [&>button]:!lg:mt-0">
+                    );
+                case "Received":
+                    return (
                         <Button
                             buttonText="Return Vest"
                             onClick={() => handleActionClick(attendee, "return")}
                             type={ButtonTypes.SECONDARY}
                             width={ButtonWidths.FULL}
                         />
-                    </div>
-                );
-            case "Returned":
-                return (
-                    <span className="text-sm text-gray-600 italic text-center block">
-                        Vest Returned
-                    </span>
-                );
-            default:
-                return null;
-        }
+                    );
+                case "Returned":
+                    return (
+                        <Button
+                            buttonText="Assign Vest"
+                            onClick={() => handleActionClick(attendee, "assign")}
+                            type={ButtonTypes.TERTIARY}
+                            width={ButtonWidths.FULL}
+                        />
+                    );
+                default:
+                    return null;
+            }
+        };
+
+        return (
+            <div className="space-y-2">
+                <div className="[&>button]:!mt-0 [&>button]:!lg:mt-0">
+                    {actionButton()}
+                </div>
+                <div className="[&>button]:!mt-0 [&>button]:!lg:mt-0">
+                    <Button
+                        buttonText="View Timeline"
+                        onClick={() => handleTimelineClick(attendee)}
+                        type={ButtonTypes.GHOST}
+                        width={ButtonWidths.FULL}
+                    />
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -151,7 +190,6 @@ const VestAttendeesCardView = ({ attendees, eventId, setAttendees }: VestAttende
                             </div>
                         </div>
 
-                        {/* Action Button */}
                         <div className="pt-2">
                             {renderActionButton(attendee)}
                         </div>
@@ -161,7 +199,6 @@ const VestAttendeesCardView = ({ attendees, eventId, setAttendees }: VestAttende
                 <div className="p-8 text-center text-gray-500">No attendees found</div>
             )}
 
-            {/* Modal */}
             <VestActionModal
                 isOpen={modalState.isOpen}
                 onClose={handleModalClose}
@@ -169,6 +206,14 @@ const VestAttendeesCardView = ({ attendees, eventId, setAttendees }: VestAttende
                 onConfirm={() => setIsSubmitting(true)}
                 attendeeName={modalState.attendee?.name || ""}
                 action={modalState.action || "assign"}
+            />
+
+            <VestTimelineModal
+                isOpen={timelineModal.isOpen}
+                onClose={handleTimelineClose}
+                attendeeName={timelineModal.attendee?.name || ""}
+                memberId={String(timelineModal.attendee?.id || "")}
+                eventId={eventId || ""}
             />
         </div>
     );

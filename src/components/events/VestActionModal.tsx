@@ -1,5 +1,4 @@
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
-import Button from "@/components/generics/Button";
+import { Button, ButtonTypes, ButtonWidths } from "tccd-ui";
 
 interface VestActionModalProps {
     isOpen: boolean;

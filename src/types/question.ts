@@ -37,6 +37,16 @@ export interface NumberQuestion {
   isMandatory: boolean;
 }
 
-export type Question = EssayQuestion | MCQQuestion | DateQuestion | NumberQuestion;
+export interface UploadQuestion {
+  questionType: "Upload";
+  questionNumber: number;
+  questionText: string;
+  isMandatory: boolean;
+  maxFileSizeMB?: number; 
+  allowedFileTypes: string[];
+  allowMultiple: boolean;
+}
 
-export type Answer = {qid: number, answer: string | number | string[]};
+export type Question = EssayQuestion | MCQQuestion | DateQuestion | NumberQuestion | UploadQuestion;
+
+export type Answer = {qid: number, answer: string | number | string[] | File | File[]};

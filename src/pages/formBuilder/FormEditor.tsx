@@ -1,18 +1,15 @@
 import { useParams } from "react-router-dom";
 import { useForm, useCreateForm } from "@/queries/forms/formQueries";
-import LoadingPage from "@/components/generics/LoadingPage";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import WithNavbar from "@/components/hoc/WithNavbar";
 import type { form } from "@/types/form";
-import Button from "@/components/generics/Button";
-import { ButtonTypes } from "@/constants/presets";
 import MainInfo from "@/components/formBuilder/MainInfo";
 import PagesInfo from "@/components/formBuilder/PagesInfo";
 import type { FormEditorHandle } from "@/types/form";
 import { getErrorMessage } from "@/utils";
 import { useNavigate } from "react-router-dom";
-import ErrorComponent from "@/components/generics/Error";
+import { LoadingPage, ErrorScreen, Button, ButtonTypes } from "tccd-ui";
 
 export default function FormEditor() {
     const { formId } = useParams<{ formId: string }>();
@@ -107,7 +104,7 @@ export default function FormEditor() {
     }
 
     if(isError) {
-        return <ErrorComponent title="Error loading form" message="failed to fetch form data please try again later or contact IT team" />;
+        return <ErrorScreen title="Error loading form" message="failed to fetch form data please try again later or contact IT team" />;
     }
 
     return (

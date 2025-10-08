@@ -1,5 +1,4 @@
-import Button from "../generics/Button";
-import { ButtonTypes, ButtonWidths } from "@/constants/presets";
+import { ButtonTypes, ButtonWidths, Button } from "tccd-ui";
 
 const ErrorFallBack = ({
   error,

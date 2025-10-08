@@ -4,12 +4,11 @@ import type { Answer, Question } from "@/types/question";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import Button from "@/components/generics/Button";
 import FormLoadingComponent from "@/components/forms/Loading";
-import ErrorComponent from "@/components/generics/Error";
 import type { QuestionCardHandle } from "@/types/form";
 import { SUBMISSION_CATCHER } from "@/constants/formConstants";
 import { useNavigate } from "react-router-dom";
+import { ErrorScreen, Button } from "tccd-ui";
 
 export default function FormView() {
   const navigate = useNavigate();
@@ -135,7 +134,7 @@ export default function FormView() {
     <div className="min-h-screen pb-4 md:pb-10 md:pt-4">
       {isFetching && <FormLoadingComponent />}
       {isError && (
-        <ErrorComponent
+        <ErrorScreen
           title="Error Loading Form"
           message="We encountered an error while loading this form, Please try again later."
         />
