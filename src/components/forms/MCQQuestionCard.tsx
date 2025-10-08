@@ -56,7 +56,7 @@ const MCQQuestionCard = forwardRef<QuestionCardHandle, MCQQuestionCardProps>(({
         validate: validateQuestion,
         collect: () => { return { qid: question.questionNumber, answer: answer } },
         clear: clearSelection,
-        reassign: (ans) => { if (typeof ans.answer === 'string' || Array.isArray(ans.answer)) setAnswer(ans.answer); }
+        reassign: (ans) => { if (typeof ans.answer === 'string' || Array.isArray(ans.answer)) setAnswer(ans.answer as string | string[]); }
     }));
     
     return (

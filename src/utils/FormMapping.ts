@@ -41,47 +41,51 @@ export const formRequestMapper = (formData: form) => {
       title: page.title,
       description: page.description,
       pageNumber: index,
-      questions: page.questions.map((q) => {
-        switch (q.questionType) {
-          case "Essay":
-            return {
-              questionType: "Essay",
-              questionNumber: q.questionNumber,
-              questionText: q.questionText,
-              isMandatory: q.isMandatory,
-              ...(q.maxLength !== undefined ? { maxLength: q.maxLength } : {}),
-              ...(q.isTextArea !== undefined
-                ? { isTextArea: q.isTextArea }
-                : {}),
-            } satisfies EssayQuestion;
+      questions: page.questions
+        .map((q) => {
+          switch (q.questionType) {
+            case "Essay":
+              return {
+                questionType: "Essay",
+                questionNumber: q.questionNumber,
+                questionText: q.questionText,
+                isMandatory: q.isMandatory,
+                ...(q.maxLength !== undefined ? { maxLength: q.maxLength } : {}),
+                ...(q.isTextArea !== undefined
+                  ? { isTextArea: q.isTextArea }
+                  : {}),
+              } satisfies EssayQuestion;
 
-          case "MCQ":
-            return {
-              questionType: "MCQ",
-              questionNumber: q.questionNumber,
-              questionText: q.questionText,
-              isMandatory: q.isMandatory,
-              choices: q.choices,
-              isMultiSelect: q.isMultiSelect,
-            } satisfies MCQQuestion;
+            case "MCQ":
+              return {
+                questionType: "MCQ",
+                questionNumber: q.questionNumber,
+                questionText: q.questionText,
+                isMandatory: q.isMandatory,
+                choices: q.choices,
+                isMultiSelect: q.isMultiSelect,
+              } satisfies MCQQuestion;
 
-          case "Date":
-            return {
-              questionType: "Date",
-              questionNumber: q.questionNumber,
-              questionText: q.questionText,
-              isMandatory: q.isMandatory,
-            } satisfies DateQuestion;
+            case "Date":
+              return {
+                questionType: "Date",
+                questionNumber: q.questionNumber,
+                questionText: q.questionText,
+                isMandatory: q.isMandatory,
+              } satisfies DateQuestion;
 
-          case "Number":
-            return {
-              questionType: "Number",
-              questionNumber: q.questionNumber,
-              questionText: q.questionText,
-              isMandatory: q.isMandatory,
-            } satisfies NumberQuestion;
-        }
-      }),
+            case "Number":
+              return {
+                questionType: "Number",
+                questionNumber: q.questionNumber,
+                questionText: q.questionText,
+                isMandatory: q.isMandatory,
+              } satisfies NumberQuestion;
+            default:
+              return undefined;
+          }
+        })
+        .filter((q) => q !== undefined),
     }));
 
     const formDataWithBranches: serverRequestForm = {

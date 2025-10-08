@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source "./src/**/*.{js,jsx,ts,tsx}";
+@source "../node_modules/tccd-ui/dist/**/*.{js,jsx,ts,tsx}";
 
 @theme {
   --color-dashboard-welcome-bg: #295e7e2e;

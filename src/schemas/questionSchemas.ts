@@ -16,6 +16,10 @@ export const numberAnswerSchema = z.object({
   answer: z.number(),
 });
 
+export const uploadAnswerSchema = z.object({
+  answer: z.instanceof(File),
+});
+
 export const createEssayValidationSchema = (question: {
   maxLength?: number;
   isMandatory: boolean;
@@ -109,7 +113,36 @@ export const createNumberValidationSchema = (question: {
   }
 };
 
+export const createUploadValidationSchema = (question: {
+  isMandatory: boolean;
+  maxFileSizeMB?: number;
+  allowedFileTypes: string[];
+}) => {
+  let schema = z.instanceof(File).optional();
+
+  if (question.isMandatory) {
+    schema = schema.refine((val) => val !== undefined, "File is required");
+  }
+
+  if (question.maxFileSizeMB) {
+    schema = schema.refine(
+      (val) => val === undefined || (val.size / 1024 / 1024) <= question.maxFileSizeMB!,
+      `File must be smaller than ${question.maxFileSizeMB}MB`
+    );
+  }
+
+  if (question.allowedFileTypes) {
+    schema = schema.refine(
+      (val) => val === undefined || question.allowedFileTypes.includes(val.type),
+      `File type must be one of: ${question.allowedFileTypes.join(", ")}`
+    );
+  }
+
+  return schema;
+};
+
 export type EssayAnswerFormData = z.infer<typeof essayAnswerSchema>;
 export type MCQAnswerFormData = z.infer<typeof mcqAnswerSchema>;
 export type DateAnswerFormData = z.infer<typeof dateAnswerSchema>;
 export type NumberAnswerFormData = z.infer<typeof numberAnswerSchema>;
+export type UploadAnswerFormData = z.infer<typeof uploadAnswerSchema>;
