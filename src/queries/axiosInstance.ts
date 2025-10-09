@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const systemApi = axios.create({
-  baseURL: "/api",
+  baseURL: "https://test-prod.runasp.net/api",
   timeout: 10000,
   withCredentials: true,
   headers: {
