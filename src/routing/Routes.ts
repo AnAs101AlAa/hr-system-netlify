@@ -8,8 +8,8 @@ const routes: { path: string; Component: React.FC; protected?: boolean; roles?: 
   { path: "/form/:formId", Component: FormView },
   { path: "/form/finish", Component: FormSubmissionPage },
   { path: "/unauthorized", Component: UnauthorizedPage },
-  { path: "/form-builder", Component: FormBuilder, protected: true, roles: ["Head", "HighBoard", "Admin"] },
-  { path: "/form-builder/:formId", Component: FormEditor, protected: true, roles: ["Head", "HighBoard", "Admin"] },
+  { path: "/form-builder", Component: FormBuilder, protected: true, roles: ["HR", "Head", "HighBoard", "Admin"] },
+  { path: "/form-builder/:formId", Component: FormEditor, protected: true, roles: ["HR", "Head", "HighBoard", "Admin"] },
 ];
 
 export default routes;
