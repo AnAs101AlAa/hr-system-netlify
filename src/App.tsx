@@ -6,7 +6,7 @@ import MemberRoute from "./routing/ProtectedRoutes";
 function App() {
   return (
     <BrowserRouter>
-      <Toaster />
+      <Toaster containerClassName="text-[14px] md:text-[15px] lg:text-[16px]" />
       <Routes>
         {routes.map(
           ({ path, Component, protected: isProtected, roles }, index) =>
