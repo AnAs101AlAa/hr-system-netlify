@@ -111,7 +111,7 @@ const EventDetails = () => {
     return <EventNotFound />;
   }
 
-  if (userRole && userRole.includes("Vest")) {
+  if (userRole && userRole.length === 1 && userRole[0] === "Vest") {
     return (
       <VestEventDetailsView
         event={event}
