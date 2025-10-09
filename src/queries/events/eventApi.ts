@@ -85,9 +85,9 @@ class eventsApi {
     );
 
     // Access count using the correct structure: response.data.data.items.length
-    const items = response.data?.data?.items;
-    if (Array.isArray(items)) {
-      return items.length;
+    const items = response.data?.data?.totalCount;
+    if (typeof items === "number") {
+      return items;
     }
 
     console.warn(
