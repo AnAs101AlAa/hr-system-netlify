@@ -22,6 +22,8 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     const [pageErrors, setPageErrors] = useState<{[index: number]: formPageError}>({});
     const [mainError, setMainError] = useState<string>("");
 
+    console.log(formDataState);
+
     const handleAddPage = () => {
         setFormDataState((prev) => {
             if (!prev) return prev;
@@ -30,6 +32,15 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         });
     }
 
+    const handleDeletePage = (pageIndex: number) => {
+        setFormDataState((prev) => {
+            if (!prev || !prev.pages) return prev;
+            const updatedPages = [...prev.pages];
+            updatedPages.splice(pageIndex, 1);
+            return { ...prev, pages: updatedPages };
+        });
+    };
+    
     const handleAddQuestion = (pageIndex: number) => {
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
@@ -226,7 +237,8 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
             </p>
             {formDataState?.pages && formDataState.pages.length > 0 ? (
                 formDataState.pages.map((page, index) => (
-                    <div key={index} className="p-4 border border-gray-300 rounded-md space-y-3">
+                    <div key={index} className="p-4 border border-gray-300 rounded-md space-y-3 relative">
+                        <FaXmark className="text-primary cursor-pointer size-4 md:size-5 absolute right-4 top-4" onClick={() => handleDeletePage(index)} />
                         <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Primary information</p>
                         <InputField label="Page Title" id={`page-title-${index}`} value={page.title} placeholder="Enter page title" onChange={(e) => handleInputChange(e, "pages", index, "title")} error={pageErrors[index]?.title} />
                         {pageErrors[index]?.title && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.title}</p>}
