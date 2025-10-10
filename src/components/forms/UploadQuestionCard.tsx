@@ -82,6 +82,12 @@ const UploadQuestionCard = forwardRef<QuestionCardHandle, UploadQuestionCardProp
           </div>
         </div>
 
+        {question.description && (
+            <p className="text-[13px] md:text-[14px] lg:text-[15px] text-gray-600 italic pl-6">
+                {question.description}
+            </p>
+        )}
+
         <div>
           <label htmlFor={`question-${question.questionNumber}`} className="block font-medium mb-2">
             Upload file{question.isMandatory ? " *" : ""}

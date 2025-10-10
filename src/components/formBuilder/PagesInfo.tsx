@@ -53,7 +53,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         });
     }
 
-    const handleQQuestionChange = (index: number, pageIndex: number, field: string, value: string | string[] | boolean | number | null) => {
+    const handleQuestionChange = (index: number, pageIndex: number, field: string, value: string | string[] | boolean | number | null) => {
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
             if (value === null) {
@@ -240,20 +240,21 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                 <div key={qIndex} className="p-3 border border-gray-200 rounded-md bg-white space-y-3 flex flex-wrap lg:gap-[2%] relative">
                                     <FaXmark className="text-primary cursor-pointer size-4 md:size-5 absolute right-4 top-4" onClick={() => handleRemoveQuestion(index, qIndex)} />
                                     <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Question {qIndex + 1}</p>
-                                    <InputField label="Question Text" id={`question-text-${index}-${qIndex}`} value={question.questionText} placeholder="Enter question text" onChange={(e) => handleQQuestionChange(qIndex, index, "questionText", e.target.value)} error={pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""} />
+                                    <InputField label="Question Text" id={`question-text-${index}-${qIndex}`} value={question.questionText} placeholder="Enter question text" onChange={(e) => handleQuestionChange(qIndex, index, "questionText", e.target.value)} error={pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""} />
+                                    <TextAreaField label="Question Description (optional)" id={`question-description-${index}-${qIndex}`} value={question.description || ""} placeholder="Enter question description" onChange={(e) => handleQuestionChange(qIndex, index, "description", e.target.value)} />
                                     <div className="w-full lg:w-[49%]">
-                                        <DropdownMenu options={QUESTION_TYPES.map((type) => ({ label: type, value: type }))} value={question.questionType} onChange={(selected) => handleQQuestionChange(qIndex, index, "questionType", selected)} label="Question Type" />
+                                        <DropdownMenu options={QUESTION_TYPES.map((type) => ({ label: type, value: type }))} value={question.questionType} onChange={(selected) => handleQuestionChange(qIndex, index, "questionType", selected)} label="Question Type" />
                                     </div>
                                     <div className="w-full lg:w-[49%]">
-                                        <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMandatory ? "true" : "false"} onChange={(selected) => handleQQuestionChange(qIndex, index, "isMandatory", selected === "true")} label="Is Required" />
+                                        <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMandatory ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "isMandatory", selected === "true")} label="Is Required" />
                                     </div>
                                     {question.questionType === "Essay" && (
                                         <>
                                         <div className="w-full lg:w-[49%]">
-                                            <DropdownMenu options={[{ label: "multiline", value: "true" }, { label: "single line", value: "false" }]} value={question.isTextArea ? "true" : "false"} onChange={(selected) => handleQQuestionChange(qIndex, index, "isTextArea", selected === "true")} label="Answer Format" />
+                                            <DropdownMenu options={[{ label: "multiline", value: "true" }, { label: "single line", value: "false" }]} value={question.isTextArea ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "isTextArea", selected === "true")} label="Answer Format" />
                                         </div>
                                         <div className="w-full lg:w-[49%]">
-                                            <NumberField label="Character Limit" id={`question-charlimit-${index}-${qIndex}`} value={question.maxLength ? question.maxLength.toString() : ""} placeholder="e.g. 250" onChange={(e) => handleQQuestionChange(qIndex, index, "maxLength", e.target.value !== "" ? parseInt(e.target.value) : null)} />
+                                            <NumberField label="Character Limit" id={`question-charlimit-${index}-${qIndex}`} value={question.maxLength ? question.maxLength.toString() : ""} placeholder="e.g. 250" onChange={(e) => handleQuestionChange(qIndex, index, "maxLength", e.target.value !== "" ? parseInt(e.target.value) : null)} />
                                         </div>
                                         </>
                                     )}
@@ -277,19 +278,19 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                             </div>
                                             <Button type={ButtonTypes.SECONDARY} onClick={() => handleAddChoice(qIndex, index)} buttonText="+"/>
                                         </div>
-                                        <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMultiSelect ? "true" : "false"} onChange={(selected) => handleQQuestionChange(qIndex, index, "isMultiSelect", selected === "true")} label="Allow Multiple Answers" />
+                                        <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMultiSelect ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "isMultiSelect", selected === "true")} label="Allow Multiple Answers" />
                                         </div>
                                     )}
                                     {question.questionType === "Upload" && (
                                         <>
                                         <div className="w-full lg:w-[49%]">
-                                            <NumberField label="Max File Size (MB)" id={`question-maxfilesize-${index}-${qIndex}`} value={question.maxFileSizeMB ? question.maxFileSizeMB.toString() : ""} placeholder="e.g. 5" onChange={(e) => handleQQuestionChange(qIndex, index, "maxFileSizeMB", e.target.value !== "" ? parseInt(e.target.value) : null)} />
+                                            <NumberField label="Max File Size (MB)" id={`question-maxfilesize-${index}-${qIndex}`} value={question.maxFileSizeMB ? question.maxFileSizeMB.toString() : ""} placeholder="e.g. 5" onChange={(e) => handleQuestionChange(qIndex, index, "maxFileSizeMB", e.target.value !== "" ? parseInt(e.target.value) : null)} />
                                         </div>
                                         <div className="w-full lg:w-[49%]">
-                                            <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.allowMultiple ? "true" : "false"} onChange={(selected) => handleQQuestionChange(qIndex, index, "allowMultiple", selected === "true")} label="Allow Multiple Files" />
+                                            <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.allowMultiple ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "allowMultiple", selected === "true")} label="Allow Multiple Files" />
                                         </div>
                                         <div className="w-full">
-                                            <InputField label="Allowed File Types (comma separated, e.g. .pdf, .docx)" id={`question-allowedfiletypes-${index}-${qIndex}`} value={question.allowedFileTypes ? question.allowedFileTypes.join(", ") : ""} placeholder="e.g. .pdf, .docx" onChange={(e) => handleQQuestionChange(qIndex, index, "allowedFileTypes", e.target.value !== "" ? e.target.value.split(", ").map(type => type.trim()) : [])} />
+                                            <InputField label="Allowed File Types (comma separated, e.g. .pdf, .docx)" id={`question-allowedfiletypes-${index}-${qIndex}`} value={question.allowedFileTypes ? question.allowedFileTypes.join(", ") : ""} placeholder="e.g. .pdf, .docx" onChange={(e) => handleQuestionChange(qIndex, index, "allowedFileTypes", e.target.value !== "" ? e.target.value.split(", ").map(type => type.trim()) : [])} />
                                         </div>
                                         </>
                                     )}

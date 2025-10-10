@@ -9,6 +9,8 @@ const formKeys = {
     getForm: (formId: string) => [...formKeys.all, formId] as const,
     saveAnswer: (formId: string, questionId: number, answer: Answer, formName: string) => [...formKeys.getForm(formId), "saveAnswer", questionId, answer, formName] as const,
     submitForm: (formId: string, formName: string) => [...formKeys.getForm(formId), "submitForm", formName] as const,
+    createForm: () => [...formKeys.all, "createForm"] as const,
+    deleteForm: (formId: string) => [...formKeys.getForm(formId), "deleteForm"] as const,
 }
 
 export const useForms = (): UseQueryResult<form[], Error> => {
@@ -66,6 +68,23 @@ export const useCreateForm = () => {
         mutationFn: (formData: form) => {
             const mappedFormData = formRequestMapper(formData) as serverRequestForm;
             return formAPI.createForm(mappedFormData);
+        },
+    })
+}
+
+export const useDeleteForm = () => {
+    return useMutation( {
+        mutationFn: (formId: string) => {
+            return formAPI.deleteForm(formId);
+        },
+    });
+};
+
+export const useUpdateForm = (formId: string) => {
+    return useMutation( {
+        mutationFn: (formData: form) => {
+            const mappedFormData = formRequestMapper(formData) as serverRequestForm;
+            return formAPI.updateForm(formId, mappedFormData);
         },
     })
 }

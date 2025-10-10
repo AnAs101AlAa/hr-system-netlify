@@ -28,3 +28,13 @@ export async function createForm(formData: serverRequestForm) {
     const response = await systemApi.post(`${FORMS_API_URL}`, formData);
     return response.data;
 }
+
+export async function deleteForm(formId: string) {
+    const response = await systemApi.delete(`${FORMS_API_URL}/${formId}`);
+    return response.data;
+}
+
+export async function updateForm(formId: string, formData: serverRequestForm) {
+    const response = await systemApi.put(`/v2/Form/${formId}`, formData);
+    return response.data;
+}

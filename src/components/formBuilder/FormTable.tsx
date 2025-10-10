@@ -3,6 +3,8 @@ import Format from "@/utils/Formater";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Button, ButtonTypes } from "tccd-ui";
+import { useState } from "react";
+import FormDeleteModal from "./FormDeleteModal";
 
 interface FormsTableProps {
     forms: form[];
@@ -10,9 +12,11 @@ interface FormsTableProps {
 
 const FormTable = ({ forms }: FormsTableProps) => {
     const navigate = useNavigate();
+    const [showDeleteModal, setShowDeleteModal] = useState("");
 
   return (
     <div className="hidden lg:block overflow-x-auto">
+      <FormDeleteModal showModal={showDeleteModal} setShowModal={setShowDeleteModal} />
       <table className="w-full">
         {/* Table Header */}
         <thead className="bg-gray-50">
@@ -69,7 +73,7 @@ const FormTable = ({ forms }: FormsTableProps) => {
                     />
                     <Button
                       type={ButtonTypes.DANGER}
-                      onClick={() => navigate(`/forms/${form.id}`)}
+                      onClick={() => setShowDeleteModal(form.id)}
                       buttonText="Delete"
                     />
                   </div>
