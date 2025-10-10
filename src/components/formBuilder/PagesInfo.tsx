@@ -35,9 +35,23 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     const handleDeletePage = (pageIndex: number) => {
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
+            // Remove the page
             const updatedPages = [...prev.pages];
             updatedPages.splice(pageIndex, 1);
-            return { ...prev, pages: updatedPages };
+
+            // Reindex questionNumber across all pages
+            let newQuestionCount = 0;
+            const reindexedPages = updatedPages.map((page) => {
+                const questions = (page.questions || []).map((q, idx) => ({
+                    ...q,
+                    questionNumber: ++newQuestionCount,
+                }));
+                return { ...page, questions };
+            });
+
+            setQuestionCount(newQuestionCount);
+
+            return { ...prev, pages: reindexedPages };
         });
     };
     
@@ -251,7 +265,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                             page.questions.map((question, qIndex) => (
                                 <div key={qIndex} className="p-3 border border-gray-200 rounded-md bg-white space-y-3 flex flex-wrap lg:gap-[2%] relative">
                                     <FaXmark className="text-primary cursor-pointer size-4 md:size-5 absolute right-4 top-4" onClick={() => handleRemoveQuestion(index, qIndex)} />
-                                    <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Question {qIndex + 1}</p>
+                                    <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Question {question.questionNumber} ({qIndex + 1} in page)</p>
                                     <InputField label="Question Text" id={`question-text-${index}-${qIndex}`} value={question.questionText} placeholder="Enter question text" onChange={(e) => handleQuestionChange(qIndex, index, "questionText", e.target.value)} error={pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""} />
                                     <TextAreaField label="Question Description (optional)" id={`question-description-${index}-${qIndex}`} value={question.description || ""} placeholder="Enter question description" onChange={(e) => handleQuestionChange(qIndex, index, "description", e.target.value)} />
                                     <div className="w-full lg:w-[49%]">
