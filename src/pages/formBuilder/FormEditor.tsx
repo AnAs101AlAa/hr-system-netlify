@@ -1,5 +1,4 @@
-import { useParams } from "react-router-dom";
-import { useForm, useCreateForm } from "@/queries/forms/formQueries";
+import { useForm, useCreateForm, useUpdateForm } from "@/queries/forms/formQueries";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import WithNavbar from "@/components/hoc/WithNavbar";
@@ -10,22 +9,27 @@ import type { FormEditorHandle } from "@/types/form";
 import { getErrorMessage } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { LoadingPage, ErrorScreen, Button, ButtonTypes } from "tccd-ui";
+import { useParams, useSearchParams } from "react-router-dom";
 
 export default function FormEditor() {
+    const navigate = useNavigate();
     const { formId } = useParams<{ formId: string }>();
+    const [searchParams] = useSearchParams();
+    const templateId = searchParams.get("template") || "";
     const isEditMode = formId !== "new";
+    console.log(isEditMode, formId, templateId);
+
     const emptyForm: form = { id: "", title: "", sheetName: "", pages: [], description: "", googleSheetId: "", createdAt: "", updatedAt: "" };
 
-    const { data: formData, isLoading, isError, error } = useForm(formId!);
+    const { data: formData, isLoading, isError, error } = useForm(formId !== "new" ? formId ?? "" : templateId ?? "");
 
     const createFormMutation = useCreateForm();
+    const updateFormMutation = useUpdateForm(formId ?? "");
     const [formDataState, setFormDataState] = useState<form>(emptyForm);
 
         
     const mainSectionRef = useRef<FormEditorHandle | null>(null);
     const pagesSectionRef = useRef<FormEditorHandle | null>(null);
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (isError && error) {
@@ -67,36 +71,69 @@ export default function FormEditor() {
     }
 
     const handleCreateForm = async () => {
-        toast.promise(
-            new Promise((resolve, reject) => {
-                if (!validateForm()) {
-                    reject("Form validation failed. Please check your inputs.");
-                    return;
+        if( isEditMode ) {
+            toast.promise(
+                new Promise((resolve, reject) => {
+                    if (!validateForm()) {
+                        reject("Form validation failed. Please check your inputs.");
+                        return;
+                    }
+                    updateFormMutation.mutate(formDataState, {
+                        onSuccess: () => {
+                            resolve(true);
+                            setTimeout(() => {
+                                navigate("/form-builder");
+                            }, 1500);
+                        },
+                        onError: (error: unknown) => {
+                            const errorMessage = getErrorMessage(error) || "Failed to update form";
+                            reject(errorMessage);
+                        },
+                    });
+                }),
+                {
+                    loading: "Updating form...",
+                    error: (err) => typeof err === "string"
+                        ? err
+                        : isEditMode
+                            ? "Failed to update form"
+                            : "Failed to create form",
+                    success: "Form updated successfully",
                 }
-                createFormMutation.mutate(formDataState, {
-                    onSuccess: () => {
-                        setFormDataState(emptyForm);
-                        resolve(true);
-                        setTimeout(() => {
-                            navigate("/form-builder");
-                        }, 1500);
-                    },
-                    onError: (error: unknown) => {
-                        const errorMessage = getErrorMessage(error) || "Failed to create form";
-                        reject(errorMessage);
-                    },
-                });
-            }),
-            {
-                loading: "Creating form...",
-                error: (err) => typeof err === "string"
-                    ? err
-                    : isEditMode
-                        ? "Failed to update form"
-                        : "Failed to create form",
-                success: "Form created successfully",
-            }
-        );
+            );
+            return;
+        } else {
+            toast.promise(
+                new Promise((resolve, reject) => {
+                    if (!validateForm()) {
+                        reject("Form validation failed. Please check your inputs.");
+                        return;
+                    }
+                    createFormMutation.mutate(formDataState, {
+                        onSuccess: () => {
+                            setFormDataState(emptyForm);
+                            resolve(true);
+                            setTimeout(() => {
+                                navigate("/form-builder");
+                            }, 1500);
+                        },
+                        onError: (error: unknown) => {
+                            const errorMessage = getErrorMessage(error) || "Failed to create form";
+                            reject(errorMessage);
+                        },
+                    });
+                }),
+                {
+                    loading: "Creating form...",
+                    error: (err) => typeof err === "string"
+                        ? err
+                        : isEditMode
+                            ? "Failed to update form"
+                            : "Failed to create form",
+                    success: "Form created successfully",
+                }
+            );
+        }
     }
 
     if (isLoading) {
@@ -118,8 +155,8 @@ export default function FormEditor() {
 
                 <div className="space-y-4 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background">
                     <div className="flex justify-center items-center gap-3">
-                        <Button type={ButtonTypes.SECONDARY} onClick={() => {}} buttonText="Discard" />
-                        <Button type={ButtonTypes.PRIMARY} onClick={() => handleCreateForm()} buttonText="Save Form" />
+                        <Button type={ButtonTypes.SECONDARY} onClick={() => navigate(-1)} buttonText="Discard" />
+                        <Button type={ButtonTypes.PRIMARY} onClick={() => handleCreateForm()} loading={createFormMutation.isPending || updateFormMutation.isPending} buttonText="Save Form" />
                     </div>
                 </div>
             </div>

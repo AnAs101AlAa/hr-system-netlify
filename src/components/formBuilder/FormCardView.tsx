@@ -3,6 +3,8 @@ import type { form } from "@/types/form";
 import { ButtonTypes, Button } from "tccd-ui";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import FormDeleteModal from "./FormDeleteModal";
 
 interface FormCardViewProps {
   forms: form[];
@@ -12,9 +14,11 @@ const FormCardView = ({
   forms,
 }: FormCardViewProps) => {
     const navigate = useNavigate();
+    const [showDeleteModal, setShowDeleteModal] = useState("");
 
   return (
     <div className="lg:hidden divide-y divide-gray-100">
+      <FormDeleteModal showModal={showDeleteModal} setShowModal={setShowDeleteModal} />
       {forms && forms.length > 0 ? (
         forms.map((form, index) => (
           <div key={form.id || index} className="p-4 space-y-3">
@@ -58,7 +62,7 @@ const FormCardView = ({
                 />
                 <Button
                     type={ButtonTypes.DANGER}
-                    onClick={() => navigate(`/form-builder/${form.id}/submissions`)}
+                    onClick={() => setShowDeleteModal(form.id || "")}
                     buttonText="Delete"
                 />
             </div>

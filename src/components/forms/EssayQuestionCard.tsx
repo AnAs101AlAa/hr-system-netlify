@@ -78,7 +78,7 @@ const EssayQuestionCard = forwardRef<QuestionCardHandle, EssayQuestionCardProps>
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4">
+        <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-2">
             <div className="flex items-start gap-1.5 md:gap-3">
                 <FaQuestionCircle className="text-secondary text-md md:text-lg mt-1 flex-shrink-0" />
                 <div className="flex-1 flex items-center gap-1">
@@ -90,6 +90,12 @@ const EssayQuestionCard = forwardRef<QuestionCardHandle, EssayQuestionCardProps>
                     )}
                 </div>
             </div>
+
+            {question.description && (
+                <p className="text-[13px] md:text-[14px] lg:text-[15px] text-gray-600 italic pl-6">
+                    {question.description}
+                </p>
+            )}
 
             <div>
                 {renderAnswerField()}

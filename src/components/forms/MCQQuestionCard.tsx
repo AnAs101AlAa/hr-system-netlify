@@ -72,6 +72,13 @@ const MCQQuestionCard = forwardRef<QuestionCardHandle, MCQQuestionCardProps>(({
                     )}
                 </div>
             </div>
+
+            {question.description && (
+                <p className="text-[13px] md:text-[14px] lg:text-[15px] text-gray-600 italic pl-6">
+                    {question.description}
+                </p>
+            )}
+
             <div>
                 {question.isMultiSelect ? (
                     <div className="flex flex-col gap-3 md:gap-4">

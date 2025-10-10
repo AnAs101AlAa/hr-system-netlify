@@ -49,6 +49,7 @@ export const formRequestMapper = (formData: form) => {
                 questionType: "Essay",
                 questionNumber: q.questionNumber,
                 questionText: q.questionText,
+                description: q.description,
                 isMandatory: q.isMandatory,
                 ...(q.maxLength !== undefined ? { maxLength: q.maxLength } : {}),
                 ...(q.isTextArea !== undefined
@@ -61,6 +62,7 @@ export const formRequestMapper = (formData: form) => {
                 questionType: "MCQ",
                 questionNumber: q.questionNumber,
                 questionText: q.questionText,
+                description: q.description,
                 isMandatory: q.isMandatory,
                 choices: q.choices,
                 isMultiSelect: q.isMultiSelect,
@@ -71,6 +73,7 @@ export const formRequestMapper = (formData: form) => {
                 questionType: "Date",
                 questionNumber: q.questionNumber,
                 questionText: q.questionText,
+                description: q.description,
                 isMandatory: q.isMandatory,
               } satisfies DateQuestion;
 
@@ -79,6 +82,7 @@ export const formRequestMapper = (formData: form) => {
                 questionType: "Number",
                 questionNumber: q.questionNumber,
                 questionText: q.questionText,
+                description: q.description,
                 isMandatory: q.isMandatory,
               } satisfies NumberQuestion;
             default:

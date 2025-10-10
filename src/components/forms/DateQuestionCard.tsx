@@ -54,6 +54,12 @@ const DateQuestionCard = forwardRef<QuestionCardHandle, DateQuestionCardProps>((
                 </div>
             </div>
 
+            {question.description && (
+                <p className="text-[13px] md:text-[14px] lg:text-[15px] text-gray-600 italic pl-6">
+                    {question.description}
+                </p>
+            )}
+            
             <div>
                 <DatePicker
                     label=""
