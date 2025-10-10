@@ -17,7 +17,6 @@ export default function FormEditor() {
     const [searchParams] = useSearchParams();
     const templateId = searchParams.get("template") || "";
     const isEditMode = formId !== "new";
-    console.log(isEditMode, formId, templateId);
 
     const emptyForm: form = { id: "", title: "", sheetName: "", pages: [], description: "", googleSheetId: "", createdAt: "", updatedAt: "" };
 
@@ -26,7 +25,7 @@ export default function FormEditor() {
     const createFormMutation = useCreateForm();
     const updateFormMutation = useUpdateForm(formId ?? "");
     const [formDataState, setFormDataState] = useState<form>(emptyForm);
-
+    const [questionCount, setQuestionCount] = useState(0);
         
     const mainSectionRef = useRef<FormEditorHandle | null>(null);
     const pagesSectionRef = useRef<FormEditorHandle | null>(null);
@@ -151,7 +150,7 @@ export default function FormEditor() {
             <h1 className="lg:text-[24px] md:text-[22px] text-[20px] font-bold mb-4">{isEditMode ? `Edit Form` : "Create New Form"}</h1>
             <div className="space-y-6">
                 <MainInfo handleInputChange={handleInputChange} formDataState={formDataState} ref={mainSectionRef} />
-                <PagesInfo formDataState={formDataState} setFormDataState={setFormDataState} handleInputChange={handleInputChange} ref={pagesSectionRef} />
+                <PagesInfo questionCount={questionCount} setQuestionCount={setQuestionCount} formDataState={formDataState} setFormDataState={setFormDataState} handleInputChange={handleInputChange} ref={pagesSectionRef} />
 
                 <div className="space-y-4 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background">
                     <div className="flex justify-center items-center gap-3">

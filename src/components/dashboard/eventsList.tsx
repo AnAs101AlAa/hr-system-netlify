@@ -23,7 +23,6 @@ const EventsList = ({ events, userRole = [] }: EventsListProps) => {
   const deleteEventMutation = useDeleteEvent();
 
   const isAdmin = userRole.includes("Admin");
-  console.log("isAdmin:", isAdmin);
 
   const handleEdit = (eventId: string) => {
     const eventToEdit = eventsArray.find((event) => event.id === eventId);

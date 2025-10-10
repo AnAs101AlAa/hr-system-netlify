@@ -11,14 +11,14 @@ import { sanitize, addQuestionError} from "@/utils/formBuilderUtils";
 
 interface PagesInfoProps {
     formDataState: form;
+    questionCount: number;
+    setQuestionCount: React.Dispatch<React.SetStateAction<number>>;
     setFormDataState: React.Dispatch<React.SetStateAction<form>>;
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, toChange: string, index?: number, field?: string) => void;
 }
-    
-const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChange }: PagesInfoProps, ref) => {
-    const [questionCount, setQuestionCount] = useState<number>(0);
-    const [choiceTextBuffer, setChoiceTextBuffer] = useState<string>("");
 
+const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChange, questionCount, setQuestionCount }: PagesInfoProps, ref) => {
+    const [choiceTextBuffer, setChoiceTextBuffer] = useState<string>("");
     const [pageErrors, setPageErrors] = useState<{[index: number]: formPageError}>({});
     const [mainError, setMainError] = useState<string>("");
 
