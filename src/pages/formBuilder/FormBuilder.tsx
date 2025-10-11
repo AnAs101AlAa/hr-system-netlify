@@ -14,7 +14,7 @@ export default function FormBuilder() {
     const [formSearchTerm, setFormSearchTerm] = useState("");
     const [filteredForms, setFilteredForms] = useState(Forms || []);
     const [selectedTemplate, setSelectedTemplate] = useState<null | string>(null);
-
+    
     useEffect(() => {
         setSelectedTemplate(null);
         if (formSearchTerm.trim() === "") {
@@ -33,7 +33,7 @@ export default function FormBuilder() {
         if (isError && error) {
             toast.error(`Failed to fetch forms, please try again`);
         }
-    }, [isError, error]);
+    }, [isError, error, Forms]);
 
     if (isLoading) {
         return <LoadingPage />;
@@ -104,12 +104,12 @@ export default function FormBuilder() {
             </Modal>
         )}
         <div className="min-h-screen bg-background p-4">
-            <div className="max-w-6xl mx-auto">
+            <div className="w-[96%] md:w-[94%] lg:w-[84%] xl:w-3/4 mx-auto">
             <h1 className="lg:text-[24px] md:text-[22px] text-[20px] font-bold mb-4">Form Builder</h1>
                 <div className="w-full my-4">
-                <Button buttonText="New Form" onClick={() => setModalOpen(1)} type={ButtonTypes.PRIMARY} width="small" buttonIcon={<FaPlus />} />
+                <Button buttonText="New Form" onClick={() => setModalOpen(1)} type={ButtonTypes.PRIMARY} width="auto" buttonIcon={<FaPlus />} />
                 </div>
-                <FormList Forms={Forms || []} />
+                <FormList Forms={Forms || []}/>
             </div>
         </div>
         </WithNavbar>

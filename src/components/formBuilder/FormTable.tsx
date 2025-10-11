@@ -3,17 +3,54 @@ import Format from "@/utils/Formater";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Button, ButtonTypes } from "tccd-ui";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormDeleteModal from "./FormDeleteModal";
+import { useModifyFormStatus } from "@/queries/forms/formQueries";
+import { getErrorMessage } from "@/utils";
 
 interface FormsTableProps {
     forms: form[];
 }
 
 const FormTable = ({ forms }: FormsTableProps) => {
-    const navigate = useNavigate();
-    const [showDeleteModal, setShowDeleteModal] = useState("");
+  const navigate = useNavigate();
+  const [displayedForms, setDisplayedForms] = useState<form[]>(forms);
+  const [showDeleteModal, setShowDeleteModal] = useState("");
+  const modifyFormStatusMutation = useModifyFormStatus();
+  
+  const handleModifyStatus = (formId: string, isClosed: boolean) => {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        modifyFormStatusMutation.mutate(
+          { formId, isClosed },
+          {
+            onSuccess: () => {
+              setShowDeleteModal("");
+              setDisplayedForms((prevForms) =>
+                prevForms.map((form) =>
+                  form.id === formId ? { ...form, isClosed } : form
+                )
+              );
+              resolve(true);
+            },
+            onError: (error: unknown) => {
+              reject(error);
+            },
+          }
+        );
+      }),
+      {
+        loading: isClosed ? "Closing form..." : "Opening form...",
+        success: isClosed ? "Form closed" : "Form opened",
+        error: (err) => `Error: ${getErrorMessage(err) || "Failed to modify form status"}`,
+      }
+    );
+  };
 
+  useEffect(() => {
+    setDisplayedForms(forms);
+  }, [forms]);
+  
   return (
     <div className="hidden lg:block overflow-x-auto">
       <FormDeleteModal showModal={showDeleteModal} setShowModal={setShowDeleteModal} />
@@ -38,8 +75,8 @@ const FormTable = ({ forms }: FormsTableProps) => {
 
         {/* Table Body */}
         <tbody className="divide-y divide-gray-100">
-          {forms && forms.length > 0 ? (
-            forms.map((form, index) => (
+          {displayedForms && displayedForms.length > 0 ? (
+            displayedForms.map((form, index) => (
               <tr
                 key={form.id || index}
                 className="hover:bg-gray-50 transition-colors"
@@ -65,16 +102,38 @@ const FormTable = ({ forms }: FormsTableProps) => {
                       type={ButtonTypes.TERTIARY}
                       onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/form/${form.id}`); toast.success("Form link copied to clipboard") }}
                       buttonText="Copy Link"
+                      width="small"
                     />
                     <Button
                       type={ButtonTypes.SECONDARY}
                       onClick={() => navigate(`/form-builder/${form.id}`)}
                       buttonText="Edit"
+                      width="fit"
                     />
+                    {form.isClosed ? (
+                      <div className="w-20">
+                        <Button
+                          type={ButtonTypes.PRIMARY}
+                          onClick={() => handleModifyStatus(form.id, false)}
+                          buttonText="Unlock"
+                          disabled={modifyFormStatusMutation.isPending && modifyFormStatusMutation.variables?.formId === form.id}
+                          width="full"/>
+                      </div>
+                      ) : (
+                      <div className="w-20">
+                        <Button
+                          type={ButtonTypes.PRIMARY}
+                          onClick={() => handleModifyStatus(form.id, true)}
+                          buttonText="Lock"
+                          disabled={modifyFormStatusMutation.isPending && modifyFormStatusMutation.variables?.formId === form.id}
+                          width="full"/>
+                      </div>
+                    )}
                     <Button
                       type={ButtonTypes.DANGER}
                       onClick={() => setShowDeleteModal(form.id)}
                       buttonText="Delete"
+                      width="fit"
                     />
                   </div>
                 </td>

@@ -11,6 +11,8 @@ const formKeys = {
     submitForm: (formId: string, formName: string) => [...formKeys.getForm(formId), "submitForm", formName] as const,
     createForm: () => [...formKeys.all, "createForm"] as const,
     deleteForm: (formId: string) => [...formKeys.getForm(formId), "deleteForm"] as const,
+    updateForm: (formId: string) => [...formKeys.getForm(formId), "updateForm"] as const,
+    modifyFormStatus: () => [...formKeys.all, "modifyFormStatus"] as const,
 }
 
 export const useForms = (): UseQueryResult<form[], Error> => {
@@ -18,18 +20,18 @@ export const useForms = (): UseQueryResult<form[], Error> => {
         queryKey: formKeys.all,
         queryFn: async () => {
             const data = await formAPI.getForms();
-            const mappedForms = data.data.map((form : serverResponseForm) => formResponseMapper(form));
+            const mappedForms = data.data.map((form : serverResponseForm) => formResponseMapper(form, false));
             return mappedForms;
         },
     })
 }
 
-export const useForm = (id: string): UseQueryResult<form, Error> => {
+export const useForm = (id: string, formTags: boolean): UseQueryResult<form, Error> => {
     return useQuery({
         queryKey: formKeys.getForm(id),
         queryFn: async () => {
             const data = await formAPI.getForm(id);
-            const mappedForm = formResponseMapper(data.data as serverResponseForm);
+            const mappedForm = formResponseMapper(data.data as serverResponseForm, formTags);
             return mappedForm;
         },
         enabled: id != "new",
@@ -88,3 +90,23 @@ export const useUpdateForm = (formId: string) => {
         },
     })
 }
+
+export const useModifyFormStatus = () => {
+    return useMutation({
+        mutationFn: ({ formId, isClosed }: { formId: string; isClosed: boolean }) => {
+            return formAPI.modifyFormStatus(formId, isClosed);
+        },
+    });
+};
+
+export const useUploadSubmissionMedia = (formId: string) => {
+    return useMutation({
+        mutationFn: (media: File[]) => {
+            const uploadUrls: Promise<string>[] = [];
+            media.forEach((file) => {
+                uploadUrls.push(formAPI.uploadSubmissionMedia(formId, file));
+            });
+            return Promise.all(uploadUrls);
+        },
+    });
+};

@@ -2,7 +2,7 @@ import { useForm, useCreateForm, useUpdateForm } from "@/queries/forms/formQueri
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import WithNavbar from "@/components/hoc/WithNavbar";
-import type { form } from "@/types/form";
+import type { form, formPage } from "@/types/form";
 import MainInfo from "@/components/formBuilder/MainInfo";
 import PagesInfo from "@/components/formBuilder/PagesInfo";
 import type { FormEditorHandle } from "@/types/form";
@@ -18,9 +18,9 @@ export default function FormEditor() {
     const templateId = searchParams.get("template") || "";
     const isEditMode = formId !== "new";
 
-    const emptyForm: form = { id: "", title: "", sheetName: "", pages: [], description: "", googleSheetId: "", createdAt: "", updatedAt: "" };
+    const emptyForm: form = { id: "", title: "", sheetName: "", pages: [], description: "", googleSheetId: "", googleDriveId: "", isClosed: false, createdAt: "", updatedAt: "" };
 
-    const { data: formData, isLoading, isError, error } = useForm(formId !== "new" ? formId ?? "" : templateId ?? "");
+    const { data: formData, isLoading, isError, error } = useForm(formId !== "new" ? formId ?? "" : templateId ?? "", true);
 
     const createFormMutation = useCreateForm();
     const updateFormMutation = useUpdateForm(formId ?? "");
@@ -29,6 +29,13 @@ export default function FormEditor() {
         
     const mainSectionRef = useRef<FormEditorHandle | null>(null);
     const pagesSectionRef = useRef<FormEditorHandle | null>(null);
+
+    const calcQuestionCount = (pages?: formPage[]) =>
+        (pages ?? []).reduce((acc, page) => acc + (page.questions?.length ?? 0), 0);
+
+    useEffect(() => {
+        setQuestionCount(calcQuestionCount(formDataState.pages));
+    }, [formDataState.pages]);
 
     useEffect(() => {
         if (isError && error) {

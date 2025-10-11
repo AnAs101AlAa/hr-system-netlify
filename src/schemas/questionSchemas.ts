@@ -118,7 +118,7 @@ export const createUploadValidationSchema = (question: {
   maxFileSizeMB?: number;
   allowedFileTypes: string[];
 }) => {
-  let schema = z.instanceof(File).optional();
+  let schema = z.union([z.instanceof(File), z.array(z.instanceof(File))]).optional();
 
   if (question.isMandatory) {
     schema = schema.refine((val) => val !== undefined, "File is required");
@@ -126,15 +126,49 @@ export const createUploadValidationSchema = (question: {
 
   if (question.maxFileSizeMB) {
     schema = schema.refine(
-      (val) => val === undefined || (val.size / 1024 / 1024) <= question.maxFileSizeMB!,
+      (val) => {
+        if (val === undefined) return true;
+        if (Array.isArray(val)) {
+          return val.every(file => (file.size / 1024 / 1024) <= question.maxFileSizeMB!);
+        }
+        return (val.size / 1024 / 1024) <= question.maxFileSizeMB!;
+      },
       `File must be smaller than ${question.maxFileSizeMB}MB`
     );
   }
 
-  if (question.allowedFileTypes) {
+  if (question.allowedFileTypes && question.allowedFileTypes.length > 0) {
+    const allowed = question.allowedFileTypes.map((s) => s.toLowerCase().trim());
+
+    const fileMatches = (file: File) => {
+      const ftype = (file.type || "").toLowerCase();
+      const fname = (file.name || "").toLowerCase();
+
+      return allowed.some((a) => {
+        if (!a) return false;
+        if (a.startsWith(".")) {
+          return fname.endsWith(a);
+        }
+        if (!a.includes("/")) {
+          return fname.endsWith("." + a) || fname.endsWith(a);
+        }
+        if (a.endsWith("/*")) {
+          const prefix = a.split("/")[0];
+          return ftype.startsWith(prefix + "/");
+        }
+        return ftype === a;
+      });
+    };
+
     schema = schema.refine(
-      (val) => val === undefined || question.allowedFileTypes.includes(val.type),
-      `File type must be one of: ${question.allowedFileTypes.join(", ")}`
+      (val) => {
+        if (val === undefined) return true;
+        if (Array.isArray(val)) {
+          return val.every(file => fileMatches(file));
+        }
+        return fileMatches(val);
+      },
+      { message: `File type must be one of: ${question.allowedFileTypes.join(", ")}` }
     );
   }
 

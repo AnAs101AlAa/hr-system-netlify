@@ -9,6 +9,9 @@ import type { QuestionCardHandle } from "@/types/form";
 import { SUBMISSION_CATCHER } from "@/constants/formConstants";
 import { useNavigate } from "react-router-dom";
 import { ErrorScreen, Button } from "tccd-ui";
+import { HTMLText } from "@/components/HTMLText";
+import FormLockedPage from "./FormLockedPage";
+import { useUploadSubmissionMedia } from "@/queries/forms/formQueries";
 
 export default function FormView() {
   const navigate = useNavigate();
@@ -23,18 +26,17 @@ export default function FormView() {
     }
   }, [didSubmit, navigate]);
   
-  const { data: formData, isFetching, isError } = useForm(ID);
+  
+  const { data: formData, isFetching, isError } = useForm(ID, false);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [, setPageHistory] = useState<number[]>([0]);
-
+  
   const [answers, setAnswers] = useState<Answer[]>([]);
   const questionRefs = useRef<(QuestionCardHandle | null)[]>([]);
-
-  const submitFormMutation = useSubmitForm(
-    ID,
-    formData?.sheetName ?? "Guest"
-  );
-
+  
+  const submitFormMutation = useSubmitForm(ID, formData?.sheetName ?? "Guest");
+  const uploadMediaMutation = useUploadSubmissionMedia(ID);
+  
   const handleClear = () => {
     if (!formData || !formData.pages) return;
     const questionsOnPage = formData.pages[currentPage].questions;
@@ -103,10 +105,24 @@ export default function FormView() {
 
   const handleSubmit = (finalAnswers: Answer[]) => {
     toast.promise(
-      submitFormMutation.mutateAsync(finalAnswers).then(() => {
+      (async () => {
+        for (const answer of finalAnswers) {
+          if (
+            answer.answer instanceof File ||
+            (Array.isArray(answer.answer) && answer.answer.some((a) => a instanceof File))
+          ) {
+            const files = Array.isArray(answer.answer)
+              ? (answer.answer as File[])
+              : [answer.answer as File];
+            const uploadedUrls = await uploadMediaMutation.mutateAsync(files);
+            answer.answer = Array.isArray(answer.answer) ? uploadedUrls : uploadedUrls[0];
+          }
+        }
+
+        await submitFormMutation.mutateAsync(finalAnswers);
         localStorage.setItem(`form_${ID}_completed`, "true");
         navigate("/form/finish");
-      }),
+      })(),
       {
         loading: "Submitting...",
         error: () =>
@@ -139,17 +155,23 @@ export default function FormView() {
           message="We encountered an error while loading this form, Please try again later."
         />
       )}
+      {formData?.isClosed && (
+        <FormLockedPage />
+      )}
 
       {formData && formData.pages && (
         <div className="w-full md:w-2/3 lg:w-1/3 m-auto md:rounded-xl shadow-md p-5 flex flex-col gap-4 bg-background-primary">
+          <img src="/banner.png" alt="TCCD Banner" className="w-full h-24 md:h-32 lg:h-[130px] xl:h-[150px] object-fill rounded-lg" />
           {/* Form Header */}
           <div className="space-y-4 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background">
             <h1 className="text-2xl lg:text-3xl font-bold text-primary">
               {formData.title}
             </h1>
             {formData.description && (
-              <p className="text-[14px] md:text-[15px] lg:text-[16px] text-inactive-tab-text">
-                {formData.description}
+              <p
+                className="text-[14px] md:text-[15px] lg:text-[16px] text-inactive-tab-text"
+              >
+                <HTMLText content={formData.description} />
               </p>
             )}
             <hr className="border-contrast/30" />
@@ -168,7 +190,7 @@ export default function FormView() {
               </div>
               {SUBMISSION_CATCHER.description && (
                 <p className="text-[13px] md:text-[14px] lg:text-[15px] mb-6 text-inactive-tab-text px-4">
-                  {SUBMISSION_CATCHER.description}
+                  <HTMLText content={SUBMISSION_CATCHER.description} />
                 </p>
               )}
             </div>
@@ -184,10 +206,9 @@ export default function FormView() {
                 {formData.pages[currentPage].description && (
                   <p
                     className="text-[13px] md:text-[14px] lg:text-[15px] mb-6 px-4"
-                    dangerouslySetInnerHTML={{
-                      __html: formData.pages[currentPage].description,
-                    }}
-                  />
+                  >
+                    <HTMLText content={formData.pages[currentPage].description} />
+                  </p>
                 )}
               </div>
 

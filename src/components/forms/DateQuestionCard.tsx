@@ -4,6 +4,7 @@ import type { DateQuestion } from '@/types/question';
 import { createDateValidationSchema } from '@/schemas/questionSchemas';
 import type { QuestionCardHandle } from '@/types/form';
 import { DatePicker } from 'tccd-ui';
+import { HTMLText } from '../HTMLText';
 
 interface DateQuestionCardProps {
     question: DateQuestion;
@@ -56,7 +57,7 @@ const DateQuestionCard = forwardRef<QuestionCardHandle, DateQuestionCardProps>((
 
             {question.description && (
                 <p className="text-[13px] md:text-[14px] lg:text-[15px] text-gray-600 italic pl-6">
-                    {question.description}
+                    <HTMLText content={question.description} />
                 </p>
             )}
             

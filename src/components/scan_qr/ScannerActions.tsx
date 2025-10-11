@@ -117,7 +117,6 @@ const ScannerActions = ({
     const isLate = attendanceStatus === STATUS.LATE;
     const isLeavingEarly = attendanceStatus === STATUS.LEAVING_EARLY;
     const reasonValue = isLate ? lateReason : leaveExcuse || "";
-    console.log(reasonValue);
 
     return (isLate || isLeavingEarly) && !reasonValue.trim();
   };

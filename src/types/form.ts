@@ -11,7 +11,9 @@ export interface formPage {
 
 export interface serverRequestForm {
     googleSheetId: string;
+    googleDriveId: string;
     sheetName: string;
+    isClosed: boolean;
     title: string;
     description: string;
     pages: formPage[];
@@ -29,7 +31,9 @@ export interface serverResponseForm {
     formId: string;
     sheetName: string;
     googleSheetId: string;
+    googleDriveId: string;
     title: string;
+    isClosed: boolean;
     description: string;
     pages: formPage[];
     branches: serverResponseBranch[];
@@ -60,11 +64,13 @@ export interface formPageError {
 export interface form {
     id: string;
     googleSheetId: string;
+    googleDriveId: string;
     sheetName: string;
     pages: formPage[];
     title: string;
     description: string;
     createdAt: string;
+    isClosed: boolean;
     updatedAt: string;
 }
 

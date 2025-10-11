@@ -10,7 +10,7 @@ interface MainInfoProps {
 }
 
 const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChange, formDataState }, ref) => {
-    const [errors, setErrors] = useState<string[]>(["", "", "", ""]);
+    const [errors, setErrors] = useState<string[]>(["", "", "", "", ""]);
     
     const collectErrors = (): boolean => {
         const currentErrors: string[] = ["", "", "", ""];
@@ -20,11 +20,14 @@ const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChang
         if (!formDataState.sheetName || formDataState.sheetName.trim() === "") {
             currentErrors[1] = "Sheet/Tab Name is required.";
         }
+        if (!formDataState.googleDriveId || formDataState.googleDriveId.trim() === "") {
+            currentErrors[2] = "Google Drive Folder Id is required.";
+        }
         if (!formDataState.title || formDataState.title.trim() === "") {
-            currentErrors[2] = "Form Title is required.";
+            currentErrors[3] = "Form Title is required.";
         }
         if(!formDataState.description || formDataState.description.trim() === "") {
-            currentErrors[3] = "Form Description is required.";
+            currentErrors[4] = "Form Description is required.";
         }
 
         setErrors(currentErrors);
@@ -48,7 +51,7 @@ const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChang
                 The form responses will be saved in a Google Sheet. Please provide the necessary details below.
             </p>
             <InputField
-                label="Sheet Id"
+                label="Google sheet id"
                 id="form-id"
                 value={formDataState?.googleSheetId || ""}
                 placeholder="enter id here"
@@ -65,6 +68,14 @@ const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChang
                 error={errors[1]}
             />
             {errors[1] && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{errors[1]}</p>}
+            <InputField
+                label="Google drive folder id (include only for forms with upload questions)"
+                id="form-drive-id"
+                value={formDataState?.googleDriveId || ""}
+                placeholder="enter id here"
+                onChange={(e) => handleInputChange(e, "googleDriveId")}
+            />
+            {errors[2] && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{errors[2]}</p>}
         </div>
         <div className="space-y-4 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background">
             <p className="pageErrors font-semibold text-primary">
@@ -79,18 +90,18 @@ const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChang
                 value={formDataState?.title || ""}
                 placeholder="e.g. Orientation title"
                 onChange={(e) => handleInputChange(e, "title")}
-                error={errors[2]}
+                error={errors[3]}
             />
-            {errors[2] && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{errors[2]}</p>}
+            {errors[3] && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{errors[3]}</p>}
             <TextAreaField
                 label="Form Description"
                 id="form-description"
                 value={formDataState?.description || ""}
                 placeholder="e.g. Orientation description"
                 onChange={(e) => handleInputChange(e, "description")}
-                error={errors[3]}
+                error={errors[4]}
             />
-            {errors[3] && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{errors[3]}</p>}
+            {errors[4] && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{errors[4]}</p>}
         </div>
         </>
     )

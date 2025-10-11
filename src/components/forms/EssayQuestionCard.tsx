@@ -4,6 +4,7 @@ import { InputField, TextAreaField } from 'tccd-ui';
 import type { EssayQuestion } from '@/types/question';
 import { createEssayValidationSchema } from '@/schemas/questionSchemas';
 import type { QuestionCardHandle } from '@/types/form';
+import { HTMLText } from '../HTMLText';
 
 interface EssayQuestionCardProps {
     question: EssayQuestion;
@@ -93,7 +94,7 @@ const EssayQuestionCard = forwardRef<QuestionCardHandle, EssayQuestionCardProps>
 
             {question.description && (
                 <p className="text-[13px] md:text-[14px] lg:text-[15px] text-gray-600 italic pl-6">
-                    {question.description}
+                    <HTMLText content={question.description} />
                 </p>
             )}
 

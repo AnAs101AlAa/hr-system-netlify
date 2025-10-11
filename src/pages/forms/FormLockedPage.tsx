@@ -1,6 +1,7 @@
 import tccd_logo from "@/assets/TCCD_logo.svg";
+import { FaXmark } from "react-icons/fa6";
 
-const FormSubmissionPage = () => {
+const FormLockedPage = () => {
     return (
         <main className="min-h-screen bg-gradient-to-b from-white via-white to-[#f8f6f1] text-[#121212]">
             <div className="mx-auto grid min-h-screen max-w-7xl place-items-center px-4 pb-16">
@@ -21,47 +22,26 @@ const FormSubmissionPage = () => {
                     <div className="mt-8 text-center space-y-6">
                         <div className="flex justify-center">
                             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
-                                <svg
-                                    className="w-10 h-10 text-primary"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M5 13l4 4L19 7"
-                                    />
-                                </svg>
+                                <FaXmark className="lg:size-10 md:size-9 size-9 text-primary" />
                             </div>
                         </div>
 
                         <div className="space-y-3">
                             <h2 className="text-xl font-bold text-[#5E6064]">
-                                Thank You!
+                                We're sorry
                             </h2>
                             <p className="text-[#636569] text-sm leading-relaxed">
-                                Your form has been successfully submitted. We appreciate your engagement to our community.
+                                This form is currently not accepting submissions. If you believe this is an error, please contact the form administrator for assistance.
                             </p>
                             <p className="text-[#636569] text-sm leading-relaxed">
                                 You can follow us on our social media platforms to stay updated with the latest news and events through out <a href="https://linktr.ee/TCCD_Technical_Center" target="_blank" rel="noopener noreferrer" className="text-primary underline">Linktree</a>.
                             </p>
-                            <p className="text-[#636569] text-xs mt-4">
-                                You can safely close this page now.
-                            </p>
                         </div>
                     </div>
-
-                    <footer className="mt-8 pt-6 border-t border-black/5">
-                        <p className="text-center text-xs text-[#A5A9B2]">
-                            Have a wonderful day!
-                        </p>
-                    </footer>
                 </section>
             </div>
         </main>
     );
 };
 
-export default FormSubmissionPage;
+export default FormLockedPage;

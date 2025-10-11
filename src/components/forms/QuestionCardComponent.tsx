@@ -5,6 +5,7 @@ import DateQuestionCard from './DateQuestionCard';
 import NumberQuestionCard from './NumberQuestionCard';
 import { forwardRef } from 'react';
 import type { QuestionCardHandle } from '@/types/form';
+import UploadQuestionCard from './UploadQuestionCard';
 
 interface QuestionCardComponentProps {
   question: Question;
@@ -68,6 +69,20 @@ const QuestionCardComponent = forwardRef<QuestionCardHandle, QuestionCardCompone
         ref={ref}
         question={question}
         initialValue={numberInitialValue}
+      />
+    );
+  }
+
+  if (question.questionType === 'Upload') {
+    const uploadInitialValue = initialValue && (typeof initialValue === 'string' || Array.isArray(initialValue))
+      ? initialValue
+      : undefined;
+
+    return (
+      <UploadQuestionCard
+        ref={ref}
+        question={question}
+        initialValue={uploadInitialValue}
       />
     );
   }
