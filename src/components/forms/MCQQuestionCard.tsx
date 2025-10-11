@@ -4,6 +4,7 @@ import type { MCQQuestion } from '@/types/question';
 import { createMCQValidationSchema } from '@/schemas/questionSchemas';
 import type { QuestionCardHandle } from '@/types/form';
 import { RadioButton, Checkbox, InputField } from 'tccd-ui';
+import { HTMLText } from '../HTMLText';
 
 interface MCQQuestionCardProps {
     question: MCQQuestion;
@@ -75,7 +76,7 @@ const MCQQuestionCard = forwardRef<QuestionCardHandle, MCQQuestionCardProps>(({
 
             {question.description && (
                 <p className="text-[13px] md:text-[14px] lg:text-[15px] text-gray-600 italic pl-6">
-                    {question.description}
+                    <HTMLText content={question.description} />
                 </p>
             )}
 

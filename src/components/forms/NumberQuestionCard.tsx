@@ -5,6 +5,7 @@ import { createNumberValidationSchema } from '@/schemas/questionSchemas';
 import { forwardRef, useImperativeHandle } from "react";
 import type { QuestionCardHandle } from '@/types/form';
 import { NumberField } from 'tccd-ui';
+import { HTMLText } from '../HTMLText';
 
 interface NumberQuestionCardProps {
   question: NumberQuestion;
@@ -64,7 +65,7 @@ const NumberQuestionCard = forwardRef<QuestionCardHandle, NumberQuestionCardProp
 
             {question.description && (
                 <p className="text-[13px] md:text-[14px] lg:text-[15px] text-gray-600 italic pl-6">
-                    {question.description}
+                    <HTMLText content={question.description} />
                 </p>
             )}
             

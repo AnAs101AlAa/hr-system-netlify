@@ -35,6 +35,28 @@ export async function deleteForm(formId: string) {
 }
 
 export async function updateForm(formId: string, formData: serverRequestForm) {
-    const response = await systemApi.put(`/v2/Form/${formId}`, formData);
+    const response = await systemApi.put(`${FORMS_API_URL}/${formId}`, formData);
     return response.data;
+}
+
+export async function modifyFormStatus(formId: string, isClosed: boolean) {
+    const response = await systemApi.patch(`${FORMS_API_URL}/${formId}/status`, { isClosed });
+    return response.data;
+}
+
+export async function uploadSubmissionMedia(formId: string, media: File) {
+  const formData = new FormData();
+  formData.append("file", media);
+
+  const response = await systemApi.post(
+    `${FORMS_API_URL}/${formId}/upload`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return response.data.data.webUrl;
 }

@@ -4,26 +4,22 @@ import type { UploadQuestion } from '@/types/question';
 import { createUploadValidationSchema } from '@/schemas/questionSchemas';
 import { forwardRef, useImperativeHandle } from "react";
 import type { QuestionCardHandle } from '@/types/form';
+import { HTMLText } from '../HTMLText';
 
 interface UploadQuestionCardProps {
   question: UploadQuestion;
+  initialValue?: string | string[];
 } 
 
 const UploadQuestionCard = forwardRef<QuestionCardHandle, UploadQuestionCardProps>(
-  ({ question }, ref) => {
+  ({ question, initialValue }, ref) => {
     const [files, setFiles] = useState<File[]>([]);
-    const [fileNames, setFileNames] = useState<string[]>([]);
+    const [fileNames, setFileNames] = useState<string[]>(initialValue ? (Array.isArray(initialValue) ? initialValue : [initialValue]) : []);
     const [errors, setErrors] = useState<string[]>([]);
 
     const validateQuestion = useCallback(() => {
       try {
         const schema = createUploadValidationSchema(question);
-        const hasFiles = files.length > 0 || fileNames.length > 0;
-
-        if (question.isMandatory && !hasFiles) {
-          setErrors(["This field is required"]);
-          return true;
-        }
 
         if (files.length > 0) {
           const valueToValidate = question.allowMultiple ? files : files[0];
@@ -45,28 +41,39 @@ const UploadQuestionCard = forwardRef<QuestionCardHandle, UploadQuestionCardProp
     useImperativeHandle(ref, () => ({
       validate: validateQuestion,
       collect: () => {
-        if (question.allowMultiple) {
-          const names = files.length > 0 ? files.map(f => f.name) : fileNames;
-          return { qid: question.questionNumber, answer: names };
-        } else {
-          const name = files[0]?.name ?? fileNames[0] ?? "";
-          return { qid: question.questionNumber, answer: name };
-        }
+      if (question.allowMultiple) {
+        return {
+        qid: question.questionNumber,
+        answer: files,
+        fileNames: files.map(f => f.name),
+        };
+      } else {
+        return {
+        qid: question.questionNumber,
+        answer: files[0] ?? null,
+        fileNames: files[0] ? [files[0].name] : [],
+        };
+      }
       },
       clear: () => {
-        setFiles([]);
-        setFileNames([]);
+      setFiles([]);
+      setFileNames([]);
       },
       reassign: (ans) => {
-        if (Array.isArray(ans.answer)) {
-          setFileNames(ans.answer.map(String));
-        } else if (ans.answer !== undefined && ans.answer !== null) {
-          setFileNames([String(ans.answer)]);
-        } else {
-          setFileNames([]);
-        }
+      if (Array.isArray(ans.answer)) {
+        setFiles(ans.answer instanceof File ? [ans.answer] as File[] : ans.answer as File[]);
+        const filesReturn: File[] = ans.answer instanceof File ? [ans.answer] as File[] : ans.answer as File[];
+        setFileNames(filesReturn.map(f => f.name));
+      } else if (ans.answer instanceof File) {
+        setFiles([ans.answer]);
+        setFileNames([ans.answer.name]);
+      } else {
+        setFiles([]);
+        setFileNames([]);
+      }
       }
     }));
+
 
     return (
       <div className="bg-white rounded-xl shadow-md p-5 flex flex-col gap-4">
@@ -84,7 +91,7 @@ const UploadQuestionCard = forwardRef<QuestionCardHandle, UploadQuestionCardProp
 
         {question.description && (
             <p className="text-[13px] md:text-[14px] lg:text-[15px] text-gray-600 italic pl-6">
-                {question.description}
+                <HTMLText content={question.description} />
             </p>
         )}
 
@@ -102,6 +109,7 @@ const UploadQuestionCard = forwardRef<QuestionCardHandle, UploadQuestionCardProp
               setFiles(selected);
               setFileNames(selected.map(f => f.name));
             }}
+            value={files.length === 0 ? "" : undefined}
             className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/80"
           />
 

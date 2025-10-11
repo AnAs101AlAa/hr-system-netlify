@@ -1,7 +1,7 @@
 import { DropdownMenu, InputField, NumberField, TextAreaField, Button, ButtonTypes } from "tccd-ui";
 import { FaXmark } from "react-icons/fa6";
+import { IoCaretUp, IoCaretDown } from "react-icons/io5";
 import type { form, formPage, formPageError } from "@/types/form";
-import type { Question } from "@/types/question";
 import toast from "react-hot-toast";
 import { QUESTION_TYPES } from "@/constants/formConstants";
 import { useState } from "react";
@@ -17,13 +17,11 @@ interface PagesInfoProps {
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, toChange: string, index?: number, field?: string) => void;
 }
 
-const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChange, questionCount, setQuestionCount }: PagesInfoProps, ref) => {
+const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChange, setQuestionCount }: PagesInfoProps, ref) => {
     const [choiceTextBuffer, setChoiceTextBuffer] = useState<string>("");
     const [pageErrors, setPageErrors] = useState<{[index: number]: formPageError}>({});
     const [mainError, setMainError] = useState<string>("");
-
-    console.log(formDataState);
-
+        
     const handleAddPage = () => {
         setFormDataState((prev) => {
             if (!prev) return prev;
@@ -42,7 +40,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
             // Reindex questionNumber across all pages
             let newQuestionCount = 0;
             const reindexedPages = updatedPages.map((page) => {
-                const questions = (page.questions || []).map((q, idx) => ({
+                const questions = (page.questions || []).map((q) => ({
                     ...q,
                     questionNumber: ++newQuestionCount,
                 }));
@@ -55,14 +53,43 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         });
     };
     
+    const handleMovePage = (pageIndex: number, direction: "up" | "down") => {
+        setFormDataState((prev) => {
+            if (!prev || !prev.pages) return prev;
+            const updatedPages = [...prev.pages];
+            const [movedPage] = updatedPages.splice(pageIndex, 1);
+            updatedPages.splice(direction === "up" ? pageIndex - 1 : pageIndex + 1, 0, movedPage);
+
+            let newQuestionNumber = 1;
+            const reindexedPages = updatedPages.map(page => ({
+                ...page,
+                questions: (page.questions || []).map(q => ({
+                    ...q,
+                    questionNumber: newQuestionNumber++,
+                })),
+            }));
+            
+            return { ...prev, pages: reindexedPages };
+        });
+    };
+
     const handleAddQuestion = (pageIndex: number) => {
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
             const updatedPages = [...prev.pages];
-            const newQuestion : Question = { questionNumber: questionCount + 1, questionText: "", questionType: "Essay", isMandatory: false };
-            updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: [...(updatedPages[pageIndex].questions || []), newQuestion] };
-            setQuestionCount(questionCount + 1);
-            return { ...prev, pages: updatedPages };
+            const questions = [...(updatedPages[pageIndex].questions || [])];
+            questions.push({ questionNumber: 0, questionText: "", questionType: "Essay", isMandatory: false });
+            // Reindex questionNumber for all questions in all pages
+            let newQuestionNumber = 1;
+            const reindexedPages = updatedPages.map((page, idx) => {
+                const qs = idx === pageIndex ? questions : (page.questions || []);
+                return {
+                    ...page,
+                    questions: qs.map(q => ({ ...q, questionNumber: newQuestionNumber++ })),
+                };
+            });
+            setQuestionCount(newQuestionNumber - 1);
+            return { ...prev, pages: reindexedPages };
         });
     }
 
@@ -70,10 +97,32 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
             const updatedPages = [...prev.pages];
-            const updatedQuestions = (updatedPages[pageIndex].questions || [])
-                .filter((_, idx) => idx !== questionIndex)
-                .map((q, idx) => ({ ...q, questionNumber: idx + 1 })); // Re-assign ids
-            updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
+            const questions = (updatedPages[pageIndex].questions || []).filter((_, idx) => idx !== questionIndex);
+
+            let newQuestionNumber = 1;
+            const reindexedPages = updatedPages.map((page, idx) => {
+                const qs = idx === pageIndex ? questions : (page.questions || []);
+                return {
+                    ...page,
+                    questions: qs.map(q => ({ ...q, questionNumber: newQuestionNumber++ })),
+                };
+            });
+
+            setQuestionCount(newQuestionNumber - 1);
+            return { ...prev, pages: reindexedPages };
+        });
+    }
+
+    const handleMoveQuestion = (pageIndex: number, questionIndex: number, direction: "up" | "down") => {
+        setFormDataState((prev) => {
+            if (!prev || !prev.pages) return prev;
+            const updatedPages = [...prev.pages];
+            const updatedQuestions = [...(updatedPages[pageIndex].questions || [])];
+            const [movedQuestion] = updatedQuestions.splice(questionIndex, 1);
+            updatedQuestions.splice(direction === "up" ? questionIndex - 1 : questionIndex + 1, 0, movedQuestion);
+
+            const reindexedQuestions = updatedQuestions.map((q, idx) => ({ ...q, questionNumber: idx + 1 }));
+            updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: reindexedQuestions };
             return { ...prev, pages: updatedPages };
         });
     }
@@ -228,10 +277,6 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         return currentPageErrors.length !== 0;
     };
 
-    useImperativeHandle(ref, () => ({
-        collect: validatePages
-    }));
-
     const handleAddBranch = (pageIndex: number) => {
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
@@ -240,6 +285,10 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
             return { ...prev, pages: updatedPages };
         });
     }
+
+    useImperativeHandle(ref, () => ({
+        collect: validatePages
+    }));
 
     return (
         <div className="space-y-4 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background">
@@ -252,7 +301,11 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
             {formDataState?.pages && formDataState.pages.length > 0 ? (
                 formDataState.pages.map((page, index) => (
                     <div key={index} className="p-4 border border-gray-300 rounded-md space-y-3 relative">
-                        <FaXmark className="text-primary cursor-pointer size-4 md:size-5 absolute right-4 top-4" onClick={() => handleDeletePage(index)} />
+                        <div className="absolute right-4 top-4 flex gap-2 items-center">
+                            {index > 0 && <div className="bg-secondary rounded-full p-1"><IoCaretUp className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleMovePage(index, "up")} /></div>}
+                            {index < (formDataState.pages?.length || 0) - 1 && <div className="bg-secondary rounded-full p-1"><IoCaretDown className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleMovePage(index, "down")} /></div>}
+                            <div className="bg-primary rounded-full p-1"><FaXmark className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleDeletePage(index)} /></div>
+                        </div>
                         <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Primary information</p>
                         <InputField label="Page Title" id={`page-title-${index}`} value={page.title} placeholder="Enter page title" onChange={(e) => handleInputChange(e, "pages", index, "title")} error={pageErrors[index]?.title} />
                         {pageErrors[index]?.title && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.title}</p>}
@@ -264,7 +317,11 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                         {page.questions && page.questions.length > 0 ? (
                             page.questions.map((question, qIndex) => (
                                 <div key={qIndex} className="p-3 border border-gray-200 rounded-md bg-white space-y-3 flex flex-wrap lg:gap-[2%] relative">
-                                    <FaXmark className="text-primary cursor-pointer size-4 md:size-5 absolute right-4 top-4" onClick={() => handleRemoveQuestion(index, qIndex)} />
+                                    <div className="absolute right-4 top-4 flex gap-2 items-center">
+                                        {qIndex > 0 && <div className="bg-secondary rounded-full p-1"><IoCaretUp className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleMoveQuestion(index, qIndex, "up")} /></div>}
+                                        {qIndex < (page.questions?.length || 0) - 1 && <div className="bg-secondary rounded-full p-1"><IoCaretDown className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleMoveQuestion(index, qIndex, "down")} /></div>}
+                                        <div className="bg-primary rounded-full p-1"><FaXmark className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleRemoveQuestion(index, qIndex)} /></div>
+                                    </div>
                                     <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Question {question.questionNumber} ({qIndex + 1} in page)</p>
                                     <InputField label="Question Text" id={`question-text-${index}-${qIndex}`} value={question.questionText} placeholder="Enter question text" onChange={(e) => handleQuestionChange(qIndex, index, "questionText", e.target.value)} error={pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""} />
                                     <TextAreaField label="Question Description (optional)" id={`question-description-${index}-${qIndex}`} value={question.description || ""} placeholder="Enter question description" onChange={(e) => handleQuestionChange(qIndex, index, "description", e.target.value)} />

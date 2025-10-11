@@ -11,7 +11,9 @@ import type {
   MCQQuestion,
   DateQuestion,
   NumberQuestion,
+  UploadQuestion,
 } from "../types/question";
+import { StringTagFormatter, TagStringFormatter } from "./StringTagFormater";
 
 export const formBranchMapper = (
   pages?: formPage[]
@@ -39,7 +41,7 @@ export const formRequestMapper = (formData: form) => {
 
     const mappedPages = formData.pages?.map((page, index) => ({
       title: page.title,
-      description: page.description,
+      description: StringTagFormatter(page.description) as string,
       pageNumber: index,
       questions: page.questions
         .map((q) => {
@@ -49,7 +51,7 @@ export const formRequestMapper = (formData: form) => {
                 questionType: "Essay",
                 questionNumber: q.questionNumber,
                 questionText: q.questionText,
-                description: q.description,
+                description: StringTagFormatter(q.description),
                 isMandatory: q.isMandatory,
                 ...(q.maxLength !== undefined ? { maxLength: q.maxLength } : {}),
                 ...(q.isTextArea !== undefined
@@ -62,7 +64,7 @@ export const formRequestMapper = (formData: form) => {
                 questionType: "MCQ",
                 questionNumber: q.questionNumber,
                 questionText: q.questionText,
-                description: q.description,
+                description: StringTagFormatter(q.description),
                 isMandatory: q.isMandatory,
                 choices: q.choices,
                 isMultiSelect: q.isMultiSelect,
@@ -73,7 +75,7 @@ export const formRequestMapper = (formData: form) => {
                 questionType: "Date",
                 questionNumber: q.questionNumber,
                 questionText: q.questionText,
-                description: q.description,
+                description: StringTagFormatter(q.description),
                 isMandatory: q.isMandatory,
               } satisfies DateQuestion;
 
@@ -82,9 +84,21 @@ export const formRequestMapper = (formData: form) => {
                 questionType: "Number",
                 questionNumber: q.questionNumber,
                 questionText: q.questionText,
-                description: q.description,
+                description: StringTagFormatter(q.description),
                 isMandatory: q.isMandatory,
               } satisfies NumberQuestion;
+            case "Upload":
+              return {
+                questionType: "Upload",
+                questionNumber: q.questionNumber,
+                questionText: q.questionText,
+                description: StringTagFormatter(q.description),
+                isMandatory: q.isMandatory,
+                maxFileSizeMB: q.maxFileSizeMB,
+                allowedFileTypes: q.allowedFileTypes,
+                allowMultiple: q.allowMultiple,
+              } satisfies UploadQuestion;
+
             default:
               return undefined;
           }
@@ -94,19 +108,22 @@ export const formRequestMapper = (formData: form) => {
 
     const formDataWithBranches: serverRequestForm = {
       googleSheetId: formData.googleSheetId,
+      googleDriveId: formData.googleDriveId,
       pages: mappedPages || [],
       branches: mappedBranches,
       title: formData.title,
+      isClosed: formData.isClosed,
       sheetName: formData.sheetName,
-      description: formData.description,
+      description: StringTagFormatter(formData.description) as string,
     };
 
     return formDataWithBranches;
 }
 
-export const formResponseMapper = (formData: serverResponseForm) => {
+export const formResponseMapper = (formData: serverResponseForm, formTags: boolean) => {
     const mappedPages = formData.pages?.map((page) => ({
         ...page,
+        description: formTags ? (page.description ? StringTagFormatter(page.description) as string : undefined) : page.description,
         toBranch: page.toBranches ? page.toBranches.map((branch) => ({
             [branch.questionNumber]: {
                 assertOn: branch.assertOn,
@@ -118,11 +135,13 @@ export const formResponseMapper = (formData: serverResponseForm) => {
     return {
         id: formData.formId,
         title: formData.title,
-        description: formData.description,
+        description: formTags ? (formData.description ? TagStringFormatter(formData.description) as string : undefined) : formData.description,
         pages: mappedPages,
         googleSheetId: formData.googleSheetId,
+        googleDriveId: formData.googleDriveId,
         sheetName: formData.sheetName,
         createdAt: formData.createdAt,
+        isClosed: formData.isClosed,
         updatedAt: formData.updatedOn,
     } as form;
     };
