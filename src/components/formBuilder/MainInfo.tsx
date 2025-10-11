@@ -20,7 +20,7 @@ const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChang
         if (!formDataState.sheetName || formDataState.sheetName.trim() === "") {
             currentErrors[1] = "Sheet/Tab Name is required.";
         }
-        if (!formDataState.googleDriveId || formDataState.googleDriveId.trim() === "") {
+        if ((!formDataState.googleDriveId || formDataState.googleDriveId.trim() === "") && formDataState.pages.some(page => page.questions.some(question => question.questionType === "Upload"))) {
             currentErrors[2] = "Google Drive Folder Id is required.";
         }
         if (!formDataState.title || formDataState.title.trim() === "") {
