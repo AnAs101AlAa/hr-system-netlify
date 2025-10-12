@@ -152,7 +152,7 @@ export default function FormEditor() {
 
     return (
         <WithNavbar>
-        <div className="min-h-screen bg-background p-4">
+        <div className="min-h-screen bg-background p-3 md:p-4">
             <div className="max-w-6xl mx-auto">
             <h1 className="lg:text-[24px] md:text-[22px] text-[20px] font-bold mb-4">{isEditMode ? `Edit Form` : "Create New Form"}</h1>
             <div className="space-y-6">

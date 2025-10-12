@@ -1,13 +1,15 @@
 import { DropdownMenu, InputField, NumberField, TextAreaField, Button, ButtonTypes } from "tccd-ui";
-import { FaXmark } from "react-icons/fa6";
-import { IoCaretUp, IoCaretDown } from "react-icons/io5";
+import { IoCaretUp, IoCaretDown, IoTrashSharp, IoLockOpen, IoLockClosed } from "react-icons/io5";
 import type { form, formPage, formPageError } from "@/types/form";
 import toast from "react-hot-toast";
 import { QUESTION_TYPES } from "@/constants/formConstants";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BranchInfo from "./BranchInfo";
 import { forwardRef, useImperativeHandle } from "react";
 import { sanitize, addQuestionError} from "@/utils/formBuilderUtils";
+import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
+import type { Question } from "@/types/question";
+import { TiTick, TiPlus } from "react-icons/ti";
 
 interface PagesInfoProps {
     formDataState: form;
@@ -21,7 +23,79 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     const [choiceTextBuffer, setChoiceTextBuffer] = useState<string>("");
     const [pageErrors, setPageErrors] = useState<{[index: number]: formPageError}>({});
     const [mainError, setMainError] = useState<string>("");
-        
+    const [allowModifiers, setAllowModifiers] = useState<boolean>(false);
+    const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
+    const [clipboard, setClipboard] = useState<Question[]>([]);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (!(e.ctrlKey || e.metaKey)) return;
+            const key = e.key.toLowerCase();
+            if (!["c", "x"].includes(key)) return;
+            e.preventDefault();
+
+            setFormDataState((prev) => {
+                if (!prev?.pages) return prev;
+
+                const copied = prev.pages.flatMap((p) =>
+                p.questions.filter((q) => selectedQuestions.includes(q.id || ""))
+                );
+
+                setClipboard(copied);
+
+                if (key === "c") {
+                return prev;
+                }
+
+                const updatedPages = prev.pages.map((page) => {
+                const filteredQuestions = page.questions.filter(
+                    (q) => !selectedQuestions.includes(q.id || "")
+                );
+                return { ...page, questions: filteredQuestions };
+                });
+
+                let counter = 1;
+                const pagesWithReindexed = updatedPages.map((page) => ({
+                ...page,
+                questions: page.questions.map((q) => ({ ...q, questionNumber: counter++ })),
+                }));
+
+                return { ...prev, pages: pagesWithReindexed };
+            });
+
+            if (key === "x") {
+                setSelectedQuestions([]);
+            }
+
+            toast.success(`${key === "c" ? "Copied" : "Cut"} ${selectedQuestions.length} question(s) to clipboard`);
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [selectedQuestions, clipboard]);
+
+    const handlePasteQuestions = (pageIndex: number) => {
+        if (clipboard.length === 0) {
+            toast.error("Clipboard is empty");
+            return;
+        }
+        setFormDataState((prev) => {
+            if (!prev || !prev.pages) return prev;
+            const updatedPages = [...prev.pages];
+            const questions = [...(updatedPages[pageIndex].questions || []), ...clipboard];
+            let newQuestionNumber = 1;
+            const reindexedPages = updatedPages.map((page, idx) => {
+            const qs = idx === pageIndex ? questions : (page.questions || []);
+            return {
+                ...page,
+                questions: qs.map(q => ({ ...q, questionNumber: newQuestionNumber++ })),
+            };
+            });
+            setQuestionCount(newQuestionNumber - 1);
+            setClipboard([]);
+            return { ...prev, pages: reindexedPages };
+        });
+    }
     const handleAddPage = () => {
         setFormDataState((prev) => {
             if (!prev) return prev;
@@ -78,7 +152,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
             if (!prev || !prev.pages) return prev;
             const updatedPages = [...prev.pages];
             const questions = [...(updatedPages[pageIndex].questions || [])];
-            questions.push({ questionNumber: 0, questionText: "", questionType: "Essay", isMandatory: false });
+            questions.push({ questionNumber: 0, questionText: "", questionType: "Essay", isMandatory: false, id: crypto.randomUUID() });
             // Reindex questionNumber for all questions in all pages
             let newQuestionNumber = 1;
             const reindexedPages = updatedPages.map((page, idx) => {
@@ -110,20 +184,6 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
 
             setQuestionCount(newQuestionNumber - 1);
             return { ...prev, pages: reindexedPages };
-        });
-    }
-
-    const handleMoveQuestion = (pageIndex: number, questionIndex: number, direction: "up" | "down") => {
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            const updatedPages = [...prev.pages];
-            const updatedQuestions = [...(updatedPages[pageIndex].questions || [])];
-            const [movedQuestion] = updatedQuestions.splice(questionIndex, 1);
-            updatedQuestions.splice(direction === "up" ? questionIndex - 1 : questionIndex + 1, 0, movedQuestion);
-
-            const reindexedQuestions = updatedQuestions.map((q, idx) => ({ ...q, questionNumber: idx + 1 }));
-            updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: reindexedQuestions };
-            return { ...prev, pages: updatedPages };
         });
     }
 
@@ -286,26 +346,73 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         });
     }
 
+    const handleDragEnd = (result : DropResult) => {
+        const { source, destination } = result;
+
+        // dropped outside any droppable area
+        if (!destination) return;
+
+        const sourcePageIndex = parseInt(source.droppableId.split("-")[1], 10);
+        const destPageIndex = parseInt(destination.droppableId.split("-")[1], 10);
+
+        // nothing changed
+        if (
+            sourcePageIndex === destPageIndex &&
+            source.index === destination.index
+        ) {
+            return;
+        }
+
+        setFormDataState((prev) => {
+            if (!prev || !prev.pages) return prev;
+
+            const updatedPages = prev.pages.map((p) => ({ ...p, questions: [...(p.questions || [])] }));
+
+            const [movedQuestion] = updatedPages[sourcePageIndex].questions.splice(source.index, 1);
+
+            updatedPages[destPageIndex].questions.splice(destination.index, 0, movedQuestion);
+
+            let globalCounter = 1;
+            const pagesWithReindexedQuestions = updatedPages.map((page) => {
+            const reindexed = page.questions.map((q) => {
+                return { ...q, questionNumber: globalCounter++ };
+            });
+            return { ...page, questions: reindexed };
+            });
+
+            return {
+            ...prev,
+            pages: pagesWithReindexedQuestions,
+            };
+        });
+    };
+
     useImperativeHandle(ref, () => ({
         collect: validatePages
     }));
 
     return (
-        <div className="space-y-4 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background">
+        <div className="space-y-4 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background relative">
+            <div className="absolute md:right-4 md:top-4 top-3 right-3 flex items-center gap-2 cursor-pointer px-3 py-1 rounded-full bg-secondary text-background" onClick={() => setAllowModifiers(!allowModifiers)}>
+                {allowModifiers ? <IoLockOpen className="size-3.5 md:size-4" /> : <IoLockClosed className="size-3.5 md:size-4" />}
+                <p className="lg:text-[15px] md:text-[14px] text-[13px]">{allowModifiers ? "Disable Modifiers" : "Enable Modifiers"}</p>
+            </div>
             <p className="text-[16px] md:text-[18px] lg:text-[20px] font-semibold text-primary">
                 Form Pages
             </p>
             <p className="text-[14px] md:text-[15px] lg:text-[16px] text-inactive-tab-text">
                 Add and manage the pages of your form. Each page can contain multiple questions.
             </p>
+            <DragDropContext onDragEnd={handleDragEnd}>
             {formDataState?.pages && formDataState.pages.length > 0 ? (
                 formDataState.pages.map((page, index) => (
-                    <div key={index} className="p-4 border border-gray-300 rounded-md space-y-3 relative">
+                    <div key={index} className="p-3 md:p-4 border border-gray-300 rounded-md space-y-3 relative border-t-primary border-t-8 md:border-t-10">
                         <div className="absolute right-4 top-4 flex gap-2 items-center">
                             {index > 0 && <div className="bg-secondary rounded-full p-1"><IoCaretUp className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleMovePage(index, "up")} /></div>}
                             {index < (formDataState.pages?.length || 0) - 1 && <div className="bg-secondary rounded-full p-1"><IoCaretDown className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleMovePage(index, "down")} /></div>}
-                            <div className="bg-primary rounded-full p-1"><FaXmark className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleDeletePage(index)} /></div>
+                            <div className="bg-primary rounded-full p-1"><IoTrashSharp className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleDeletePage(index)} /></div>
                         </div>
+                        <p className="text-[16px] md:text-[18px] lg:text-[20px] font-semibold text-primary">Page {index + 1} ({page.questions ? page.questions.length : 0} question{page.questions && page.questions.length !== 1 ? "s" : ""})</p>
                         <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Primary information</p>
                         <InputField label="Page Title" id={`page-title-${index}`} value={page.title} placeholder="Enter page title" onChange={(e) => handleInputChange(e, "pages", index, "title")} error={pageErrors[index]?.title} />
                         {pageErrors[index]?.title && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.title}</p>}
@@ -314,87 +421,107 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                         {pageErrors[index]?.description && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.description}</p>}
 
                         <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text mt-4">Questions</p>
-                        {page.questions && page.questions.length > 0 ? (
-                            page.questions.map((question, qIndex) => (
-                                <div key={qIndex} className="p-3 border border-gray-200 rounded-md bg-white space-y-3 flex flex-wrap lg:gap-[2%] relative">
-                                    <div className="absolute right-4 top-4 flex gap-2 items-center">
-                                        {qIndex > 0 && <div className="bg-secondary rounded-full p-1"><IoCaretUp className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleMoveQuestion(index, qIndex, "up")} /></div>}
-                                        {qIndex < (page.questions?.length || 0) - 1 && <div className="bg-secondary rounded-full p-1"><IoCaretDown className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleMoveQuestion(index, qIndex, "down")} /></div>}
-                                        <div className="bg-primary rounded-full p-1"><FaXmark className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleRemoveQuestion(index, qIndex)} /></div>
-                                    </div>
-                                    <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Question {question.questionNumber} ({qIndex + 1} in page)</p>
-                                    <InputField label="Question Text" id={`question-text-${index}-${qIndex}`} value={question.questionText} placeholder="Enter question text" onChange={(e) => handleQuestionChange(qIndex, index, "questionText", e.target.value)} error={pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""} />
-                                    <TextAreaField label="Question Description (optional)" id={`question-description-${index}-${qIndex}`} value={question.description || ""} placeholder="Enter question description" onChange={(e) => handleQuestionChange(qIndex, index, "description", e.target.value)} />
-                                    <div className="w-full lg:w-[49%]">
-                                        <DropdownMenu options={QUESTION_TYPES.map((type) => ({ label: type, value: type }))} value={question.questionType} onChange={(selected) => handleQuestionChange(qIndex, index, "questionType", selected)} label="Question Type" />
-                                    </div>
-                                    <div className="w-full lg:w-[49%]">
-                                        <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMandatory ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "isMandatory", selected === "true")} label="Is Required" />
-                                    </div>
-                                    {question.questionType === "Essay" && (
-                                        <>
-                                        <div className="w-full lg:w-[49%]">
-                                            <DropdownMenu options={[{ label: "multiline", value: "true" }, { label: "single line", value: "false" }]} value={question.isTextArea ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "isTextArea", selected === "true")} label="Answer Format" />
-                                        </div>
-                                        <div className="w-full lg:w-[49%]">
-                                            <NumberField label="Character Limit" id={`question-charlimit-${index}-${qIndex}`} value={question.maxLength ? question.maxLength.toString() : ""} placeholder="e.g. 250" onChange={(e) => handleQuestionChange(qIndex, index, "maxLength", e.target.value !== "" ? parseInt(e.target.value) : null)} />
-                                        </div>
-                                        </>
-                                    )}
-                                    {question.questionType === "MCQ" && (
-                                        <div className="w-full space-y-3">
-                                        <p className="text-label text-[14px] md:text-[15px] lg:text-[16px] mb-2 font-semibold">Added Choices</p>
-                                        {question.choices && question.choices.length > 0 ? (
-                                            <div className="w-full mb-2">
-                                            {question.choices.map((choice, cIndex) => (
-                                                <div key={cIndex} className="flex items-center justify-between w-full gap-2 my-3">
-                                                    <p className="text-[14px] md:text-[15px] lg:text-[16px]">{cIndex+1 + ". " + choice.text}</p>
-                                                    <FaXmark className="text-primary cursor-pointer size-4 md:size-5" onClick={() => handleRemoveChoice(qIndex, index, cIndex)} />
+                        <Droppable droppableId={`page-${index}`} key={index}>
+                            {(provided) => (
+                                <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-3">
+                                    {page.questions && page.questions.length > 0 ? (
+                                    page.questions.map((question, qIndex) => (
+                                        <Draggable key={qIndex} draggableId={`page-${index}-question-${qIndex}`} index={qIndex} isDragDisabled={!allowModifiers}>
+                                            {(provided) => (
+                                                <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className={`${allowModifiers ? "p-1.5 md:p-3 border-gray-200" : "border-transparent"} border rounded-md bg-gray-100 space-y-3 flex flex-wrap lg:gap-[2%] relative ease-in-out transition-all duration-200`}>
+                                                    <div key={qIndex} className="p-3 border border-gray-200 rounded-md bg-white space-y-3 flex flex-wrap lg:gap-[2%] relative w-full">
+                                                    <div className="absolute right-4 top-4 flex gap-2 items-center">
+                                                        {allowModifiers ? (selectedQuestions.includes(question.id || "") ?
+                                                            <div className="bg-secondary rounded-full p-1">
+                                                                <TiTick className="text-background cursor-pointer size-4 md:size-5" onClick={() => setSelectedQuestions((prev) => prev.filter((id) => id !== question.id || ""))} />
+                                                            </div> : 
+                                                            <div className="bg-secondary py-0.5 md:py-1 rounded-full px-3">
+                                                                <p className="text-background text-[12px] md:text-[14px] cursor-pointer" onClick={() => setSelectedQuestions((prev) => [...prev, question.id || ""])} >Select</p>
+                                                            </div>):
+                                                        null}
+                                                        <div className="bg-primary rounded-full p-1"><IoTrashSharp className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleRemoveQuestion(qIndex, index)} /></div>
+                                                     </div>
+                                                        <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Question {question.questionNumber} ({qIndex + 1} in page)</p>
+                                                        <InputField label="Question Text" id={`question-text-${index}-${qIndex}`} value={question.questionText} placeholder="Enter question text" onChange={(e) => handleQuestionChange(qIndex, index, "questionText", e.target.value)} error={pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""} />
+                                                        <TextAreaField label="Question Description (optional)" id={`question-description-${index}-${qIndex}`} value={question.description || ""} placeholder="Enter question description" onChange={(e) => handleQuestionChange(qIndex, index, "description", e.target.value)} />
+                                                        <div className="w-full lg:w-[49%]">
+                                                            <DropdownMenu options={QUESTION_TYPES.map((type) => ({ label: type, value: type }))} value={question.questionType} onChange={(selected) => handleQuestionChange(qIndex, index, "questionType", selected)} label="Question Type" />
+                                                        </div>
+                                                        <div className="w-full lg:w-[49%]">
+                                                            <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMandatory ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "isMandatory", selected === "true")} label="Is Required" />
+                                                        </div>
+                                                        {question.questionType === "Essay" && (
+                                                            <>
+                                                            <div className="w-full lg:w-[49%]">
+                                                                <DropdownMenu options={[{ label: "multiline", value: "true" }, { label: "single line", value: "false" }]} value={question.isTextArea ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "isTextArea", selected === "true")} label="Answer Format" />
+                                                            </div>
+                                                            <div className="w-full lg:w-[49%]">
+                                                                <NumberField label="Character Limit" id={`question-charlimit-${index}-${qIndex}`} value={question.maxLength ? question.maxLength.toString() : ""} placeholder="e.g. 250" onChange={(e) => handleQuestionChange(qIndex, index, "maxLength", e.target.value !== "" ? parseInt(e.target.value) : null)} />
+                                                            </div>
+                                                            </>
+                                                        )}
+                                                        {question.questionType === "MCQ" && (
+                                                            <div className="w-full space-y-3">
+                                                            <p className="text-label text-[14px] md:text-[15px] lg:text-[16px] mb-2 font-semibold">Added Choices</p>
+                                                            {question.choices && question.choices.length > 0 ? (
+                                                                <div className="w-full mb-2">
+                                                                {question.choices.map((choice, cIndex) => (
+                                                                    <div key={cIndex} className="flex items-center justify-between w-full gap-2 my-3">
+                                                                        <p className="text-[14px] md:text-[15px] lg:text-[16px]">{cIndex+1 + ". " + choice.text}</p>
+                                                                        <IoTrashSharp className="text-primary cursor-pointer size-4 md:size-5" onClick={() => handleRemoveChoice(qIndex, index, cIndex)} />
+                                                                    </div>
+                                                                ))}
+                                                                </div>) : (
+                                                                    <p className="text-sm text-gray-600">No choices added yet.</p>
+                                                            )}
+                                                            <div className="flex gap-2 items-end w-full justify-between">
+                                                                <div className="max-w-3/4 md:max-w-none w-full">
+                                                                    <InputField label="Add Choice" id={`question-add-choice-${index}-${qIndex}`} value={choiceTextBuffer} placeholder="Enter choice text" onChange={(e) => setChoiceTextBuffer(e.target.value)} />
+                                                                </div>
+                                                                <Button type={ButtonTypes.SECONDARY} width="fit" onClick={() => handleAddChoice(qIndex, index)} buttonIcon={<TiPlus className="size-3 md:size-4.5"/>} />
+                                                            </div>
+                                                            <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMultiSelect ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "isMultiSelect", selected === "true")} label="Allow Multiple Answers" />
+                                                            </div>
+                                                        )}
+                                                        {question.questionType === "Upload" && (
+                                                            <>
+                                                            <div className="w-full lg:w-[49%]">
+                                                                <NumberField label="Max File Size (MB)" id={`question-maxfilesize-${index}-${qIndex}`} value={question.maxFileSizeMB ? question.maxFileSizeMB.toString() : ""} placeholder="e.g. 5" onChange={(e) => handleQuestionChange(qIndex, index, "maxFileSizeMB", e.target.value !== "" ? parseInt(e.target.value) : null)} />
+                                                            </div>
+                                                            <div className="w-full lg:w-[49%]">
+                                                                <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.allowMultiple ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "allowMultiple", selected === "true")} label="Allow Multiple Files" />
+                                                            </div>
+                                                            <div className="w-full">
+                                                                <InputField label="Allowed File Types (comma separated, e.g. .pdf, .docx)" id={`question-allowedfiletypes-${index}-${qIndex}`} value={question.allowedFileTypes ? question.allowedFileTypes.join(", ") : ""} placeholder="e.g. .pdf, .docx" onChange={(e) => handleQuestionChange(qIndex, index, "allowedFileTypes", e.target.value !== "" ? e.target.value.split(", ").map(type => type.trim()) : [])} />
+                                                            </div>
+                                                            </>
+                                                        )}
+                                                        <div className="space-y-2">
+                                                            <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""}</p>
+                                                            <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.questions?.[qIndex]?.questionType ?? ""}</p>
+                                                            <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.questions?.[qIndex]?.choices ?? ""}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            ))}
-                                            </div>) : (
-                                                <p className="text-sm text-gray-600">No choices added yet.</p>
-                                        )}
-                                        <div className="flex gap-2 items-end w-full justify-between">
-                                            <div className="max-w-3/4 md:max-w-none w-full">
-                                                <InputField label="Add Choice" id={`question-add-choice-${index}-${qIndex}`} value={choiceTextBuffer} placeholder="Enter choice text" onChange={(e) => setChoiceTextBuffer(e.target.value)} />
-                                            </div>
-                                            <Button type={ButtonTypes.SECONDARY} onClick={() => handleAddChoice(qIndex, index)} buttonText="+"/>
-                                        </div>
-                                        <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMultiSelect ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "isMultiSelect", selected === "true")} label="Allow Multiple Answers" />
-                                        </div>
+                                            )}
+                                        </Draggable>
+                                    ))
+                                    ) : (
+                                        <p className="text-sm text-gray-600">No questions added yet. Click "Add Question" to create your first question.</p>
                                     )}
-                                    {question.questionType === "Upload" && (
-                                        <>
-                                        <div className="w-full lg:w-[49%]">
-                                            <NumberField label="Max File Size (MB)" id={`question-maxfilesize-${index}-${qIndex}`} value={question.maxFileSizeMB ? question.maxFileSizeMB.toString() : ""} placeholder="e.g. 5" onChange={(e) => handleQuestionChange(qIndex, index, "maxFileSizeMB", e.target.value !== "" ? parseInt(e.target.value) : null)} />
-                                        </div>
-                                        <div className="w-full lg:w-[49%]">
-                                            <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.allowMultiple ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "allowMultiple", selected === "true")} label="Allow Multiple Files" />
-                                        </div>
-                                        <div className="w-full">
-                                            <InputField label="Allowed File Types (comma separated, e.g. .pdf, .docx)" id={`question-allowedfiletypes-${index}-${qIndex}`} value={question.allowedFileTypes ? question.allowedFileTypes.join(", ") : ""} placeholder="e.g. .pdf, .docx" onChange={(e) => handleQuestionChange(qIndex, index, "allowedFileTypes", e.target.value !== "" ? e.target.value.split(", ").map(type => type.trim()) : [])} />
-                                        </div>
-                                        </>
-                                    )}
-                                    <div className="space-y-2">
-                                        <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""}</p>
-                                        <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.questions?.[qIndex]?.questionType ?? ""}</p>
-                                        <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.questions?.[qIndex]?.choices ?? ""}</p>
-                                    </div>
+                                    {provided.placeholder}
                                 </div>
-                            ))
-                        ) : (
-                            <p className="text-sm text-gray-600">No questions added yet. Click "Add Question" to create your first question.</p>
-                        )}
+                            )}
+                        </Droppable>
                         {page.toBranch && (
                             <BranchInfo setFormDataState={setFormDataState} index={index} page={page} />
                         )}  
-                        <div className="flex gap-3 items-center">
-                            <Button type={ButtonTypes.PRIMARY} onClick={() => handleAddQuestion(index)} buttonText="Add Question"/>
+                        <div className="flex gap-2 md:gap-3 md:justify-start justify-center items-center">
+                            <Button type={ButtonTypes.PRIMARY} width="small" onClick={() => handleAddQuestion(index)} buttonText="Add Question"/>
                             {!page.toBranch && (
-                                <Button type={ButtonTypes.SECONDARY} onClick={() => handleAddBranch(index)} buttonText="Add Branching" />
+                                <Button type={ButtonTypes.SECONDARY} width="small" onClick={() => handleAddBranch(index)} buttonText="Add Branch" />
                             )}
+                            {clipboard.length > 0 && allowModifiers && <Button type={ButtonTypes.TERTIARY} width="fit" onClick={() => handlePasteQuestions(index)} buttonText={`Paste`} />}
                         </div>
                         <div className="space-y-2">
                             <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.questionCount}</p>
@@ -408,6 +535,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                     {mainError && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{mainError}</p>}
                 </>
             )}
+            </DragDropContext>
             <Button type={ButtonTypes.PRIMARY} onClick={() => handleAddPage()} buttonText="Add Page"/>
         </div>
     )

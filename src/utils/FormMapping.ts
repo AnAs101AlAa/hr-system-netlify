@@ -123,6 +123,7 @@ export const formRequestMapper = (formData: form) => {
 export const formResponseMapper = (formData: serverResponseForm, formTags: boolean) => {
     const mappedPages = formData.pages?.map((page) => ({
         ...page,
+        id: crypto.randomUUID(),
         description: formTags ? (page.description ? StringTagFormatter(page.description) as string : undefined) : page.description,
         toBranch: page.toBranches ? page.toBranches.map((branch) => ({
             [branch.questionNumber]: {
