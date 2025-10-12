@@ -26,7 +26,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     const [allowModifiers, setAllowModifiers] = useState<boolean>(false);
     const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
     const [clipboard, setClipboard] = useState<Question[]>([]);
-
+    
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!(e.ctrlKey || e.metaKey)) return;
@@ -82,7 +82,8 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
             const updatedPages = [...prev.pages];
-            const questions = [...(updatedPages[pageIndex].questions || []), ...clipboard];
+            const newQuestions = clipboard.map((q) => ({ ...q, id: crypto.randomUUID() }));
+            const questions = [...(updatedPages[pageIndex].questions || []), ...newQuestions];
             let newQuestionNumber = 1;
             const reindexedPages = updatedPages.map((page, idx) => {
             const qs = idx === pageIndex ? questions : (page.questions || []);
@@ -93,9 +94,11 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
             });
             setQuestionCount(newQuestionNumber - 1);
             setClipboard([]);
+            setSelectedQuestions([]);
             return { ...prev, pages: reindexedPages };
         });
     }
+
     const handleAddPage = () => {
         setFormDataState((prev) => {
             if (!prev) return prev;
@@ -247,6 +250,27 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
             return { ...prev, pages: updatedPages };
         });
     }
+
+    const handleMoveChoice = (questionIndex: number, pageIndex: number, choiceIndex: number, direction: "up" | "down") => {
+        setFormDataState((prev) => {
+            if (!prev || !prev.pages) return prev;
+            const updatedPages = [...prev.pages];
+            const updatedQuestions = [...(updatedPages[pageIndex].questions || [])];
+            const question = updatedQuestions[questionIndex];
+            if (question.questionType !== "MCQ" || !question.choices) {
+                toast.error("Invalid operation");
+                return prev;
+            }
+            const choices = [...question.choices];
+            const [movedChoice] = choices.splice(choiceIndex, 1);
+            choices.splice(direction === "up" ? choiceIndex - 1 : choiceIndex + 1, 0, movedChoice);
+            // Reassign choiceNumber
+            const reindexedChoices = choices.map((choice, idx) => ({ ...choice, choiceNumber: idx + 1 }));
+            updatedQuestions[questionIndex] = { ...question, choices: reindexedChoices };
+            updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
+            return { ...prev, pages: updatedPages };
+        })
+    };
 
     const validatePages = (): boolean => {
         const currentPageErrors: formPageError[] = [];
@@ -468,7 +492,11 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                                                 {question.choices.map((choice, cIndex) => (
                                                                     <div key={cIndex} className="flex items-center justify-between w-full gap-2 my-3">
                                                                         <p className="text-[14px] md:text-[15px] lg:text-[16px]">{cIndex+1 + ". " + choice.text}</p>
-                                                                        <IoTrashSharp className="text-primary cursor-pointer size-4 md:size-5" onClick={() => handleRemoveChoice(qIndex, index, cIndex)} />
+                                                                        <div className="flex gap-2 items-center">
+                                                                            {choice.choiceNumber > 1 && <IoCaretUp className="text-primary cursor-pointer size-4 md:size-4.5" onClick={() => handleMoveChoice(qIndex, index, cIndex, "up")} />}
+                                                                            {choice.choiceNumber < (question.choices ? question.choices.length : 0) && <IoCaretDown className="text-primary cursor-pointer size-4 md:size-4.5" onClick={() => handleMoveChoice(qIndex, index, cIndex, "down")} />}
+                                                                            <IoTrashSharp className="text-primary cursor-pointer size-4 md:size-4.5" onClick={() => handleRemoveChoice(qIndex, index, cIndex)} />
+                                                                        </div>
                                                                     </div>
                                                                 ))}
                                                                 </div>) : (
