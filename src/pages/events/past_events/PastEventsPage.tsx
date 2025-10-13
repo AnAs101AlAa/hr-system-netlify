@@ -42,18 +42,21 @@ const PastEventsPage = () => {
   const totalCount = data?.total ?? 0;
   const totalFilteredPages = Math.max(1, Math.ceil(totalCount / eventsPerPage));
 
-  // Update events per page on window resize
   useEffect(() => {
     const handleResize = () => {
-      setEventsPerPage(getEventsPerPage());
-      // Reset to first page when changing layout
-      setCurrentPage(1);
+      const newEventsPerPage = getEventsPerPage();
+
+      setEventsPerPage((prev) => {
+        if (prev !== newEventsPerPage) {
+          setCurrentPage(1);
+          return newEventsPerPage;
+        }
+        return prev;
+      });
     };
 
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
