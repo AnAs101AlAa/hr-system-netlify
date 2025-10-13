@@ -251,9 +251,10 @@ export const useEventAttendees = (eventId: string, roles: string[]) => {
     queryKey: eventKeys.eventAttendees(eventId),
     queryFn: async () => {
       let data;
-      if (roles && roles.includes("Vest")) {
+      if (roles && roles.length === 1 && roles[0] === "Vest") {
         data = await eventsApiInstance.fetchVestEventAttendees(eventId);
       } else {
+        console.log("Fetching regular event attendees");
         data = await eventsApiInstance.fetchEventAttendees(eventId);
       }
       return data;

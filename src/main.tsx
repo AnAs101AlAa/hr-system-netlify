@@ -7,14 +7,21 @@ import { PersistGate } from "redux-persist/integration/react";
 import App from "./App";
 import store, { persistor } from "./redux/store/store";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    },
+  },
+});
 
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <QueryClientProvider client={queryClient}>
         <StrictMode>
-            <App />
+          <App />
         </StrictMode>
       </QueryClientProvider>
     </PersistGate>
