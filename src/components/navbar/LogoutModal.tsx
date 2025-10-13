@@ -1,6 +1,5 @@
 import { Modal, Button, ButtonTypes } from "tccd-ui";
 import { useLogout } from "@/queries/users";
-import { TbLoader2 } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -32,9 +31,7 @@ export default function LogoutModal ({ showLogoutModal, setShowLogoutModal }: { 
           <p className="text-sm text-gray-600 mb-4 text-center">Are you sure you want to logout?</p>
           <div className="flex justify-center gap-[4%]">
             {logoutMutation.isLoading ? (
-                <button className="rounded-xl px-6 py-2 border font-bold text-[12px] md:text-[13px] lg:text-[14px] transition-all duration-200 ease-in-out flex items-center justify-center h-fit bg-inactive-tab-text" disabled={true}>
-                    <TbLoader2 className="animate-spin" />
-                </button>
+                <Button loading={true} type={ButtonTypes.PRIMARY} onClick={() => {}} />
             ) : (
                 <>
                     <Button buttonText="Cancel" onClick={() => setShowLogoutModal(false)} type={ButtonTypes.SECONDARY} />
