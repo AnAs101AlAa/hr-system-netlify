@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import FormDeleteModal from "./FormDeleteModal";
 import { useModifyFormStatus } from "@/queries/forms/formQueries";
 import { getErrorMessage } from "@/utils";
+import { IoTrashSharp } from "react-icons/io5";
+import { FaRegCopy } from "react-icons/fa6";
+import { FaEdit, FaLock, FaUnlock } from "react-icons/fa";
 
 interface FormCardViewProps {
   forms: form[];
@@ -86,40 +89,39 @@ const FormCardView = ({
               </div>
             </div>
 
-            <div className="mt-4 flex justify-end items-center gap-3">
+            <div className="mt-4 flex justify-center items-center gap-3">
                 <Button
                   type={ButtonTypes.TERTIARY}
                   onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/form/${form.id}`); toast.success("Form link copied to clipboard") }}
-                  buttonText="Copy Link"
+                  buttonIcon={<FaRegCopy size={16} />}
+                  width="fit"
                 />
                 <Button
                     type={ButtonTypes.SECONDARY}
                     onClick={() => navigate(`/form-builder/${form.id}`)}
-                    buttonText="Edit"
+                    buttonIcon={<FaEdit size={16} />}
+                    width="fit"
                 />
                 {form.isClosed ? (
-                  <div className="w-20">
                     <Button
                       type={ButtonTypes.PRIMARY}
                       onClick={() => handleModifyStatus(form.id, false)}
-                      buttonText="Unlock"
+                      buttonIcon={<FaUnlock size={14} />}
                       disabled={modifyFormStatusMutation.isPending && modifyFormStatusMutation.variables?.formId === form.id}
-                      width="full"/>
-                  </div>
+                      width="fit"/>
                   ) : (
-                  <div className="w-20">
                     <Button
                       type={ButtonTypes.PRIMARY}
                       onClick={() => handleModifyStatus(form.id, true)}
-                      buttonText="Lock"
+                      buttonIcon={<FaLock size={14} />}
                       disabled={modifyFormStatusMutation.isPending && modifyFormStatusMutation.variables?.formId === form.id}
-                      width="full"/>
-                  </div>
+                      width="fit"/>
                 )}
                 <Button
                     type={ButtonTypes.DANGER}
                     onClick={() => setShowDeleteModal(form.id || "")}
-                    buttonText="Delete"
+                    buttonIcon={<IoTrashSharp size={17} />}
+                    width="fit"
                 />
             </div>
           </div>

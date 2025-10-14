@@ -106,6 +106,8 @@ const LoginPage = () => {
             {/* Password */}
             <div className="space-y-2">
               <PasswordField
+                id={"password"}
+                label="Password"
                 value={loginForm.password}
                 error={errors.password}
                 onChange={handleInputChange}
