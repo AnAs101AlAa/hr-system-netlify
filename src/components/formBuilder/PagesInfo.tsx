@@ -31,7 +31,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!(e.ctrlKey || e.metaKey)) return;
             const key = e.key.toLowerCase();
-            if (!["c", "x"].includes(key)) return;
+            if (!(["c", "x"].includes(key) && clipboard.length > 0)) return;
             e.preventDefault();
 
             setFormDataState((prev) => {
