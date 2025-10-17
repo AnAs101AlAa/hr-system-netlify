@@ -254,7 +254,6 @@ export const useEventAttendees = (eventId: string, roles: string[]) => {
       if (roles && roles.length === 1 && roles[0] === "Vest") {
         data = await eventsApiInstance.fetchVestEventAttendees(eventId);
       } else {
-        console.log("Fetching regular event attendees");
         data = await eventsApiInstance.fetchEventAttendees(eventId);
       }
       return data;
