@@ -171,11 +171,9 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     }
 
     const handleRemoveQuestion = (pageIndex: number, questionIndex: number) => {
-        console.log(formDataState)
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
             const updatedPages = [...prev.pages];
-            console.log(updatedPages, pageIndex, questionIndex);
             const questions = (updatedPages[pageIndex].questions || []).filter((_, idx) => idx !== questionIndex);
 
             let newQuestionNumber = 1;
@@ -193,7 +191,6 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     }
 
     const handleQuestionChange = (index: number, pageIndex: number, field: string, value: string | string[] | boolean | number | null) => {
-        console.log(value);
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
             if (value === null) {
