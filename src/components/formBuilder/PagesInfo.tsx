@@ -171,9 +171,11 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     }
 
     const handleRemoveQuestion = (pageIndex: number, questionIndex: number) => {
+        console.log(formDataState)
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
             const updatedPages = [...prev.pages];
+            console.log(updatedPages, pageIndex, questionIndex);
             const questions = (updatedPages[pageIndex].questions || []).filter((_, idx) => idx !== questionIndex);
 
             let newQuestionNumber = 1;
@@ -191,6 +193,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     }
 
     const handleQuestionChange = (index: number, pageIndex: number, field: string, value: string | string[] | boolean | number | null) => {
+        console.log(value);
         setFormDataState((prev) => {
             if (!prev || !prev.pages) return prev;
             if (value === null) {
@@ -463,7 +466,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                                                 <p className="text-background text-[12px] md:text-[14px] cursor-pointer" onClick={() => setSelectedQuestions((prev) => [...prev, question.id || ""])} >Select</p>
                                                             </div>):
                                                         null}
-                                                        <div className="bg-primary rounded-full p-1"><IoTrashSharp className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleRemoveQuestion(qIndex, index)} /></div>
+                                                        <div className="bg-primary rounded-full p-1"><IoTrashSharp className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleRemoveQuestion(index, qIndex)} /></div>
                                                      </div>
                                                         <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Question {question.questionNumber} ({qIndex + 1} in page)</p>
                                                         <InputField label="Question Text" id={`question-text-${index}-${qIndex}`} value={question.questionText} placeholder="Enter question text" onChange={(e) => handleQuestionChange(qIndex, index, "questionText", e.target.value)} error={pageErrors[index]?.questions?.[qIndex]?.questionText ?? ""} />
@@ -520,7 +523,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                                                 <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.allowMultiple ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "allowMultiple", selected === "true")} label="Allow Multiple Files" />
                                                             </div>
                                                             <div className="w-full">
-                                                                <InputField label="Allowed File Types (comma separated, e.g. .pdf, .docx)" id={`question-allowedfiletypes-${index}-${qIndex}`} value={question.allowedFileTypes ? question.allowedFileTypes.join(", ") : ""} placeholder="e.g. .pdf, .docx" onChange={(e) => handleQuestionChange(qIndex, index, "allowedFileTypes", e.target.value !== "" ? e.target.value.split(", ").map(type => type.trim()) : [])} />
+                                                                <InputField label="Allowed File Types (comma separated, e.g. .pdf, .docx)" id={`question-allowedfiletypes-${index}-${qIndex}`} value={question.allowedFileTypes ? question.allowedFileTypes.join(", ") : ""} placeholder="e.g. .pdf, .docx" onChange={(e) => handleQuestionChange(qIndex, index, "allowedFileTypes", e.target.value ? e.target.value.split(/\s*,\s*/).filter(Boolean) : [])} />
                                                             </div>
                                                             </>
                                                         )}
