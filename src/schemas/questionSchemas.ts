@@ -70,14 +70,14 @@ export const createDateValidationSchema = (question: {
 
   schema = schema.regex(/^\d{4}-\d{2}-\d{2}$|^$/, "Invalid date format");
 
-  if (question.minDate) {
+  if (question.minDate && question.minDate !== "0001-01-01T00:00:00") {
     schema = schema.refine(
       (val) => !val || new Date(val) >= new Date(question.minDate!),
       `Date must be on or after ${question.minDate}`
     );
   }
 
-  if (question.maxDate) {
+  if (question.maxDate && question.maxDate !== "0001-01-01T00:00:00") {
     schema = schema.refine(
       (val) => !val || new Date(val) <= new Date(question.maxDate!),
       `Date must be on or before ${question.maxDate}`
