@@ -24,6 +24,8 @@ const UploadQuestionCard = forwardRef<QuestionCardHandle, UploadQuestionCardProp
         if (files.length > 0) {
           const valueToValidate = question.allowMultiple ? files : files[0];
           schema.parse(valueToValidate);
+        } else if (question.isMandatory) {
+          schema.parse(undefined);
         }
 
         setErrors([]);

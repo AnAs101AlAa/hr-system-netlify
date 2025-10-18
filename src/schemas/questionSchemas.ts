@@ -118,12 +118,25 @@ export const createUploadValidationSchema = (question: {
   maxFileSizeMB?: number;
   allowedFileTypes: string[];
 }) => {
-  let schema = z.union([z.instanceof(File), z.array(z.instanceof(File))]).optional();
+  let schema = z.union([
+    z.instanceof(File), 
+    z.array(z.instanceof(File)),
+    z.undefined()
+  ]);
 
   if (question.isMandatory) {
-    schema = schema.refine((val) => val !== undefined, "File is required");
+    console.log("Creating mandatory upload schema");
+    schema = schema.refine(
+      (val) => {
+        if (val === undefined || val === null) return false;
+        if (Array.isArray(val) && val.length === 0) return false;
+        return true;
+      },
+      "File is required"
+    );
   }
 
+  // File size validation
   if (question.maxFileSizeMB) {
     schema = schema.refine(
       (val) => {
@@ -137,6 +150,7 @@ export const createUploadValidationSchema = (question: {
     );
   }
 
+  // File type validation
   if (question.allowedFileTypes && question.allowedFileTypes.length > 0) {
     const allowed = question.allowedFileTypes.map((s) => s.toLowerCase().trim());
 

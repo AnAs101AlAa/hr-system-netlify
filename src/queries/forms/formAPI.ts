@@ -25,6 +25,7 @@ export async function submitForm(formId: string, answers: string[]) {
 }
 
 export async function createForm(formData: serverRequestForm) {
+  console.log("Creating form with data:", formData);
     const response = await systemApi.post(`${FORMS_API_URL}`, formData);
     return response.data;
 }

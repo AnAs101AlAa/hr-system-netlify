@@ -5,7 +5,7 @@ import WithNavbar from "@/components/hoc/WithNavbar";
 import type { form, formPage } from "@/types/form";
 import MainInfo from "@/components/formBuilder/MainInfo";
 import PagesInfo from "@/components/formBuilder/PagesInfo";
-import type { FormEditorHandle } from "@/types/form";
+import type { FormEditorHandle, FormEditorPageHandle } from "@/types/form";
 import { getErrorMessage } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { LoadingPage, ErrorScreen, Button, ButtonTypes } from "tccd-ui";
@@ -28,7 +28,7 @@ export default function FormEditor() {
     const [questionCount, setQuestionCount] = useState(0);
         
     const mainSectionRef = useRef<FormEditorHandle | null>(null);
-    const pagesSectionRef = useRef<FormEditorHandle | null>(null);
+    const pagesSectionRef = useRef<FormEditorPageHandle | null>(null);
 
     const calcQuestionCount = (pages?: formPage[]) =>
         (pages ?? []).reduce((acc, page) => acc + (page.questions?.length ?? 0), 0);
@@ -72,19 +72,22 @@ export default function FormEditor() {
     const validateForm = () => {
         let hasErrors = false;
         hasErrors = mainSectionRef.current?.collect() || hasErrors;
-        hasErrors = pagesSectionRef.current?.collect() || hasErrors;
-        return !hasErrors;
+        const pageValidated = pagesSectionRef.current?.collect() || { hasErrors: false, pages: [] };
+        hasErrors = pageValidated.hasErrors || hasErrors;
+        return { hasErrors, pages: pageValidated.pages || [] };
     }
 
     const handleCreateForm = async () => {
         if( isEditMode ) {
             toast.promise(
                 new Promise((resolve, reject) => {
-                    if (!validateForm()) {
+                    const validationResult = validateForm();
+                    if (validationResult.hasErrors) {
                         reject("Form validation failed. Please check your inputs.");
                         return;
                     }
-                    updateFormMutation.mutate(formDataState, {
+
+                    updateFormMutation.mutate({...formDataState, pages: validationResult.pages}, {
                         onSuccess: () => {
                             resolve(true);
                             setTimeout(() => {
