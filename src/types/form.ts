@@ -89,6 +89,6 @@ export type QuestionCardHandle = { validate: () => boolean, collect: () => Answe
 
 export type FormEditorHandle = { collect: () => boolean };
 
-export type FormEditorPageHandle = { collect: (questionAnswers: string[]) => { hasErrors: boolean; pages?: formPage[] } };
+export type FormEditorPageHandle = { collect: () => { hasErrors: boolean; pages?: formPage[] } };
 
 export type FormBranchHandle = { collect: (questionAnswers: string[]) => formBranch, fetchQuestionNumber: () => number };
