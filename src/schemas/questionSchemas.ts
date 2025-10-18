@@ -125,7 +125,6 @@ export const createUploadValidationSchema = (question: {
   ]);
 
   if (question.isMandatory) {
-    console.log("Creating mandatory upload schema");
     schema = schema.refine(
       (val) => {
         if (val === undefined || val === null) return false;

@@ -19,7 +19,6 @@ export const formBranchMapper = (
   pages?: formPage[]
 ) => {
     const mappedBranches: serverRequestBranch[] = [];
-    console.log("Mapping branches from pages:", pages);
     pages?.forEach((page, pageIndex) => {
       if (page.toBranch) {
         Object.entries(page.toBranch).forEach(([questionId, branchData]) => {

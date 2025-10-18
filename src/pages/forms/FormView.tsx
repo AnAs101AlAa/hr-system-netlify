@@ -12,6 +12,7 @@ import { ErrorScreen, Button } from "tccd-ui";
 import { HTMLText } from "@/components/HTMLText";
 import FormLockedPage from "./FormLockedPage";
 import { useUploadSubmissionMedia } from "@/queries/forms/formQueries";
+import { branchAssertionFormatter } from "@/utils/formViewerUtils";
 
 export default function FormView() {
   const navigate = useNavigate();
@@ -82,7 +83,9 @@ export default function FormView() {
       const branch = formData.pages[currentPage].toBranch;
       if (branch) {
         const currentAnswer = answerArray.find((a) => branch[a.qid]);
-        if (currentAnswer?.answer == branch[currentAnswer!.qid].assertOn) {
+        const answersToAssert = currentAnswer ? branchAssertionFormatter(branch[currentAnswer.qid].assertOn) : [];
+
+        if (answersToAssert.includes(currentAnswer?.answer as string)) {
           setCurrentPage(branch[currentAnswer!.qid].targetPage);
           setPageHistory((prev) => [
             ...prev,
