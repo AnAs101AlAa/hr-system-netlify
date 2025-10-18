@@ -1,9 +1,9 @@
 import { FaXmark } from "react-icons/fa6";
 import { InputField, NumberField } from "tccd-ui";
-import type { form, formPage, formBranch } from "@/types/form";
+import type { form, formBranch, formPage, FormBranchHandle } from "@/types/form";
 import { useState } from "react";
 import { forwardRef, useImperativeHandle } from "react";
-
+import { branchAssertionFormatter } from "@/utils/formViewerUtils";
 interface BranchInfoProps {
   setFormDataState: React.Dispatch<React.SetStateAction<form>>;
   index: number;
@@ -11,12 +11,13 @@ interface BranchInfoProps {
   initialValue?: formBranch;
 }
 
-const BranchInfo = forwardRef<{ collect: () => formBranch }, BranchInfoProps>(({ setFormDataState, index, page, initialValue }: BranchInfoProps, ref) => {
+const BranchInfo = forwardRef<FormBranchHandle, BranchInfoProps>(({ setFormDataState, index, page, initialValue }: BranchInfoProps, ref) => {
   const [branchData, setBranchData] = useState<{questionNumber: string, assertOn: string; targetPage: string }>(initialValue ? {
     questionNumber: initialValue.questionNumber.toString(),
     assertOn: initialValue.assertOn,
     targetPage: initialValue.targetPage.toString(),
   } : { questionNumber: "", assertOn: "", targetPage: "" });
+  const [branchingMode, setBranchingMode] = useState<boolean>(false);
 
   const handleRemoveBranch = (pageIndex: number) => {
     setFormDataState((prev) => {
@@ -31,16 +32,19 @@ const BranchInfo = forwardRef<{ collect: () => formBranch }, BranchInfoProps>(({
     });
   };
 
-  const collectBranchData = () => {
+  const collectBranchData = (questionAnswers: string[]) => {
+    const assertionAnswers = branchAssertionFormatter(branchData.assertOn);
+    const selectedAnswers = questionAnswers.filter(ans => !assertionAnswers.includes(ans));
     return {
       questionNumber: parseInt(branchData.questionNumber),
-      assertOn: branchData.assertOn,
+      assertOn: branchingMode ? "[" + selectedAnswers.join(", ") + "]" : branchData.assertOn,
       targetPage: parseInt(branchData.targetPage),
     };
   }
 
   useImperativeHandle(ref, () => ({
     collect: collectBranchData,
+    fetchQuestionNumber: () => parseInt(branchData.questionNumber),
   }));
 
   if (!page.toBranch) {
@@ -49,12 +53,20 @@ const BranchInfo = forwardRef<{ collect: () => formBranch }, BranchInfoProps>(({
 
   return (
     <div className="p-3 border border-gray-200 rounded-md bg-white space-y-3 relative">
-      <FaXmark
-        className="text-primary cursor-pointer size-4 md:size-5 absolute right-4 top-4"
-        onClick={() => handleRemoveBranch(index)}
-      />
-      <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">
+      <div className="absolute right-4 top-4 flex items-center gap-2">
+        <div className="bg-secondary py-0.5 md:py-1 rounded-full px-3">
+          <p className="text-background text-[12px] md:text-[14px] cursor-pointer" onClick={() => setBranchingMode((prev) => !prev)} >{branchingMode ? "Excluding" : "Including"}</p>
+        </div>
+        <FaXmark
+          className="text-primary cursor-pointer size-4 md:size-5"
+          onClick={() => handleRemoveBranch(index)}
+        />
+      </div>
+      <p className="text-[15px] md:text-[17px] lg:text-[19px] font-semibold text-inactive-tab-text mb-5">
         Page Branching
+      </p>
+      <p className="text-[13px] md:text-[14px] lg:text-[15px] text-inactive-tab-text">
+        Select the in page question number to base the branching on, the answer to trigger or exclude from triggering the branch based on the selected mode, and the page to skip to.
       </p>
       <div className="flex flex-wrap lg:gap-[2%] gap-4 mb-2">
         <div className="lg:w-[32%] w-full">
@@ -68,7 +80,7 @@ const BranchInfo = forwardRef<{ collect: () => formBranch }, BranchInfoProps>(({
         </div>
         <div className="lg:w-[32%] w-full">
           <InputField
-            label="Answer to Trigger Branch"
+            label={`Answer to ${branchingMode ? "not" : ""} Trigger Branch`}
             id={`branching-answer-${index}`}
             placeholder="e.g. Yes"
             value={branchData?.assertOn || ""}
@@ -82,8 +94,8 @@ const BranchInfo = forwardRef<{ collect: () => formBranch }, BranchInfoProps>(({
             label="Page to skip to"
             id={`branching-targetpage-${index}`}
             placeholder="e.g. 2"
-            value={branchData?.targetPage || ""}
-            onChange={(e) => setBranchData({ ...branchData, targetPage: e.target.value }) }
+            value={String(parseInt(branchData?.targetPage) + 1)  || ""}
+            onChange={(e) => setBranchData({ ...branchData, targetPage: String(parseInt(e.target.value) - 1) }) }
           />
         </div>
       </div>

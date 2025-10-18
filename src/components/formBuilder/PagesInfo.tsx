@@ -1,6 +1,6 @@
 import { DropdownMenu, InputField, NumberField, TextAreaField, Button, ButtonTypes } from "tccd-ui";
 import { IoCaretUp, IoCaretDown, IoTrashSharp, IoLockOpen, IoLockClosed } from "react-icons/io5";
-import type { form, formPage, formPageError } from "@/types/form";
+import type { form, formPage, formPageError, FormBranchHandle } from "@/types/form";
 import toast from "react-hot-toast";
 import { QUESTION_TYPES } from "@/constants/formConstants";
 import { useState, useEffect, useRef } from "react";
@@ -28,7 +28,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     const [allowModifiers, setAllowModifiers] = useState<boolean>(true);
     const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
     const [clipboard, setClipboard] = useState<Question[]>([]);
-    const branchInfoRefs = useRef<Array<{ collect: () => { questionNumber: number; assertOn: string; targetPage: number; } } | null>>([]);
+    const branchInfoRefs = useRef<Array<FormBranchHandle | null>>([]);
 
     useEffect(() => {
         if(Object.keys(showHidePages).length === 0) {
@@ -347,8 +347,17 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
 
             let branchData = null;
             if (branchInfoRefs.current[pIndex]) {
-                branchData = branchInfoRefs.current[pIndex]?.collect();
+                const selectedQuestionNumber = branchInfoRefs.current[pIndex]?.fetchQuestionNumber();
+                const questionAnswers = selectedQuestionNumber ? page.questions.filter(q => q.questionNumber == selectedQuestionNumber).map(q => {
+                    if(q.questionType === "MCQ" && q.choices) {
+                        return q.choices.map(c => c.text);
+                    } else {
+                        return q.questionText ? [q.questionText] : [];
+                    }
+                }) : [];
 
+                branchData = branchInfoRefs.current[pIndex]?.collect(questionAnswers.flat());
+                
                 if (branchData.questionNumber === undefined || isNaN(branchData.questionNumber) || branchData.questionNumber <= 0) {
                     currentPageErrors[pIndex] = {
                         ...(currentPageErrors[pIndex] || {}),
@@ -400,7 +409,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                 }
             }
 
-            const fixedPage = { ...page, toBranch: branchData ? { [branchData.questionNumber]: { assertOn: branchData.assertOn, targetPage: branchData.targetPage - 1} } : undefined };
+            const fixedPage = { ...page, toBranch: branchData ? { [branchData.questionNumber]: { assertOn: branchData.assertOn, targetPage: branchData.targetPage} } : undefined };
             branchFixedPages.push(fixedPage);
         });
 

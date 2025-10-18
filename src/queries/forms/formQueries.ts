@@ -32,7 +32,6 @@ export const useForm = (id: string, formTags: boolean): UseQueryResult<form, Err
         queryFn: async () => {
             const data = await formAPI.getForm(id);
             const mappedForm = formResponseMapper(data.data as serverResponseForm, formTags);
-            console.log("Fetched form data:", mappedForm);
             return mappedForm;
         },
         enabled: id != "new",
