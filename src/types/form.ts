@@ -1,5 +1,11 @@
 import type { Question, Answer, questionError } from "./question";
 
+export interface formBranch {
+   questionNumber: number;
+   assertOn: string;
+   targetPage: number;
+}
+
 export interface formPage {
     id?: string;
     title: string;
@@ -82,3 +88,5 @@ export interface clientSideBranch {
 export type QuestionCardHandle = { validate: () => boolean, collect: () => Answer, clear: () => void, reassign: (answer: Answer) => void };
 
 export type FormEditorHandle = { collect: () => boolean };
+
+export type FormEditorPageHandle = { collect: () => { hasErrors: boolean; pages?: formPage[] } };
