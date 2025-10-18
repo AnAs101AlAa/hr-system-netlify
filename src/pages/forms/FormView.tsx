@@ -58,6 +58,7 @@ export default function FormView() {
   const handlePageAdvance = () => {
     let hasErrors = false;
     const answerArray: Answer[] = [...answers];
+    
     questionRefs.current.forEach((ref) => {
       if (ref?.validate()) {
         hasErrors = true;
@@ -83,8 +84,25 @@ export default function FormView() {
       const branch = formData.pages[currentPage].toBranch;
       if (branch) {
         const currentAnswer = answerArray.find((a) => branch[a.qid]);
+        const currentQuestion = formData.pages[currentPage].questions.filter(q => q.questionNumber === currentAnswer?.qid)[0];
         const answersToAssert = currentAnswer ? branchAssertionFormatter(branch[currentAnswer.qid].assertOn) : [];
 
+        if(currentQuestion.questionType === "MCQ" && currentQuestion.isMultiSelect) {
+          const answerValues = Array.isArray(currentAnswer?.answer) ? currentAnswer.answer as string[] : [];
+          const hasMatch = answerValues.some(value => answersToAssert.includes(value));
+          if (hasMatch) {
+            setCurrentPage(branch[currentAnswer!.qid].targetPage);
+            setPageHistory((prev) => [
+              ...prev,
+              branch[currentAnswer!.qid].targetPage,
+            ]);
+            return;
+          } else {
+            setCurrentPage((prev) => prev + 1);
+            setPageHistory((prev) => [...prev, currentPage + 1]);
+            return;
+          }
+        }
         if (answersToAssert.includes(currentAnswer?.answer as string)) {
           setCurrentPage(branch[currentAnswer!.qid].targetPage);
           setPageHistory((prev) => [
