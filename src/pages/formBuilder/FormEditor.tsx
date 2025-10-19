@@ -145,6 +145,19 @@ export default function FormEditor() {
         }
     }
 
+    const handlePreviewForm = () => {
+        const collectedFormData = validateForm();
+        if (collectedFormData.hasErrors) {
+            toast.error("Form validation failed. Please check your inputs.");
+            return;
+        }
+
+        const finalized = { ...formDataState, pages: collectedFormData.pages };
+        localStorage.setItem("previewFormData", JSON.stringify(finalized));
+        const previewUrl = "/form-builder/preview";
+        window.open(previewUrl, "_blank", "noopener,noreferrer");
+    }
+
     if (isLoading) {
         return <LoadingPage />;
     }
@@ -164,7 +177,8 @@ export default function FormEditor() {
 
                 <div className="space-y-4 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background">
                     <div className="flex justify-center items-center gap-3">
-                        <Button type={ButtonTypes.SECONDARY} onClick={() => navigate(-1)} buttonText="Discard" />
+                        <Button type={ButtonTypes.DANGER} onClick={() => navigate(-1)} buttonText="Discard" />
+                        <Button type={ButtonTypes.SECONDARY} onClick={() => { handlePreviewForm(); }} buttonText="Preview" />
                         <Button type={ButtonTypes.PRIMARY} onClick={() => handleCreateForm()} loading={createFormMutation.isPending || updateFormMutation.isPending} buttonText="Save Form" />
                     </div>
                 </div>

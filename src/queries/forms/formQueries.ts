@@ -30,6 +30,9 @@ export const useForm = (id: string, formTags: boolean): UseQueryResult<form, Err
     return useQuery({
         queryKey: formKeys.getForm(id),
         queryFn: async () => {
+            if(id === "local") {
+                return localStorage.getItem("previewFormData") ? JSON.parse(localStorage.getItem("previewFormData") as string) as form : {} as form;
+            }
             const data = await formAPI.getForm(id);
             const mappedForm = formResponseMapper(data.data as serverResponseForm, formTags);
             return mappedForm;
