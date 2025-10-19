@@ -2,7 +2,7 @@ import { QuestionCardComponent } from "@/components/forms";
 import { useForm, useSubmitForm } from "@/queries/forms/formQueries";
 import type { Answer, Question } from "@/types/question";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import FormLoadingComponent from "@/components/forms/Loading";
 import type { QuestionCardHandle } from "@/types/form";
@@ -18,9 +18,11 @@ export default function FormView() {
   const navigate = useNavigate();
 
   const { formId } = useParams();
+  const isPreview = useLocation().pathname.includes("preview");
   const ID = formId ?? "";
 
   const didSubmit = localStorage.getItem(`form_${ID}_completed`);
+
   useEffect(() => {
     if (didSubmit) {
       navigate("/form/finish");
@@ -28,7 +30,7 @@ export default function FormView() {
   }, [didSubmit, navigate]);
   
   
-  const { data: formData, isFetching, isError } = useForm(ID, false);
+  const { data: formData, isFetching, isError } = useForm(isPreview ? "local" : ID, false);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [, setPageHistory] = useState<number[]>([0]);
   
@@ -125,6 +127,9 @@ export default function FormView() {
   };
 
   const handleSubmit = (finalAnswers: Answer[]) => {
+    if(isPreview)
+      return;
+
     toast.promise(
       (async () => {
         for (const answer of finalAnswers) {
@@ -269,11 +274,13 @@ export default function FormView() {
                 onClick={() => handlePageAdvance()}
               />
             ) : (
-              <Button
-                buttonText="Submit"
-                type="primary"
-                onClick={() => handlePageAdvance()}
-              />
+              <>
+                {isPreview && <Button
+                  buttonText="Submit"
+                  type="primary"
+                  onClick={() => handlePageAdvance()}
+                />}
+              </>
             )}
           </div>
         </div>

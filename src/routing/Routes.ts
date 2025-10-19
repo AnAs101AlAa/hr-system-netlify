@@ -10,6 +10,7 @@ const routes: { path: string; Component: React.FC; protected?: boolean; roles?: 
   { path: "/unauthorized", Component: UnauthorizedPage },
   { path: "/form-builder", Component: FormBuilder, protected: true, roles: ["HR", "Head", "HighBoard", "Admin"] },
   { path: "/form-builder/:formId", Component: FormEditor, protected: true, roles: ["HR", "Head", "HighBoard", "Admin"] },
+  { path: "form-builder/preview", Component: FormView }
 ];
 
 export default routes;
