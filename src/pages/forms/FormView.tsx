@@ -23,6 +23,8 @@ export default function FormView() {
 
   const didSubmit = localStorage.getItem(`form_${ID}_completed`);
 
+  console.log(isPreview);
+
   useEffect(() => {
     if (didSubmit) {
       navigate("/form/finish");
@@ -275,7 +277,7 @@ export default function FormView() {
               />
             ) : (
               <>
-                {isPreview && <Button
+                {!isPreview && <Button
                   buttonText="Submit"
                   type="primary"
                   onClick={() => handlePageAdvance()}
