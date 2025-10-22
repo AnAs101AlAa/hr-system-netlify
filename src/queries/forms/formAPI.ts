@@ -55,6 +55,7 @@ export async function uploadSubmissionMedia(formId: string, media: File) {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+      timeout: Infinity,
     }
   );
 
