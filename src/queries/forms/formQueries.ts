@@ -2,7 +2,7 @@ import { useMutation, useQuery, type UseQueryResult } from "@tanstack/react-quer
 import * as formAPI from "./formAPI"
 import type { form, serverRequestForm, serverResponseForm } from "@/types/form"
 import type { Answer } from "@/types/question"
-import { formRequestMapper, formResponseMapper } from "@/utils/FormMapping"
+import { formRequestMapper, formResponseMapper, formLocalMapper } from "@/utils/FormMapping"
 
 const formKeys = {
     all: ["forms"] as const,
@@ -31,7 +31,7 @@ export const useForm = (id: string, formTags: boolean): UseQueryResult<form, Err
         queryKey: formKeys.getForm(id),
         queryFn: async () => {
             if(id === "local") {
-                return localStorage.getItem("previewFormData") ? JSON.parse(localStorage.getItem("previewFormData") as string) as form : {} as form;
+                return formLocalMapper();
             }
             const data = await formAPI.getForm(id);
             const mappedForm = formResponseMapper(data.data as serverResponseForm, formTags);
