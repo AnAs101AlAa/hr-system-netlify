@@ -23,8 +23,6 @@ export default function FormView() {
 
   const didSubmit = localStorage.getItem(`form_${ID}_completed`);
 
-  console.log(isPreview);
-
   useEffect(() => {
     if (didSubmit) {
       navigate("/form/finish");
