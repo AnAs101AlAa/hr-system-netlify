@@ -280,6 +280,7 @@ export default function FormView() {
                 {!isPreview && <Button
                   buttonText="Submit"
                   type="primary"
+                  disabled={submitFormMutation.isPending || uploadMediaMutation.isPending}
                   onClick={() => handlePageAdvance()}
                 />}
               </>
