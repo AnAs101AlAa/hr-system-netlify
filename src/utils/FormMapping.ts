@@ -145,4 +145,28 @@ export const formResponseMapper = (formData: serverResponseForm, formTags: boole
         isClosed: formData.isClosed,
         updatedAt: formData.updatedOn,
     } as form;
-    };
+};
+
+export const formLocalMapper = () => {
+  const formData = localStorage.getItem("previewFormData");
+  if(formData) {
+    const parsedFormData: form = JSON.parse(formData);
+    return {
+        id: parsedFormData.id,
+        title: parsedFormData.title,
+        description: StringTagFormatter(parsedFormData.description) as string,
+        pages: parsedFormData.pages.map((page) => ({
+            ...page,
+            description: StringTagFormatter(page.description) as string,
+        })),
+        googleSheetId: parsedFormData.googleSheetId,
+        googleDriveId: parsedFormData.googleDriveId,
+        sheetName: parsedFormData.sheetName,
+        createdAt: parsedFormData.createdAt,
+        isClosed: parsedFormData.isClosed,
+        updatedAt: parsedFormData.updatedAt,
+    } as form;
+  } else {
+    return {} as form;
+  }
+}

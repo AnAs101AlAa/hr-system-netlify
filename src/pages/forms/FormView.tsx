@@ -183,7 +183,7 @@ export default function FormView() {
           message="We encountered an error while loading this form, Please try again later."
         />
       )}
-      {formData?.isClosed && (
+      {(formData?.isClosed && !isPreview) && (
         <FormLockedPage />
       )}
 
