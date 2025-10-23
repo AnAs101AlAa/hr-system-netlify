@@ -62,6 +62,8 @@ const ScannerActions = ({
   const [vestButtonDisabled, setVestButtonDisabled] = useState(false);
   const [isVestLoading, setIsVestLoading] = useState(false);
 
+  console.log("Event Type in ScannerActions:", eventType);
+  
   const handleVestStatus = async () => {
     if (!memberData?.id) return;
 

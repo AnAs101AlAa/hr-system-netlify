@@ -61,55 +61,50 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
         </div>
       </div>
 
-      <div className="flex justify-between items-center mt-1">
+      <div className="flex justify-end items-center mt-1 gap-2">
         {/* Left side - Admin buttons */}
-        <div className="flex gap-2">
-          {onEdit && (
-            <Button
-              buttonText="Edit"
-              onClick={() => onEdit(id)}
-              type={ButtonTypes.TERTIARY}
-              width={ButtonWidths.AUTO}
-            />
-          )}
-          {onDelete && (
-            <Button
-              buttonText="Delete"
-              onClick={() => onDelete(id)}
-              type={ButtonTypes.DANGER}
-              width={ButtonWidths.AUTO}
-            />
-          )}
-        </div>
+        {onEdit && (
+          <Button
+            buttonText="Edit"
+            onClick={() => onEdit(id)}
+            type={ButtonTypes.TERTIARY}
+            width={ButtonWidths.AUTO}
+          />
+        )}
+        {onDelete && (
+          <Button
+            buttonText="Delete"
+            onClick={() => onDelete(id)}
+            type={ButtonTypes.DANGER}
+            width={ButtonWidths.AUTO}
+          />
+        )}
 
-        {/* Right side - Action buttons */}
-        <div className="flex gap-3">
-          {(isPastEvent || isScanAvailable) && (
-            <Button
-              buttonText="Details"
-              onClick={() => navigate(`/events/${id}`)}
-              type={ButtonTypes.SECONDARY}
-              width={ButtonWidths.AUTO}
-            />
-          )}
+      {/* Right side - Action buttons */}
+        {(isPastEvent || isScanAvailable) && (
+          <Button
+            buttonText="Details"
+            onClick={() => navigate(`/events/${id}`)}
+            type={ButtonTypes.SECONDARY}
+            width={ButtonWidths.AUTO}
+          />
+        )}
 
-          {isScanAvailable && (
-            <Button
-              buttonText="Scan QR"
-              onClick={() => setIsQRModalOpen(true)}
-              type={ButtonTypes.PRIMARY}
-              width={ButtonWidths.AUTO}
-            />
-          )}
-          {/* fallback */}
-          {!isPastEvent && !isScanAvailable && (
-            <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-xs">
-              see you soon
-            </span>
-          )}
-        </div>
+        {isScanAvailable && (
+          <Button
+            buttonText="Scan QR"
+            onClick={() => setIsQRModalOpen(true)}
+            type={ButtonTypes.PRIMARY}
+            width={ButtonWidths.AUTO}
+          />
+        )}
+        {/* fallback */}
+        {!isPastEvent && !isScanAvailable && (
+          <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-xs">
+            see you soon
+          </span>
+        )}
       </div>
-
       {/* QR Scanner Modal */}
       <QRScannerModal
         isOpen={isQRModalOpen}

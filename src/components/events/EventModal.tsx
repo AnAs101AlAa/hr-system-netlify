@@ -176,9 +176,7 @@ const EventModal: React.FC<EventModalProps> = ({
     return localDateTime.toISOString();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!validateForm()) {
       return;
     }
@@ -202,6 +200,9 @@ const EventModal: React.FC<EventModalProps> = ({
         });
       }
       onClose();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Failed to save event:", error);
     }
@@ -219,9 +220,8 @@ const EventModal: React.FC<EventModalProps> = ({
       onClose={handleClose}
     >
       {/* Form */}
-      <form
+      <div
         id="event-form"
-        onSubmit={handleSubmit}
         className="flex flex-col gap-4 p-1"
       >
         {/* Title */}
@@ -342,10 +342,10 @@ const EventModal: React.FC<EventModalProps> = ({
             width={ButtonWidths.FULL}
             disabled={isLoading}
             loading={isLoading}
-            onClick={()=>{}}
+            onClick={() => handleSubmit()}
             />
         </div>
-      </form>
+      </div>
 
     </Modal>
   );
