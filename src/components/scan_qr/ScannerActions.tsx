@@ -5,7 +5,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { ButtonTypes, ButtonWidths, Button } from "tccd-ui";
-import { useUpdateVestStatus } from "@/queries/events";
+import { useUpdateVestStatus, useVestTimeline } from "@/queries/events";
 import { getErrorMessage } from "@/utils";
 import type { MemberData } from "@/types/attendance";
 
@@ -21,6 +21,8 @@ import type { MemberData } from "@/types/attendance";
  * @property onReturnToEvents - Handler for returning to events list.
  * @property onResetScanner - Handler for resetting the scanner.
  * @property onReasonChange - Handler for reason textarea change (late/early).
+ * @property eventType - Type of the event (e.g., "Meeting", "Workshop").
+ * @property eventId - ID of the event.
  */
 interface ScannerActionsProps {
   attendanceConfirmed: boolean;
@@ -57,23 +59,20 @@ const ScannerActions = ({
   eventType,
   eventId,
 }: ScannerActionsProps) => {
-  const vestStatus = useUpdateVestStatus();
+  const vestStatusUpdate = useUpdateVestStatus();
+  const { data: vestTimeline } = useVestTimeline(memberData?.id || "", eventId);
   const isNotMeeting = eventType !== "Meeting";
-  const [vestButtonDisabled, setVestButtonDisabled] = useState(false);
-  const [isVestLoading, setIsVestLoading] = useState(false);
+  const [vestStatus, setVestStatus] = useState<string>(vestTimeline ? vestTimeline.data[vestTimeline.data.length - 1]?.status || "NotReceived" : "NotReceived");
 
-  console.log("Event Type in ScannerActions:", eventType);
-  
   const handleVestStatus = async () => {
     if (!memberData?.id) return;
 
     const action =
-      attendanceStatus === STATUS.ON_TIME || attendanceStatus === STATUS.LATE
-        ? "Received"
-        : "Returned";
+      vestStatus === "Received"
+        ? "Returned"
+        : "Received";
 
-    setIsVestLoading(true);
-    vestStatus.mutate(
+    vestStatusUpdate.mutate(
       {
         memberId: memberData.id,
         eventId,
@@ -81,18 +80,14 @@ const ScannerActions = ({
       },
       {
         onSuccess: () => {
-          setVestButtonDisabled(true);
-          setIsVestLoading(false);
           toast.success(
-            attendanceStatus === STATUS.ON_TIME ||
-              attendanceStatus === STATUS.LATE
-              ? "Vest Assigned Sucessfully!"
-              : "Vest Returned Sucessfully"
+            vestStatus === "Received"
+            ? "Vest Returned Successfully!"
+            : "Vest Assigned Successfully!"
           );
+          setVestStatus(action);
         },
         onError: (error) => {
-          setVestButtonDisabled(false);
-          setIsVestLoading(false);
           toast.error(getErrorMessage(error));
         },
       }
@@ -100,10 +95,9 @@ const ScannerActions = ({
   };
 
   const getVestButtonText = () => {
-    return attendanceStatus === STATUS.ON_TIME ||
-      attendanceStatus === STATUS.LATE
-      ? "Assign Vest"
-      : "Return Vest";
+    return vestStatus === "Received"
+      ? "Return Vest"
+      : "Assign Vest";
   };
 
   const getConfirmButtonText = () => {
@@ -161,8 +155,7 @@ const ScannerActions = ({
             onClick={handleVestStatus}
             type={ButtonTypes.PRIMARY}
             width={ButtonWidths.FULL}
-            disabled={vestButtonDisabled}
-            loading={isVestLoading}
+            loading={vestStatusUpdate.isPending}
           />
         )}
         <Button
