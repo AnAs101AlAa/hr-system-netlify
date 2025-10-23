@@ -22,17 +22,8 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
   const eventEnd = new Date(endDate);
   // Compare both date and time for event status
   const isPastEvent = now >= eventEnd;
-
-  // Check if start date is today (ignoring time)
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const eventStartDate = new Date(
-    eventStart.getFullYear(),
-    eventStart.getMonth(),
-    eventStart.getDate()
-  );
-  const isStartDateToday = todayStart.getTime() === eventStartDate.getTime();
-
-  const isScanAvailable = isStartDateToday && now < eventEnd;
+  const startMinus30 = new Date(eventStart.getTime() - 30 * 60 * 1000);
+  const isUpcomingEvent = now < startMinus30;
 
   return (
     <div className="bg-white rounded-xl shadow-md p-5 flex flex-col h-full relative justify-between gap-4">
@@ -81,7 +72,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
         )}
 
       {/* Right side - Action buttons */}
-        {(isPastEvent || isScanAvailable) && (
+        {!isUpcomingEvent && (
           <Button
             buttonText="Details"
             onClick={() => navigate(`/events/${id}`)}
@@ -90,7 +81,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
           />
         )}
 
-        {isScanAvailable && (
+        {(!isUpcomingEvent && !isPastEvent) && (
           <Button
             buttonText="Scan QR"
             onClick={() => setIsQRModalOpen(true)}
@@ -99,7 +90,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
           />
         )}
         {/* fallback */}
-        {!isPastEvent && !isScanAvailable && (
+        {(isUpcomingEvent && !isPastEvent) && (
           <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-xs">
             see you soon
           </span>
