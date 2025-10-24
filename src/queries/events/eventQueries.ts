@@ -141,13 +141,12 @@ export const useEvent = (id: string) => {
 export const useUpcomingEvents = (
   page: number,
   pageSize: number,
-  fromDate: string
 ) => {
   return useQuery({
-    queryKey: [...eventKeys.upcomingEvents(), page, pageSize, fromDate],
+    queryKey: [...eventKeys.upcomingEvents(), page, pageSize],
     queryFn: async () => {
       const data = await eventsApiInstance.fetchUpcomingEvents(page, pageSize);
-      const count = await eventsApiInstance.fetchEventsCount(fromDate);
+      const count = await eventsApiInstance.fetchUpcomingEventsCount();
       return { items: data, total: count };
     },
   });

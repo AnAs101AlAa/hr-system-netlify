@@ -25,5 +25,27 @@ const ALLOWED_FIELDS: AllowedFields = {
     Upload: ["questionText", "questionType", "isMandatory", "maxFileSizeMB", "allowedFileTypes", "questionNumber", "description"],
 }
 
-export { SUBMISSION_CATCHER, QUESTION_TYPES, ALLOWED_FIELDS };
+const FORM_SORTING_OPTIONS = [
+  { label: "Newest First", value: "CreatedAtDesc" },
+  { label: "Oldest First", value: "CreatedAtAsc" },
+  { label: "A-Z", value: "az" },
+  { label: "Z-A", value: "za" },
+];
+
+const FORM_TYPES = [
+  { label: "Database Update", value: "DatabaseUpdate" },
+  { label: "Research Day", value: "ResearchDay" },
+  { label: "Recruitment", value: "Recruitment" },
+  { label: "Job Fair", value: "JobFair" },
+  { label: "Workshop", value: "Workshop" },
+  { label: "Session", value: "Session" },
+  { label: "Meeting Availability", value: "MeetingAvailability" },
+  { label: "Feedback Collection", value: "FeedbackCollection" },
+  { label: "Testing", value: "Testing" },
+  { label: "Career Opportunities", value: "CareerOpportunities" },
+  { label: "Templates", value: "Templates" },
+  { label: "Others", value: "Others" },
+];
+
+export { SUBMISSION_CATCHER, QUESTION_TYPES, ALLOWED_FIELDS, FORM_SORTING_OPTIONS, FORM_TYPES };
 export type { AllowedFields };

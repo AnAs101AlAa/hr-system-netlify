@@ -1,48 +1,19 @@
 import WithNavbar from "@/components/hoc/WithNavbar";
 import FormList from "@/components/formBuilder/FormList";
-import { useForms } from "@/queries/forms/formQueries";
-import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
-import { ButtonTypes, LoadingPage, Button, Modal, SearchField } from "tccd-ui";
+import { useState } from "react";
+import { ButtonTypes, Button, Modal, SearchField } from "tccd-ui";
 import { FaPlus } from "react-icons/fa";
 import { ImInsertTemplate } from "react-icons/im";
 import { VscEmptyWindow } from "react-icons/vsc";
+import { useForms } from "@/queries/forms/formQueries";
 
 export default function FormBuilder() {
-    const { data: Forms, isLoading, isError, error } = useForms();
     const [modalOpen, setModalOpen] = useState(0);
     const [formSearchTerm, setFormSearchTerm] = useState("");
-    const [filteredForms, setFilteredForms] = useState(Forms || []);
     const [selectedTemplate, setSelectedTemplate] = useState<null | string>(null);
+    const { data: Forms } = useForms(1, 1000, "", "", "", "");
+    const filteredForms = Forms?.filter((form) => form.title.toLowerCase().includes(formSearchTerm.toLowerCase())) || [];
     
-    useEffect(() => {
-        setSelectedTemplate(null);
-        if (formSearchTerm.trim() === "") {
-            setFilteredForms(Forms || []);
-        }
-        else {
-            const lowerSearchTerm = formSearchTerm.toLowerCase();
-            const filtered = (Forms || []).filter((form) =>
-                form.title.toLowerCase().includes(lowerSearchTerm)
-            );
-            setFilteredForms(filtered);
-        }
-    }, [formSearchTerm, Forms]);
-
-    useEffect(() => {
-        if (isError && error) {
-            toast.error(`Failed to fetch forms, please try again`);
-        }
-    }, [isError, error, Forms]);
-
-    if (isLoading) {
-        return <LoadingPage />;
-    }
-
-    if (isError) {
-        return <div>Error: {error.message}</div>;
-    }
-
     return (
         <WithNavbar>
         {modalOpen !== 0 && (
@@ -104,12 +75,13 @@ export default function FormBuilder() {
             </Modal>
         )}
         <div className="min-h-screen bg-background p-4">
-            <div className="w-[96%] md:w-[94%] lg:w-[84%] xl:w-3/4 mx-auto">
-            <h1 className="lg:text-[24px] md:text-[22px] text-[20px] font-bold mb-4">Form Builder</h1>
+            <div className="w-[96%] md:w-[94%] lg:w-[84%] xl:w-[73%] mx-auto">
+                <h1 className="lg:text-[24px] md:text-[22px] text-[20px] font-bold">Form Builder</h1>
+                <p className="mb-2 lg:text-[16px] md:text-[14px] text-[13px] text-inactive-tab-text">Create and manage custom forms for data collection and analysis.</p>
                 <div className="w-full my-4">
                 <Button buttonText="New Form" onClick={() => setModalOpen(1)} type={ButtonTypes.PRIMARY} width="auto" buttonIcon={<FaPlus />} />
                 </div>
-                <FormList Forms={Forms || []}/>
+                <FormList/>
             </div>
         </div>
         </WithNavbar>

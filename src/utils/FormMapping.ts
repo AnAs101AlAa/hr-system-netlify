@@ -108,6 +108,7 @@ export const formRequestMapper = (formData: form) => {
 
     const formDataWithBranches: serverRequestForm = {
       googleSheetId: formData.googleSheetId,
+      type: formData.type,
       googleDriveId: formData.googleDriveId,
       pages: mappedPages || [],
       branches: mappedBranches,
@@ -136,6 +137,7 @@ export const formResponseMapper = (formData: serverResponseForm, formTags: boole
     return {
         id: formData.formId,
         title: formData.title,
+        type: formData.type,
         description: formTags ? (formData.description ? TagStringFormatter(formData.description) as string : undefined) : formData.description,
         pages: mappedPages,
         googleSheetId: formData.googleSheetId,
@@ -154,6 +156,7 @@ export const formLocalMapper = () => {
     return {
         id: parsedFormData.id,
         title: parsedFormData.title,
+        type: parsedFormData.type,
         description: StringTagFormatter(parsedFormData.description) as string,
         pages: parsedFormData.pages.map((page) => ({
             ...page,
