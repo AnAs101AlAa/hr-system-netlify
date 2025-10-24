@@ -2,7 +2,6 @@ import { systemApi } from "../axiosInstance";
 import type { Event, Attendee, VestAttendee } from "@/types/event";
 
 const EVENTS_API_URL = "/v1/";
-// const EVENT_TYPES_API_URL = systemApi.defaults.baseURL + "/event-types/"; // TODO: Uncomment when backend is ready
 
 class eventsApi {
   async fetchEventById(id: string): Promise<Event> {
@@ -11,9 +10,8 @@ class eventsApi {
   }
 
   async fetchUpcomingEvents(page: number, pageSize: number): Promise<Event[]> {
-    const nowDate = new Date().toISOString();
     const response = await systemApi.get(
-      `${EVENTS_API_URL}Events/filtered?fromDate=${nowDate}&page=${page}&count=${pageSize}`
+      `${EVENTS_API_URL}Events/filtered?&eventStatuses=Running&eventStatuses=Upcoming&page=${page}&count=${pageSize}`
     );
 
     const items = response.data?.data?.items;
@@ -26,6 +24,23 @@ class eventsApi {
       response.data
     );
     return [];
+  }
+
+  async fetchUpcomingEventsCount(): Promise<number> {
+    const response = await systemApi.get(
+      `${EVENTS_API_URL}Events/filtered?&eventStatuses=Running&eventStatuses=Upcoming`
+    );
+
+    const items = response.data?.data?.items;
+    if (Array.isArray(items)) {
+      return items.length;
+    }
+
+    console.warn(
+      "Unexpected response structure for fetchUpcomingEvents:",
+      response.data
+    );
+    return 0;
   }
 
   async createEvent(eventData: Omit<Event, "id">) {
@@ -51,33 +66,12 @@ class eventsApi {
     return response.data;
   }
 
-  async fetchEventsCount(fromDate: string): Promise<number> {
-    const response = await systemApi.get(
-      `${EVENTS_API_URL}Events/filtered?${
-        fromDate ? `fromDate=${fromDate}` : ""
-      }`
-    );
-
-    // Access count using the correct structure: response.data.data.items.length
-    const items = response.data?.data?.items;
-    if (Array.isArray(items)) {
-      return items.length;
-    }
-
-    console.warn(
-      "Unexpected response structure for fetchEventsCount:",
-      response.data
-    );
-    return 0;
-  }
-
   async fetchPastEventsCount(
     eventType: string,
     title: string
   ): Promise<number> {
-    const nowDate = new Date().toISOString();
     const response = await systemApi.get(
-      `${EVENTS_API_URL}Events/filtered?toDate=${nowDate}&${
+      `${EVENTS_API_URL}Events/filtered?eventStatuses=Past&${
         eventType != "" ? `eventType=${eventType}` : ""
       }&${title != "" ? `title=${title}` : ""}`
     );
@@ -173,18 +167,9 @@ class eventsApi {
     };
   }
   
-  async fetchPastEvents(
-    eventType: string,
-    title: string,
-    page: number,
-    pageSize: number
+  async fetchPastEvents(eventType: string,title: string, page: number,pageSize: number
   ): Promise<Event[]> {
-    const nowDate = new Date().toISOString();
-    const response = await systemApi.get(
-      `${EVENTS_API_URL}Events/filtered?toDate=${nowDate}&${
-        eventType != "" ? `eventType=${eventType}` : ""
-      }&${title != "" ? `title=${title}` : ""}&page=${page}&count=${pageSize}
-      &OrderBy=date&Descending=true`
+    const response = await systemApi.get(`${EVENTS_API_URL}Events/filtered?${eventType != "" ? `eventType=${eventType}` : ""}&eventStatuses=Past&${title != "" ? `title=${title}` : ""}&page=${page}&count=${pageSize}&OrderBy=startDate&Descending=true`
     );
 
     // Access the array using the correct structure: response.data.data.items

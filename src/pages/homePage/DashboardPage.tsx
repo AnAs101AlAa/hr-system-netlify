@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   WelcomeCard,
   ActionCards,
@@ -18,12 +18,9 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 4;
 
-  const now = useMemo(() => new Date().toISOString(), []);
-
   const { data, isLoading, error, isError } = useUpcomingEvents(
     currentPage,
     eventsPerPage,
-    now
   );
   const upcomingEvents = data?.items ?? [];
   const totalCount = data?.total ?? 0;

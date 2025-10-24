@@ -6,6 +6,7 @@ import { formRequestMapper, formResponseMapper, formLocalMapper } from "@/utils/
 
 const formKeys = {
     all: ["forms"] as const,
+    getForms: (page: number, count: number, createdAfter: string, searchKey: string, selectedType: string, sortBy: string) => [...formKeys.all, { page, count, createdAfter, searchKey, selectedType, sortBy }] as const,
     getForm: (formId: string) => [...formKeys.all, formId] as const,
     saveAnswer: (formId: string, questionId: number, answer: Answer, formName: string) => [...formKeys.getForm(formId), "saveAnswer", questionId, answer, formName] as const,
     submitForm: (formId: string, formName: string) => [...formKeys.getForm(formId), "submitForm", formName] as const,
@@ -15,12 +16,12 @@ const formKeys = {
     modifyFormStatus: () => [...formKeys.all, "modifyFormStatus"] as const,
 }
 
-export const useForms = (): UseQueryResult<form[], Error> => {
+export const useForms = (page: number, count: number, createdAfter: string, searchKey: string, selectedType: string, sortBy: string): UseQueryResult<form[], Error> => {
     return useQuery({
-        queryKey: formKeys.all,
+        queryKey: formKeys.getForms(page, count, createdAfter, searchKey, selectedType, sortBy),
         queryFn: async () => {
-            const data = await formAPI.getForms();
-            const mappedForms = data.data.map((form : serverResponseForm) => formResponseMapper(form, false));
+            const data = await formAPI.getForms(page, count, createdAfter, searchKey, selectedType, sortBy);
+            const mappedForms = data.data.data.map((form : serverResponseForm) => formResponseMapper(form, false));
             return mappedForms;
         },
     })

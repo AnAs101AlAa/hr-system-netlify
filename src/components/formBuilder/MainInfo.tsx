@@ -1,8 +1,9 @@
-import { InputField, TextAreaField } from "tccd-ui";
+import { DropdownMenu, InputField, TextAreaField } from "tccd-ui";
 import type { form } from "@/types/form";
 import { forwardRef, useImperativeHandle } from "react";
 import type { FormEditorHandle } from "@/types/form";
 import { useState } from "react";
+import { FORM_TYPES } from "@/constants/formConstants";
 
 interface MainInfoProps {
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, toChange: string) => void;
@@ -10,8 +11,8 @@ interface MainInfoProps {
 }
 
 const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChange, formDataState }, ref) => {
-    const [errors, setErrors] = useState<string[]>(["", "", "", "", ""]);
-    
+    const [errors, setErrors] = useState<string[]>(["", "", "", "", "", ""]);
+
     const collectErrors = (): boolean => {
         const currentErrors: string[] = ["", "", "", ""];
         if (!formDataState.googleSheetId || formDataState.googleSheetId.trim() === "") {
@@ -28,6 +29,9 @@ const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChang
         }
         if(!formDataState.description || formDataState.description.trim() === "") {
             currentErrors[4] = "Form Description is required.";
+        }
+        if(!formDataState.type || formDataState.type.trim() === "") {
+            currentErrors[5] = "Form Type is required.";
         }
 
         setErrors(currentErrors);
@@ -102,6 +106,13 @@ const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChang
                 error={errors[4]}
             />
             {errors[4] && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{errors[4]}</p>}
+            <DropdownMenu
+                label="Form Type"
+                options={FORM_TYPES}
+                value={formDataState?.type || ""}
+                onChange={(value) => handleInputChange({ target: { value } } as React.ChangeEvent<HTMLInputElement>, "type")}
+            />
+            {errors[5] && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{errors[5]}</p>}
         </div>
         </>
     )

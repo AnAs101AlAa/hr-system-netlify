@@ -4,9 +4,33 @@ import type { serverRequestForm } from "@/types/form";
 
 const FORMS_API_URL = "/v1/Form";
 
-export async function getForms() {
-    const response = await systemApi.get(`${FORMS_API_URL}`);
-    return response.data;
+export async function getForms(page: number, count: number, createdAfter: string, searchKey: string, selectedType: string, sortBy: string) {
+  let sortKey: string | undefined = undefined;
+  let order: string | undefined = undefined;
+  console.log("SortBy in API:", selectedType);
+  if (sortBy) {
+    if (sortBy === "CreatedAtDesc" || sortBy === "CreatedAtAsc") {
+      sortKey = "CreatedAt";
+      order = sortBy === "CreatedAtDesc" ? "Desc" : "Asc";
+    } else {
+      sortKey = "Title";
+      order = sortBy === "az" ? "Asc" : "Desc";
+    }
+  }
+
+  const params: Record<string, any> = {
+    page,
+    count,
+  };
+
+  if (searchKey) params.Title = searchKey;
+  if (createdAfter) params.CreatedAfter = createdAfter;
+  if (sortKey) params.SortBy = sortKey;
+  if (order) params.Order = order;
+  //if (selectedType) params.Type = selectedType; // if you need this param
+
+  const response = await systemApi.get(`${FORMS_API_URL}`, { params });
+  return response.data;
 }
 
 export async function getForm(formId: string) {
