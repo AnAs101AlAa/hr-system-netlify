@@ -190,6 +190,8 @@ const EventModal: React.FC<EventModalProps> = ({
       endDate: convertToUTC(formData.endDate, formData.endTime),
     };
 
+    console.log("Submitting event data:", eventData);
+
     try {
       if (mode === "create") {
         await addEventMutation.mutateAsync(eventData);
@@ -268,14 +270,16 @@ const EventModal: React.FC<EventModalProps> = ({
 
         {/* Start Date and Time */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <DatePicker
-            label="Start Date"
-            id="startDate"
-            value={formData.startDate}
-            onChange={(value) => handleInputChange("startDate", value)}
-            error={errors.startDate}
-            disabled={isLoading}
-          />
+          <div className="w-full">
+            <DatePicker
+              label="Start Date"
+              id="startDate"
+              value={formData.startDate}
+              onChange={(value) => handleInputChange("startDate", value)}
+              error={errors.startDate}
+              disabled={isLoading}
+            />
+          </div>
 
           <div className="flex flex-col w-full">
             <label className="text-label text-[14px] md:text-[15px] lg:text-[16px] mb-2 font-semibold">
@@ -287,7 +291,7 @@ const EventModal: React.FC<EventModalProps> = ({
               value={formData.startTime}
               onChange={(e) => handleInputChange("startTime", e.target.value)}
               disabled={isLoading}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed text-[14px] md:text-[15px] lg:text-[16px]"
+              className="w-full px-3 py-2 border border-contrast rounded-full focus:outline-none transition-colors duration-300 focus:ring-none focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-[14px]"
             />
             {errors.startTime && (
               <span className="text-red-500 text-sm mt-1">
@@ -299,14 +303,16 @@ const EventModal: React.FC<EventModalProps> = ({
 
         {/* End Date and Time */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <DatePicker
-            label="End Date"
-            id="endDate"
-            value={formData.endDate}
-            onChange={(value) => handleInputChange("endDate", value)}
-            error={errors.endDate}
-            disabled={isLoading}
-          />
+          <div className="w-full">
+            <DatePicker
+              label="End Date"
+              id="endDate"
+              value={formData.endDate}
+              onChange={(value) => handleInputChange("endDate", value)}
+              error={errors.endDate}
+              disabled={isLoading}
+            />
+          </div>
 
           <div className="flex flex-col w-full">
             <label className="text-label text-[14px] md:text-[15px] lg:text-[16px] mb-2 font-semibold">
@@ -318,7 +324,7 @@ const EventModal: React.FC<EventModalProps> = ({
               value={formData.endTime}
               onChange={(e) => handleInputChange("endTime", e.target.value)}
               disabled={isLoading}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed text-[14px] md:text-[15px] lg:text-[16px]"
+              className="w-full px-3 py-2 border border-contrast rounded-full focus:outline-none transition-colors duration-300 focus:ring-none focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-[14px]"
             />
             {errors.endTime && (
               <span className="text-red-500 text-sm mt-1">

@@ -21,7 +21,7 @@ const FormList = () => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
       <div className="p-4 border-b border-dashboard-border space-y-2">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-4">
         <p className="text-md md:text-lg lg:text-xl font-bold text-[#72747A]">
           Forms
         </p>

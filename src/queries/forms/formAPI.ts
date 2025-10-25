@@ -7,7 +7,7 @@ const FORMS_API_URL = "/v1/Form";
 export async function getForms(page: number, count: number, createdAfter: string, searchKey: string, selectedType: string, sortBy: string) {
   let sortKey: string | undefined = undefined;
   let order: string | undefined = undefined;
-  console.log("SortBy in API:", selectedType);
+
   if (sortBy) {
     if (sortBy === "CreatedAtDesc" || sortBy === "CreatedAtAsc") {
       sortKey = "CreatedAt";
@@ -27,7 +27,7 @@ export async function getForms(page: number, count: number, createdAfter: string
   if (createdAfter) params.CreatedAfter = createdAfter;
   if (sortKey) params.SortBy = sortKey;
   if (order) params.Order = order;
-  //if (selectedType) params.Type = selectedType; // if you need this param
+  if (selectedType) params.FormType = selectedType;
 
   const response = await systemApi.get(`${FORMS_API_URL}`, { params });
   return response.data;

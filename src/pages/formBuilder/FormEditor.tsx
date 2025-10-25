@@ -18,7 +18,7 @@ export default function FormEditor() {
     const templateId = searchParams.get("template") || "";
     const isEditMode = formId !== "new";
 
-    const emptyForm: form = { id: "", title: "", type: "", sheetName: "", pages: [], description: "", googleSheetId: "", googleDriveId: "", isClosed: false, createdAt: "", updatedAt: "" };
+    const emptyForm: form = { id: "", title: "", formType: "", sheetName: "", pages: [], description: "", googleSheetId: "", googleDriveId: "", isClosed: false, createdAt: "", updatedAt: "" };
 
     const { data: formData, isLoading, isError, error } = useForm(formId !== "new" ? formId ?? "" : templateId ?? "", true);
 
