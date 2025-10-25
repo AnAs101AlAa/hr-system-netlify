@@ -30,7 +30,7 @@ const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChang
         if(!formDataState.description || formDataState.description.trim() === "") {
             currentErrors[4] = "Form Description is required.";
         }
-        if(!formDataState.type || formDataState.type.trim() === "") {
+        if(!formDataState.formType || formDataState.formType.trim() === "") {
             currentErrors[5] = "Form Type is required.";
         }
 
@@ -109,8 +109,8 @@ const MainInfo = forwardRef<FormEditorHandle, MainInfoProps>(({ handleInputChang
             <DropdownMenu
                 label="Form Type"
                 options={FORM_TYPES}
-                value={formDataState?.type || ""}
-                onChange={(value) => handleInputChange({ target: { value } } as React.ChangeEvent<HTMLInputElement>, "type")}
+                value={formDataState?.formType || ""}
+                onChange={(value) => handleInputChange({ target: { value } } as React.ChangeEvent<HTMLInputElement>, "formType")}
             />
             {errors[5] && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{errors[5]}</p>}
         </div>

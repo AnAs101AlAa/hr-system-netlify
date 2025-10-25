@@ -18,7 +18,7 @@ export interface formPage {
 export interface serverRequestForm {
     googleSheetId: string;
     googleDriveId: string;
-    type: string;
+    formType: string;
     sheetName: string;
     isClosed: boolean;
     title: string;
@@ -37,7 +37,7 @@ export interface serverRequestBranch {
 export interface serverResponseForm {
     formId: string;
     sheetName: string;
-    type: string;
+    formType: string;
     googleSheetId: string;
     googleDriveId: string;
     title: string;
@@ -71,7 +71,7 @@ export interface formPageError {
 
 export interface form {
     id: string;
-    type: string;
+    formType: string;
     googleSheetId: string;
     googleDriveId: string;
     sheetName: string;

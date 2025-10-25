@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaCalendarAlt } from "react-icons/fa";
 import type { Event } from "@/types/event";
@@ -6,6 +6,10 @@ import QRScannerModal from "@/components/scan_qr/QRScannerModal";
 import format from "@/utils/Formater";
 import { IoIosPin } from "react-icons/io";
 import { Button, ButtonTypes, ButtonWidths } from "tccd-ui";
+import { IoTrashSharp } from "react-icons/io5";
+import { TbListDetails } from "react-icons/tb";
+import { FaEdit } from "react-icons/fa";
+import { BsQrCode } from "react-icons/bs";
 
 interface EventCardProps {
   event: Omit<Event, "attendees">;
@@ -20,10 +24,20 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
   const now = new Date();
   const eventStart = new Date(startDate);
   const eventEnd = new Date(endDate);
-  // Compare both date and time for event status
   const isPastEvent = now >= eventEnd;
   const startMinus30 = new Date(eventStart.getTime() - 30 * 60 * 1000);
   const isUpcomingEvent = now < startMinus30;
+  const [isPhoneScreen, setIsPhoneScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsPhoneScreen(window.innerWidth < 640);
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div className="bg-white rounded-xl shadow-md p-5 flex flex-col h-full relative justify-between gap-4">
@@ -52,19 +66,21 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
         </div>
       </div>
 
-      <div className="flex justify-end items-center mt-1 gap-2">
+      <div className="flex justify-center md:justify-end items-center mt-1 gap-2">
         {/* Left side - Admin buttons */}
         {onEdit && (
           <Button
-            buttonText="Edit"
+            buttonText={isPhoneScreen ? undefined : "Edit"}
+            buttonIcon={isPhoneScreen ? <FaEdit size={16} /> : undefined}
             onClick={() => onEdit(id)}
             type={ButtonTypes.TERTIARY}
-            width={ButtonWidths.AUTO}
+            width="fit"
           />
         )}
         {onDelete && (
           <Button
-            buttonText="Delete"
+            buttonText={isPhoneScreen ? undefined : "Delete"}
+            buttonIcon={isPhoneScreen ? <IoTrashSharp size={16} /> : undefined}
             onClick={() => onDelete(id)}
             type={ButtonTypes.DANGER}
             width={ButtonWidths.AUTO}
@@ -74,7 +90,8 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
       {/* Right side - Action buttons */}
         {!isUpcomingEvent && (
           <Button
-            buttonText="Details"
+            buttonText={isPhoneScreen ? undefined : "Details"}
+            buttonIcon={isPhoneScreen ? <TbListDetails size={16} /> : undefined}
             onClick={() => navigate(`/events/${id}`)}
             type={ButtonTypes.SECONDARY}
             width={ButtonWidths.AUTO}
@@ -83,7 +100,8 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
 
         {(!isUpcomingEvent && !isPastEvent) && (
           <Button
-            buttonText="Scan QR"
+            buttonText={isPhoneScreen ? undefined : "Scan QR"}
+            buttonIcon={isPhoneScreen ? <BsQrCode size={16} /> : undefined}
             onClick={() => setIsQRModalOpen(true)}
             type={ButtonTypes.PRIMARY}
             width={ButtonWidths.AUTO}
