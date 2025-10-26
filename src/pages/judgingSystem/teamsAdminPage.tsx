@@ -2,10 +2,14 @@ import TeamList from "@/components/judgingSystem/TeamList";
 import WithNavbar from "@/components/hoc/WithNavbar";
 import { Button } from "tccd-ui";
 import { FaPlus } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function TeamsAdminPage() {
     const [modalOpen, setModalOpen] = useState<number>(0);
+    
+    useEffect(() => {
+        console.log("Modal Open State:", modalOpen);
+    }, [modalOpen]);
     
   return (
     <WithNavbar>
