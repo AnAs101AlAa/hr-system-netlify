@@ -6,6 +6,7 @@ import FormView from "./forms/FormView";
 import FormSubmissionPage from "./forms/FormSubmissionPage";
 import FormBuilder from "./formBuilder/FormBuilder";
 import FormEditor from "./formBuilder/FormEditor";
+import TeamsAdminPage from "./judgingSystem/teamsAdminPage";
 import { UnauthorizedPage } from "tccd-ui";
 
-export { LoginPage, HomePage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage, FormBuilder, FormEditor };
+export { LoginPage, HomePage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage, FormBuilder, FormEditor, TeamsAdminPage };

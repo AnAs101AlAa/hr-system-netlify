@@ -27,7 +27,7 @@ export async function getForms(page: number, count: number, createdAfter: string
   if (createdAfter) params.CreatedAfter = createdAfter;
   if (sortKey) params.SortBy = sortKey;
   if (order) params.Order = order;
-  if (selectedType) params.FormType = selectedType;
+  if (selectedType && selectedType !== "All") params.FormType = selectedType;
 
   const response = await systemApi.get(`${FORMS_API_URL}`, { params });
   return response.data;

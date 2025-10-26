@@ -2,10 +2,10 @@
  * Renders action buttons and reason inputs for the scanner flow.
  * @module ScannerActions
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ButtonTypes, ButtonWidths, Button } from "tccd-ui";
-import { useUpdateVestStatus, useVestTimeline } from "@/queries/events";
+import { useUpdateVestStatus, useVestStatus } from "@/queries/events";
 import { getErrorMessage } from "@/utils";
 import type { MemberData } from "@/types/attendance";
 
@@ -60,15 +60,21 @@ const ScannerActions = ({
   eventId,
 }: ScannerActionsProps) => {
   const vestStatusUpdate = useUpdateVestStatus();
-  const { data: vestTimeline } = useVestTimeline(memberData?.id || "", eventId);
+  const { data: vestStatus } = useVestStatus(memberData?.id || "", eventId);
   const isNotMeeting = eventType !== "Meeting";
-  const [vestStatus, setVestStatus] = useState<string>(vestTimeline ? vestTimeline.data[vestTimeline.data.length - 1]?.status || "NotReceived" : "NotReceived");
+  const [currentVestStatus, setCurrentVestStatus] = useState<string>(vestStatus || "NotReceived");
+
+  useEffect(() => {
+    if (vestStatus) {
+      setCurrentVestStatus(vestStatus);
+    }
+  }, [vestStatus]);
 
   const handleVestStatus = async () => {
     if (!memberData?.id) return;
 
     const action =
-      vestStatus === "Received"
+      currentVestStatus === "Received"
         ? "Returned"
         : "Received";
 
@@ -81,11 +87,11 @@ const ScannerActions = ({
       {
         onSuccess: () => {
           toast.success(
-            vestStatus === "Received"
+            currentVestStatus === "Received"
             ? "Vest Returned Successfully!"
             : "Vest Assigned Successfully!"
           );
-          setVestStatus(action);
+          setCurrentVestStatus(action);
         },
         onError: (error) => {
           toast.error(getErrorMessage(error));
@@ -95,7 +101,7 @@ const ScannerActions = ({
   };
 
   const getVestButtonText = () => {
-    return vestStatus === "Received"
+    return currentVestStatus === "Received"
       ? "Return Vest"
       : "Assign Vest";
   };

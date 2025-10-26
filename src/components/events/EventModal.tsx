@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import EVENT_TYPES from "@/constants/eventTypes";
 import type { Event } from "@/types/event";
 import { useAddEvent, useUpdateEvent } from "@/queries/events/eventQueries";
-import { Button, Modal, InputField, TextAreaField, DatePicker, DropdownMenu, ButtonTypes, ButtonWidths } from "tccd-ui";
+import { Button, Modal, InputField, TextAreaField, DatePicker, DropdownMenu, ButtonTypes, ButtonWidths, Timepicker } from "tccd-ui";
 
 interface EventModalProps {
   isOpen: boolean;
@@ -190,8 +190,6 @@ const EventModal: React.FC<EventModalProps> = ({
       endDate: convertToUTC(formData.endDate, formData.endTime),
     };
 
-    console.log("Submitting event data:", eventData);
-
     try {
       if (mode === "create") {
         await addEventMutation.mutateAsync(eventData);
@@ -282,22 +280,14 @@ const EventModal: React.FC<EventModalProps> = ({
           </div>
 
           <div className="flex flex-col w-full">
-            <label className="text-label text-[14px] md:text-[15px] lg:text-[16px] mb-2 font-semibold">
-              Start Time
-            </label>
-            <input
-              type="time"
+            <Timepicker
+              label="Start Time"
               id="startTime"
               value={formData.startTime}
-              onChange={(e) => handleInputChange("startTime", e.target.value)}
+              onChange={(value) => handleInputChange("startTime", value)}
+              error={errors.startTime}
               disabled={isLoading}
-              className="w-full px-3 py-2 border border-contrast rounded-full focus:outline-none transition-colors duration-300 focus:ring-none focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-[14px]"
             />
-            {errors.startTime && (
-              <span className="text-red-500 text-sm mt-1">
-                {errors.startTime}
-              </span>
-            )}
           </div>
         </div>
 
@@ -315,22 +305,14 @@ const EventModal: React.FC<EventModalProps> = ({
           </div>
 
           <div className="flex flex-col w-full">
-            <label className="text-label text-[14px] md:text-[15px] lg:text-[16px] mb-2 font-semibold">
-              End Time
-            </label>
-            <input
-              type="time"
+            <Timepicker
+              label="End Time"
               id="endTime"
               value={formData.endTime}
-              onChange={(e) => handleInputChange("endTime", e.target.value)}
+              onChange={(value) => handleInputChange("endTime", value)}
+              error={errors.endTime}
               disabled={isLoading}
-              className="w-full px-3 py-2 border border-contrast rounded-full focus:outline-none transition-colors duration-300 focus:ring-none focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-[14px]"
             />
-            {errors.endTime && (
-              <span className="text-red-500 text-sm mt-1">
-                {errors.endTime}
-              </span>
-            )}
           </div>
         </div>
         {/* Action Buttons */}

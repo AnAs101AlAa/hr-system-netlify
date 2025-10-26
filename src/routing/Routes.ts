@@ -1,4 +1,4 @@
-import { HomePage, LoginPage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage, FormBuilder, FormEditor } from "@/pages";
+import { HomePage, LoginPage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage, FormBuilder, FormEditor, TeamsAdminPage } from "@/pages";
 
 const routes: { path: string; Component: React.FC; protected?: boolean; roles?: string[] }[] = [
   { path: "/", Component: HomePage, protected: true, roles: ["HR", "Head", "HighBoard", "Admin", "Vest"]},
@@ -10,7 +10,8 @@ const routes: { path: string; Component: React.FC; protected?: boolean; roles?: 
   { path: "/unauthorized", Component: UnauthorizedPage },
   { path: "/form-builder", Component: FormBuilder, protected: true, roles: ["HR", "Head", "HighBoard", "Admin"] },
   { path: "/form-builder/:formId", Component: FormEditor, protected: true, roles: ["HR", "Head", "HighBoard", "Admin"] },
-  { path: "form-builder/preview", Component: FormView }
+  { path: "form-builder/preview", Component: FormView },
+  { path: "/judging-system", Component: TeamsAdminPage, protected: true, roles: ["Admin"] }
 ];
 
 export default routes;

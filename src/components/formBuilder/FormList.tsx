@@ -10,7 +10,7 @@ const FormList = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchKey, setSearchKey] = useState<string>("");
   const [sortOption, setSortOption] = useState<string>("");
-  const [filterType, setFilterType] = useState<string>("");
+  const [filterType, setFilterType] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const { data: Forms, isLoading, isError } = useForms(currentPage, 15, selectedDate || "", searchKey, filterType, sortOption);
 
@@ -23,7 +23,7 @@ const FormList = () => {
       <div className="p-4 border-b border-dashboard-border space-y-2">
         <div className="flex items-center justify-between mb-4">
         <p className="text-md md:text-lg lg:text-xl font-bold text-[#72747A]">
-          Forms
+          Forms {Forms ? `(${Forms.length})` : ""}
         </p>
         <div className="flex gap-2 items-center justify-center">
           <FaChevronLeft

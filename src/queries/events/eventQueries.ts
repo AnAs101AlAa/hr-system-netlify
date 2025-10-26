@@ -29,6 +29,8 @@ export const eventKeys = {
     ["recordLeaveEarly", eventId, memberId] as const,
   vestTimeline: (eventId: string, memberId: string) =>
     ["vestTimeline", eventId, memberId] as const,
+  vestStatus: (eventId: string, memberId: string) =>
+    ["vestStatus", eventId, memberId] as const,
 };
 // Mutation: Request Attendance
 export const useRequestAttendance = () => {
@@ -311,5 +313,15 @@ export const useVestTimeline = (memberId: string, eventId: string) => {
       return data;
     },
     enabled: !!memberId && !!eventId,
+  });
+};
+
+export const useVestStatus = (memberId: string, eventId: string) => {
+  return useQuery({
+    queryKey: eventKeys.checkAttendanceStatus(eventId, memberId),
+    queryFn: async () => {
+      const data = await eventsApiInstance.fetchVestStatus(memberId, eventId);
+      return data;
+    }
   });
 };

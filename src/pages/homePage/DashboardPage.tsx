@@ -48,7 +48,7 @@ const Dashboard = () => {
   return (
     <WithNavbar>
       <div className="mx-4 md:mx-6 lg:mx-8 flex flex-col md:items-center">
-        <div className="md:w-[90%] lg:w-[80%] xl:w-3/4 space-y-4 md:space-y-5 lg:space-y-6">
+        <div className="md:w-[90%] lg:w-[80%] xl:w-3/4 space-y-6 md:space-y-7 lg:space-y-8">
           <WelcomeCard />
           <ActionCards />
         </div>

@@ -33,6 +33,7 @@ const FORM_SORTING_OPTIONS = [
 ];
 
 const FORM_TYPES = [
+  { label: "All Forms", value: "All" },
   { label: "Database Update", value: "DatabaseUpdate" },
   { label: "Research Day", value: "ResearchDay" },
   { label: "Recruitment", value: "Recruitment" },
