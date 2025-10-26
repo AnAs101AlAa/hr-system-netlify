@@ -190,8 +190,6 @@ const EventModal: React.FC<EventModalProps> = ({
       endDate: convertToUTC(formData.endDate, formData.endTime),
     };
 
-    console.log("Submitting event data:", eventData);
-
     try {
       if (mode === "create") {
         await addEventMutation.mutateAsync(eventData);

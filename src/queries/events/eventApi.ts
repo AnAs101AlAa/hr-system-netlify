@@ -167,8 +167,13 @@ class eventsApi {
     };
   }
   
-  async fetchPastEvents(eventType: string,title: string, page: number,pageSize: number
-  ): Promise<Event[]> {
+  async fetchVestStatus(memberId: string, eventId: string): Promise<string> {
+    const response = await systemApi.get(`${EVENTS_API_URL}Vest/status/${eventId}/${memberId}`
+    );
+    return response.data.data.status;
+  }
+
+  async fetchPastEvents(eventType: string,title: string, page: number,pageSize: number): Promise<Event[]> {
     const response = await systemApi.get(`${EVENTS_API_URL}Events/filtered?${eventType != "" ? `eventType=${eventType}` : ""}&eventStatuses=Past&${title != "" ? `title=${title}` : ""}&page=${page}&count=${pageSize}&OrderBy=startDate&Descending=true`
     );
 

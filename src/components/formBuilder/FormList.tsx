@@ -10,7 +10,7 @@ const FormList = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchKey, setSearchKey] = useState<string>("");
   const [sortOption, setSortOption] = useState<string>("");
-  const [filterType, setFilterType] = useState<string>("");
+  const [filterType, setFilterType] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const { data: Forms, isLoading, isError } = useForms(currentPage, 15, selectedDate || "", searchKey, filterType, sortOption);
 
