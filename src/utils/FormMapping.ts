@@ -19,14 +19,14 @@ export const formBranchMapper = (
   pages?: formPage[]
 ) => {
     const mappedBranches: serverRequestBranch[] = [];
-    pages?.forEach((page, pageIndex) => {
+    pages?.forEach((page) => {
       if (page.toBranch) {
-        Object.entries(page.toBranch).forEach(([questionId, branchData]) => {
+        page.toBranch.forEach((branch) => {
           mappedBranches.push({
-            sourcePageNumber: pageIndex,
-            questionNumber: Number(questionId),
-            assertOn: branchData.assertOn,
-            targetPageNumber: branchData.targetPage,
+            sourcePageNumber: branch.sourcePage,
+            questionNumber: branch.questionNumber,
+            assertOn: branch.assertOn,
+            targetPageNumber: branch.targetPage,
           });
         });
       }
@@ -43,6 +43,7 @@ export const formRequestMapper = (formData: form) => {
       title: page.title,
       description: StringTagFormatter(page.description) as string,
       pageNumber: index,
+      nextPage: Number(page.nextPage),
       questions: page.questions
         .map((q) => {
           switch (q.questionType) {
@@ -126,14 +127,17 @@ export const formResponseMapper = (formData: serverResponseForm, formTags: boole
         ...page,
         id: crypto.randomUUID(),
         description: formTags ? (page.description ? StringTagFormatter(page.description) as string : undefined) : page.description,
-        toBranch: page.toBranches ? page.toBranches.map((branch) => ({
-            [branch.questionNumber]: {
-                assertOn: branch.assertOn,
-                targetPage: branch.targetPageNumber,
-            }
-        }))[0] : undefined
+        toBranch: page.toBranches ? page.toBranches.map((branch) => (
+          {
+            id: branch.id,
+            sourcePage: branch.sourcePageNumber,
+            questionNumber: branch.questionNumber,
+            assertOn: branch.assertOn,
+            targetPage: branch.targetPageNumber,
+          }
+        )) : undefined
     }));
-
+    
     return {
         id: formData.formId,
         title: formData.title,

@@ -20,7 +20,7 @@ export default function TeamsAdminPage() {
                 <div className="w-full my-4">
                 <Button buttonText="New Team" onClick={() => setModalOpen(1)} type="primary" width="auto" buttonIcon={<FaPlus />} />
                 </div>
-                <TeamList />
+                <TeamList setModalOpen={setModalOpen}/>
             </div>
         </div>
     </WithNavbar>

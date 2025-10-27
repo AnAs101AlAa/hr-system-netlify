@@ -1,9 +1,9 @@
 import { DropdownMenu, InputField, NumberField, TextAreaField, Button, ButtonTypes } from "tccd-ui";
 import { IoCaretUp, IoCaretDown, IoTrashSharp, IoLockOpen, IoLockClosed } from "react-icons/io5";
-import type { form, formPage, formPageError, FormBranchHandle } from "@/types/form";
+import type { form, formPage, formPageError, FormBranchHandle, formBranch, formBranchError } from "@/types/form";
 import toast from "react-hot-toast";
 import { QUESTION_TYPES } from "@/constants/formConstants";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import BranchInfo from "./BranchInfo";
 import { forwardRef, useImperativeHandle } from "react";
 import { sanitize, addQuestionError} from "@/utils/formBuilderUtils";
@@ -18,9 +18,10 @@ interface PagesInfoProps {
     setQuestionCount: React.Dispatch<React.SetStateAction<number>>;
     setFormDataState: React.Dispatch<React.SetStateAction<form>>;
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, toChange: string, index?: number, field?: string) => void;
+    isFetchSuccessful: boolean;
 }
 
-const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChange, setQuestionCount }: PagesInfoProps, ref) => {
+const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChange, setQuestionCount, isFetchSuccessful }: PagesInfoProps, ref) => {
     const [choiceTextBuffer, setChoiceTextBuffer] = useState<string>("");
     const [pageErrors, setPageErrors] = useState<{[index: number]: formPageError}>({});
     const [showHidePages, setShowHidePages] = useState<{[index: number]: boolean}>({});
@@ -28,13 +29,31 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     const [allowModifiers, setAllowModifiers] = useState<boolean>(true);
     const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
     const [clipboard, setClipboard] = useState<Question[]>([]);
-    const branchInfoRefs = useRef<Array<FormBranchHandle | null>>([]);
+    const [branchSections, setBranchSections] = useState<{formBranch: formBranch, ref: React.RefObject<FormBranchHandle | null>}[]>([]);
+    const [branchSectionErrors, setBranchSectionErrors] = useState<{[branchId: string]: formBranchError}>({});
+    const isInitialized = React.useRef(false);
 
     useEffect(() => {
         if(Object.keys(showHidePages).length === 0) {
             setShowHidePages(formDataState.pages ? formDataState.pages.reduce((acc, _, idx) => ({ ...acc, [idx]: true }), {}) : {});
         }
     }, [formDataState.pages]);
+
+    useEffect(() => {
+    if (!isFetchSuccessful || isInitialized.current || !formDataState.pages || formDataState.pages.length === 0) return;
+
+    const newBranches = formDataState.pages.flatMap((page, pageIndex) =>
+        (page.toBranch ?? []).map(branch => ({
+        formBranch: { ...branch, sourcePage: pageIndex },
+        ref: React.createRef<FormBranchHandle>(),
+        }))
+    );
+
+    if (newBranches.length > 0) {
+        setBranchSections(prev => [...prev, ...newBranches]);
+        isInitialized.current = true;
+    }
+    }, [isFetchSuccessful, formDataState.pages]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -111,7 +130,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
     const handleAddPage = () => {
         setFormDataState((prev) => {
             if (!prev) return prev;
-            const newPage: formPage = {title: `Page ${prev.pages ? prev.pages.length + 1 : 1}`, description: "", questions: []};
+            const newPage: formPage = {title: `Page ${prev.pages ? prev.pages.length + 1 : 1}`, nextPage: 0, description: "", questions: []};
             return { ...prev, pages: [...(prev.pages || []), newPage] };
         });
         setShowHidePages((prev) => ({ ...prev, [Object.keys(prev).length]: true }));
@@ -303,6 +322,8 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
 
     const validatePages = (): { hasErrors: boolean; pages: formPage[] } => {
         const currentPageErrors: formPageError[] = [];
+        const currentBranchErrors: {[branchId: string]: formBranchError} = {};
+
 
         const sanitizedPages: formPage[] = formDataState.pages?.map((page) => ({ ...page, questions: page.questions?.map((q) => sanitize(q, q.questionType)) })) || [];
         const branchFixedPages: formPage[] = [];
@@ -345,9 +366,13 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                 }
             });
 
-            let branchData = null;
-            if (branchInfoRefs.current[pIndex]) {
-                const selectedQuestionNumber = branchInfoRefs.current[pIndex]?.fetchQuestionNumber();
+            const collectedBranches : formBranch[] = [];
+
+            branchSections.filter(branch => branch.formBranch.sourcePage === pIndex).forEach(branchSection => {
+                const branchInfoRef = branchSection.ref;
+                const selectedQuestionNumber = branchInfoRef.current?.fetchQuestionNumber();
+                let branchData = null;
+
                 const questionAnswers = selectedQuestionNumber ? page.questions.filter(q => q.questionNumber == selectedQuestionNumber).map(q => {
                     if(q.questionType === "MCQ" && q.choices) {
                         return q.choices.map(c => c.text);
@@ -356,74 +381,53 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                     }
                 }) : [];
 
-                branchData = branchInfoRefs.current[pIndex]?.collect(questionAnswers.flat());
-                
-                if (branchData.questionNumber === undefined || isNaN(branchData.questionNumber) || branchData.questionNumber <= 0) {
-                    currentPageErrors[pIndex] = {
-                        ...(currentPageErrors[pIndex] || {}),
-                        toBranchErrors: [
-                            ...(currentPageErrors[pIndex]?.toBranchErrors || []),
-                            "Has a branch with an invalid question number.",
-                        ],
+                branchData = branchInfoRef.current?.collect(questionAnswers.flat());
+
+                if (branchData?.questionNumber === undefined || isNaN(branchData.questionNumber) || branchData.questionNumber <= 0) {
+                    currentBranchErrors[branchSection.formBranch.id] = {
+                        ...(currentBranchErrors[branchSection.formBranch.id] || {}),
+                        questionNumber: "Has a branch with an invalid question number.",
                     };
                 }
 
-                if (branchData.targetPage === undefined || isNaN(branchData.targetPage) || branchData.targetPage <= 0 || branchData.targetPage > sanitizedPages.length + 1) {
-                    currentPageErrors[pIndex] = {
-                        ...(currentPageErrors[pIndex] || {}),
-                        toBranchErrors: [
-                            ...(currentPageErrors[pIndex]?.toBranchErrors || []),
-                            "Has a branch with an invalid target page.",
-                        ],
+                if (branchData?.targetPage === undefined || isNaN(branchData.targetPage) || branchData.targetPage <= 0 || branchData.targetPage > sanitizedPages.length + 1) {
+                    currentBranchErrors[branchSection.formBranch.id] = {
+                        ...(currentBranchErrors[branchSection.formBranch.id] || {}),
+                        targetPage: "Has a branch with an invalid target page.",
                     };
                 }
 
-                if (!branchData.assertOn || branchData.assertOn.trim() === "") {
-                    currentPageErrors[pIndex] = {
-                        ...(currentPageErrors[pIndex] || {}),
-                        toBranchErrors: [
-                            ...(currentPageErrors[pIndex]?.toBranchErrors || []),
-                            "Has a branch with empty assert-on value.",
-                        ],
+                if (!branchData?.assertOn || branchData.assertOn.trim() === "") {
+                    currentBranchErrors[branchSection.formBranch.id] = {
+                        ...(currentBranchErrors[branchSection.formBranch.id] || {}),
+                        assertOn: "Has a branch with empty assert-on value.",
                     };
                 }
 
-                if (branchData.questionNumber > page.questions.length || branchData.questionNumber <= 0) {
-                    currentPageErrors[pIndex] = {
-                        ...(currentPageErrors[pIndex] || {}),
-                        toBranchErrors: [
-                            ...(currentPageErrors[pIndex]?.toBranchErrors || []),
-                            "Question Number for branching is out of the page's bounds.",
-                        ],
+                if (branchData?.questionNumber !== undefined && (branchData?.questionNumber > page.questions.length || branchData.questionNumber <= 0)) {
+                    currentBranchErrors[branchSection.formBranch.id] = {
+                        ...(currentBranchErrors[branchSection.formBranch.id] || {}),
+                        questionNumber: "Question Number for branching is out of the page's bounds.",
                     };
                 }
 
-                if(branchData.targetPage <= pIndex) {
-                    currentPageErrors[pIndex] = {
-                        ...(currentPageErrors[pIndex] || {}),
-                        toBranchErrors: [
-                            ...(currentPageErrors[pIndex]?.toBranchErrors || []),
-                            "Can't branch to the same or previous page.",
-                        ],
-                    };
-                }
-            }
+                collectedBranches.push(branchData || { questionNumber: 0, assertOn: "", targetPage: 0, sourcePage: pIndex, id: branchSection.formBranch.id });
+            });
 
-            const fixedPage = { ...page, toBranch: branchData ? { [branchData.questionNumber]: { assertOn: branchData.assertOn, targetPage: branchData.targetPage} } : undefined };
+            const fixedPage = { ...page, toBranch: collectedBranches.length > 0 ? collectedBranches : undefined };
             branchFixedPages.push(fixedPage);
         });
 
         setPageErrors(currentPageErrors);
+        setBranchSectionErrors(currentBranchErrors);
         setFormDataState((prev) => ({ ...prev, pages: branchFixedPages }));
-        return { hasErrors: currentPageErrors.length !== 0, pages: branchFixedPages };
+        return { hasErrors: currentPageErrors.length !== 0 || Object.keys(currentBranchErrors).length > 0, pages: branchFixedPages };
     };
 
     const handleAddBranch = (pageIndex: number) => {
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            const updatedPages = [...prev.pages];
-            updatedPages[pageIndex] = { ...updatedPages[pageIndex], toBranch: {0: {assertOn: "example answer", targetPage: pageIndex}} };
-            return { ...prev, pages: updatedPages };
+        setBranchSections((prev) => {
+            const newBranch: {formBranch: formBranch, ref: React.RefObject<FormBranchHandle | null>} = {formBranch: { questionNumber: 0, assertOn: "", targetPage: 0, sourcePage: pageIndex, id: crypto.randomUUID() }, ref: React.createRef<FormBranchHandle | null>()};
+            return [...prev, newBranch];
         });
     }
 
@@ -468,6 +472,24 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         });
     };
 
+    const handleAdjustNextPages = (pageIndex: number, value: number) => {
+        setFormDataState((prev) => {
+            if (!prev || !prev.pages) return prev;
+
+            const updatedPages = prev.pages.map((page, index) => {
+                if (index === pageIndex) {
+                    return { ...page, nextPage: value };
+                }
+                return page;
+            });
+
+            return {
+                ...prev,
+                pages: updatedPages,
+            };
+        });
+    };
+
     useImperativeHandle(ref, () => ({
         collect: validatePages
     }));
@@ -500,7 +522,18 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                             <div className="bg-primary rounded-full p-1"><IoTrashSharp className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleDeletePage(index)} /></div>
                         </div>
                         <p className="text-[16px] md:text-[18px] lg:text-[20px] font-semibold text-primary">Page {index + 1} ({page.questions ? page.questions.length : 0} question{page.questions && page.questions.length !== 1 ? "s" : ""})</p>
-                        {showHidePages[index] ? (
+                        <p className="text-[16px] md:text-[18px] lg:text-[20px] font-semibold text-primary flex gap-2">
+                            Guides to Page    
+                            <input
+                            placeholder="0"
+                            type="number"
+                            style={{ width: `${Math.max(12 * (page.nextPage.toString().length) + 14, 26)}px`, MozAppearance: "textfield" }}
+                            className="shadow-md bg-white rounded-lg text-center focus:border-primary border-gray-300 border transition-colors duration-200 outline-none text-contrast"
+                            value={page.nextPage + 1}
+                            onChange={(e) => handleAdjustNextPages(index, Number(e.target.value) - 1)}
+                            />
+                        </p>  
+                      {showHidePages[index] ? (
                             <>
                                 <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Primary information</p>
                                 <InputField label="Page Title" id={`page-title-${index}`} value={page.title} placeholder="Enter page title" onChange={(e) => handleInputChange(e, "pages", index, "title")} error={pageErrors[index]?.title} />
@@ -606,24 +639,28 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                         </div>
                                     )}
                                 </Droppable>
-                                {page.toBranch && (
-                                    <BranchInfo setFormDataState={setFormDataState} index={index} page={page} ref={el => { branchInfoRefs.current[index] = el; }} initialValue={{
-                                        questionNumber: page.toBranches?.[0]?.questionNumber || 0,
-                                        assertOn: page.toBranches?.[0]?.assertOn || "",
-                                        targetPage: page.toBranches?.[0]?.targetPageNumber || 0,
-                                    }}/>
-                                )}  
+                                {branchSections.filter((branch) => branch.formBranch.sourcePage === index).length > 0 && (
+                                    <>
+                                        {branchSections.filter((branch) => branch.formBranch.sourcePage === index).map((branch) => (
+                                            <div className="space-y-2" key={branch.formBranch.id}>
+                                                <BranchInfo setBranchSections={setBranchSections} ref={branch.ref} initialValue={branch.formBranch} />
+                                                {branchSectionErrors[branch.formBranch.id] && (
+                                                    <div className="space-y-2 text-primary text-[12px] md:text-[13px] lg:text-[14px]">
+                                                        {branchSectionErrors[branch.formBranch.id].questionNumber && <p>{branchSectionErrors[branch.formBranch.id].questionNumber}</p>}
+                                                        {branchSectionErrors[branch.formBranch.id].assertOn && <p>{branchSectionErrors[branch.formBranch.id].assertOn}</p>}
+                                                        {branchSectionErrors[branch.formBranch.id].targetPage && <p>{branchSectionErrors[branch.formBranch.id].targetPage}</p>}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
                                 <div className="flex gap-2 md:gap-3 md:justify-start justify-center items-center">
                                     <Button type={ButtonTypes.PRIMARY} width="small" onClick={() => handleAddQuestion(index)} buttonText="Add Question"/>
-                                    {!page.toBranch && (
-                                        <Button type={ButtonTypes.SECONDARY} width="small" onClick={() => handleAddBranch(index)} buttonText="Add Branch" />
-                                    )}
+                                    <Button type={ButtonTypes.SECONDARY} width="small" onClick={() => handleAddBranch(index)} buttonText="Add Branch" />
                                     {clipboard.length > 0 && allowModifiers && <Button type={ButtonTypes.TERTIARY} width="fit" onClick={() => handlePasteQuestions(index)} buttonText={`Paste`} />}
                                 </div>
-                                <div className="space-y-2">
-                                    <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.questionCount}</p>
-                                    <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.toBranchErrors?.map((err, i) => <span key={i}>{err}<br/></span>)}</p>
-                                </div>
+                                <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.questionCount}</p>
                             </> ) : (
                             <p className="text-sm text-gray-600">Page is hidden. Click the eye icon to show.</p>
                         )}

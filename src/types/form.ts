@@ -1,17 +1,20 @@
 import type { Question, Answer, questionError } from "./question";
 
 export interface formBranch {
-   questionNumber: number;
-   assertOn: string;
-   targetPage: number;
+    id: string;
+    sourcePage: number;
+    questionNumber: number;
+    assertOn: string;
+    targetPage: number;
 }
 
 export interface formPage {
     id?: string;
     title: string;
+    nextPage: number;
     description: string;
     questions: Question[];
-    toBranch?: { [questionId: number]: { assertOn: string, targetPage: number } };
+    toBranch?: formBranch[];
     toBranches? : serverResponseBranch[];
 }
 
@@ -66,7 +69,13 @@ export interface formPageError {
     description: string;
     questionCount?: string;
     questions: questionError[];
-    toBranchErrors?: string[];
+}
+
+export interface formBranchError {
+    branchId: string;
+    questionNumber: string;
+    assertOn: string;
+    targetPage: string;
 }
 
 export interface form {
