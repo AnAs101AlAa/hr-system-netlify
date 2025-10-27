@@ -13,6 +13,7 @@ import { HTMLText } from "@/components/HTMLText";
 import FormLockedPage from "./FormLockedPage";
 import { useUploadSubmissionMedia } from "@/queries/forms/formQueries";
 import { branchAssertionFormatter } from "@/utils/formViewerUtils";
+import type { formBranch } from "@/types/form";
 
 export default function FormView() {
   const navigate = useNavigate();
@@ -83,20 +84,22 @@ export default function FormView() {
     if (hasErrors || !formData || !formData.pages) {
       return;
     } else if (formData && currentPage < formData.pages.length - 1) {
-      const branch = formData.pages[currentPage].toBranch;
-      if (branch) {
-        const currentAnswer = answerArray.find((a) => branch[a.qid]);
+      const branches = formData.pages[currentPage].toBranch;
+      if (branches && branches.length > 0) {
+        const currentAnswer = answerArray.find((a) => branches.some(b => b.questionNumber === a.qid));
+        const selectedBranch: formBranch = branches.filter(b => { return b.sourcePage === currentPage && b.questionNumber === currentAnswer?.qid })[0];
+        
         const currentQuestion = formData.pages[currentPage].questions.filter(q => q.questionNumber === currentAnswer?.qid)[0];
-        const answersToAssert = currentAnswer ? branchAssertionFormatter(branch[currentAnswer.qid].assertOn) : [];
+        const answersToAssert = currentAnswer ? branchAssertionFormatter(selectedBranch.assertOn) : [];
 
         if(currentQuestion.questionType === "MCQ" && currentQuestion.isMultiSelect) {
           const answerValues = Array.isArray(currentAnswer?.answer) ? currentAnswer.answer as string[] : [];
           const hasMatch = answerValues.some(value => answersToAssert.includes(value));
           if (hasMatch) {
-            setCurrentPage(branch[currentAnswer!.qid].targetPage);
+            setCurrentPage(selectedBranch.targetPage);
             setPageHistory((prev) => [
               ...prev,
-              branch[currentAnswer!.qid].targetPage,
+              selectedBranch.targetPage,
             ]);
             return;
           } else {
@@ -106,20 +109,20 @@ export default function FormView() {
           }
         }
         if (answersToAssert.includes(currentAnswer?.answer as string)) {
-          setCurrentPage(branch[currentAnswer!.qid].targetPage);
+          setCurrentPage(selectedBranch.targetPage);
           setPageHistory((prev) => [
             ...prev,
-            branch[currentAnswer!.qid].targetPage,
+            selectedBranch.targetPage,
           ]);
           return;
         } else {
-          setCurrentPage((prev) => prev + 1);
-          setPageHistory((prev) => [...prev, currentPage + 1]);
+          setCurrentPage(formData.pages[currentPage].nextPage);
+          setPageHistory((prev) => [...prev, formData.pages[currentPage].nextPage]);
           return;
         }
       } else {
-        setCurrentPage((prev) => prev + 1);
-        setPageHistory((prev) => [...prev, currentPage + 1]);
+        setCurrentPage(formData.pages[currentPage].nextPage);
+        setPageHistory((prev) => [...prev, formData.pages[currentPage].nextPage]);
       }
     } else {
       handleSubmit(answerArray);

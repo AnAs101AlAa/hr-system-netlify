@@ -20,7 +20,7 @@ export default function FormEditor() {
 
     const emptyForm: form = { id: "", title: "", formType: "", sheetName: "", pages: [], description: "", googleSheetId: "", googleDriveId: "", isClosed: false, createdAt: "", updatedAt: "" };
 
-    const { data: formData, isLoading, isError, error } = useForm(formId !== "new" ? formId ?? "" : templateId ?? "", true);
+    const { data: formData, isLoading, isError, error, isSuccess } = useForm(formId !== "new" ? formId ?? "" : templateId ?? "", true);
 
     const createFormMutation = useCreateForm();
     const updateFormMutation = useUpdateForm(formId ?? "");
@@ -173,7 +173,7 @@ export default function FormEditor() {
             <h1 className="lg:text-[24px] md:text-[22px] text-[20px] font-bold mb-4">{isEditMode ? `Edit Form` : "Create New Form"}</h1>
             <div className="space-y-6">
                 <MainInfo handleInputChange={handleInputChange} formDataState={formDataState} ref={mainSectionRef} />
-                <PagesInfo questionCount={questionCount} setQuestionCount={setQuestionCount} formDataState={formDataState} setFormDataState={setFormDataState} handleInputChange={handleInputChange} ref={pagesSectionRef} />
+                <PagesInfo questionCount={questionCount} setQuestionCount={setQuestionCount} formDataState={formDataState} setFormDataState={setFormDataState} handleInputChange={handleInputChange} isFetchSuccessful={isSuccess} ref={pagesSectionRef} />
 
                 <div className="space-y-4 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background">
                     <div className="flex justify-center items-center gap-3">
