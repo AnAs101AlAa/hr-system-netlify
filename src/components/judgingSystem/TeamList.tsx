@@ -3,9 +3,10 @@ import { useState } from "react";
 import { useResearchTeams } from "@/queries/judgingSystem/judgeQueries";
 import { TEAM_SORTING_OPTIONS } from "@/constants/judgingSystemConstants";
 import TeamsTable from "./TeamsTable";
+import TeamCardView from "./TeamCardView";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-const TeamList = () => {
+const TeamList = ({setModalOpen} : {setModalOpen: React.Dispatch<React.SetStateAction<number>>}) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [searchKey, setSearchKey] = useState<string>("");
     const [sortOption, setSortOption] = useState<string>("");
@@ -78,9 +79,14 @@ const TeamList = () => {
         {/* Desktop Table View */}
         <TeamsTable
           teams={teams || []}
+          setOpenModal={setModalOpen}
         />
 
         {/* Mobile Card View */}
+        <TeamCardView
+          teams={teams || []}
+          setOpenModal={setModalOpen}
+        />
       </>
       )}
     </div>

@@ -1,15 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { Button, ButtonTypes } from "tccd-ui";
+import { Button } from "tccd-ui";
 import { useEffect, useState } from "react";
 import type { Team } from "@/types/judgingSystem";
 import TeamDeleteModal from "./TeamDeleteModal";
+import { useSelector } from "react-redux";
 
 interface TeamsTableProps {
     teams: Team[];
+    setOpenModal: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const TeamsTable = ({ teams }: TeamsTableProps) => {
+const TeamsTable = ({ teams, setOpenModal }: TeamsTableProps) => {
   const navigate = useNavigate();
+  const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
   const [displayedTeams, setDisplayedTeams] = useState<Team[]>(teams);
   const [showDeleteModal, setShowDeleteModal] = useState("");
 
@@ -65,17 +68,25 @@ const TeamsTable = ({ teams }: TeamsTableProps) => {
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-2">
                     <Button
-                      type={ButtonTypes.SECONDARY}
-                      onClick={() => navigate(`/form-builder/${team.id}`)}
+                      type="secondary"
+                      onClick={() => setOpenModal(2)}
                       buttonText="Edit"
                       width="fit"
                     />
                     <Button
-                      type={ButtonTypes.DANGER}
+                      type="danger"
                       onClick={() => setShowDeleteModal(team.id)}
                       buttonText="Delete"
                       width="fit"
                     />
+                    {(userRoles.includes("Judge") && userRoles.length === 1) && (
+                      <Button
+                        type="primary"
+                        buttonText="Start Assessment "
+                        onClick={() => { navigate(`/judging-system/assess-team/${team.id}`); }}
+                        width="fit"
+                      />
+                    )}
                   </div>
                 </td>
               </tr>
