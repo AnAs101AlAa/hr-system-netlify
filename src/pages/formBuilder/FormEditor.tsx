@@ -42,7 +42,8 @@ export default function FormEditor() {
             toast.error(`Failed to fetch form, please try again`);
         }
         if (formData) {
-            setFormDataState(formData);
+            const formCleaned = { ...formData, pages: formData.pages?.filter((page) => !(page.title === "null" && page.nextPage == -1 && page.description === "nullDescKey")) || [] };
+            setFormDataState(formCleaned);
         }
     }, [isError, error, formData]);
 

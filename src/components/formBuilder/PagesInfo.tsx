@@ -1,9 +1,9 @@
-import { DropdownMenu, InputField, NumberField, TextAreaField, Button, ButtonTypes } from "tccd-ui";
+import { DropdownMenu, InputField, NumberField, TextAreaField, Button } from "tccd-ui";
 import { IoCaretUp, IoCaretDown, IoTrashSharp, IoLockOpen, IoLockClosed } from "react-icons/io5";
 import type { form, formPage, formPageError, FormBranchHandle, formBranch, formBranchError } from "@/types/form";
 import toast from "react-hot-toast";
 import { QUESTION_TYPES } from "@/constants/formConstants";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Activity } from "react";
 import BranchInfo from "./BranchInfo";
 import { forwardRef, useImperativeHandle } from "react";
 import { sanitize, addQuestionError} from "@/utils/formBuilderUtils";
@@ -511,7 +511,11 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                 formDataState.pages.map((page, index) => (
                     <div key={index} className="p-3 md:p-4 border border-gray-300 rounded-md space-y-3 relative border-t-primary border-t-8 md:border-t-10">
                         <div className="absolute right-4 top-4 flex gap-2 items-center">
-                            {index > 0 && <div className="bg-secondary rounded-full p-1"><IoCaretUp className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleMovePage(index, "up")} /></div>}
+                            <Activity mode={index > 0 ? "visible" : "hidden"}>
+                                <div className="bg-secondary rounded-full p-1">
+                                    <IoCaretUp className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleMovePage(index, "up")} />
+                                </div>
+                            </Activity>
                             {index < (formDataState.pages?.length || 0) - 1 && <div className="bg-secondary rounded-full p-1"><IoCaretDown className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => handleMovePage(index, "down")} /></div>}
                             <div className="bg-contrast rounded-full p-1">{!showHidePages[index] ? 
                                 <BiSolidShow className="text-background cursor-pointer size-3.5 md:size-4" onClick={() => setShowHidePages((prev) => ({ ...prev, [index]: !prev[index] }))} />
@@ -533,8 +537,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                             onChange={(e) => handleAdjustNextPages(index, Number(e.target.value) - 1)}
                             />
                         </p>  
-                      {showHidePages[index] ? (
-                            <>
+                            <Activity mode={showHidePages[index] ? "visible" : "hidden"}>
                                 <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text">Primary information</p>
                                 <InputField label="Page Title" id={`page-title-${index}`} value={page.title} placeholder="Enter page title" onChange={(e) => handleInputChange(e, "pages", index, "title")} error={pageErrors[index]?.title} />
                                 {pageErrors[index]?.title && <p className="text-primary -mt-2 text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.title}</p>}
@@ -604,7 +607,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                                                         <div className="max-w-3/4 md:max-w-none w-full">
                                                                             <InputField label="Add Choice" id={`question-add-choice-${index}-${qIndex}`} value={choiceTextBuffer} placeholder="Enter choice text" onChange={(e) => setChoiceTextBuffer(e.target.value)} />
                                                                         </div>
-                                                                        <Button type={ButtonTypes.SECONDARY} width="fit" onClick={() => handleAddChoice(qIndex, index)} buttonIcon={<TiPlus className="size-3 md:size-4.5"/>} />
+                                                                        <Button type="secondary" width="fit" onClick={() => handleAddChoice(qIndex, index)} buttonIcon={<TiPlus className="size-3 md:size-4.5"/>} />
                                                                     </div>
                                                                     <DropdownMenu options={[{ label: "Yes", value: "true" }, { label: "No", value: "false" }]} value={question.isMultiSelect ? "true" : "false"} onChange={(selected) => handleQuestionChange(qIndex, index, "isMultiSelect", selected === "true")} label="Allow Multiple Answers" />
                                                                     </div>
@@ -639,31 +642,30 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                         </div>
                                     )}
                                 </Droppable>
-                                {branchSections.filter((branch) => branch.formBranch.sourcePage === index).length > 0 && (
-                                    <>
+                                    <Activity mode={branchSections.filter((branch) => branch.formBranch.sourcePage === index).length > 0 ? "visible" : "hidden"}>
                                         {branchSections.filter((branch) => branch.formBranch.sourcePage === index).map((branch) => (
                                             <div className="space-y-2" key={branch.formBranch.id}>
                                                 <BranchInfo setBranchSections={setBranchSections} ref={branch.ref} initialValue={branch.formBranch} />
-                                                {branchSectionErrors[branch.formBranch.id] && (
-                                                    <div className="space-y-2 text-primary text-[12px] md:text-[13px] lg:text-[14px]">
-                                                        {branchSectionErrors[branch.formBranch.id].questionNumber && <p>{branchSectionErrors[branch.formBranch.id].questionNumber}</p>}
-                                                        {branchSectionErrors[branch.formBranch.id].assertOn && <p>{branchSectionErrors[branch.formBranch.id].assertOn}</p>}
-                                                        {branchSectionErrors[branch.formBranch.id].targetPage && <p>{branchSectionErrors[branch.formBranch.id].targetPage}</p>}
-                                                    </div>
-                                                )}
+                                                    <Activity mode ={branchSectionErrors[branch.formBranch.id] ? "visible" : "hidden"}>
+                                                        <div className="space-y-2 text-primary text-[12px] md:text-[13px] lg:text-[14px]">
+                                                            {branchSectionErrors[branch.formBranch.id]?.questionNumber && <p>{branchSectionErrors[branch.formBranch.id].questionNumber}</p>}
+                                                            {branchSectionErrors[branch.formBranch.id]?.assertOn && <p>{branchSectionErrors[branch.formBranch.id].assertOn}</p>}
+                                                            {branchSectionErrors[branch.formBranch.id]?.targetPage && <p>{branchSectionErrors[branch.formBranch.id].targetPage}</p>}
+                                                        </div>
+                                                    </Activity>
                                             </div>
                                         ))}
-                                    </>
-                                )}
+                                    </Activity>
                                 <div className="flex gap-2 md:gap-3 md:justify-start justify-center items-center">
-                                    <Button type={ButtonTypes.PRIMARY} width="small" onClick={() => handleAddQuestion(index)} buttonText="Add Question"/>
-                                    <Button type={ButtonTypes.SECONDARY} width="small" onClick={() => handleAddBranch(index)} buttonText="Add Branch" />
-                                    {clipboard.length > 0 && allowModifiers && <Button type={ButtonTypes.TERTIARY} width="fit" onClick={() => handlePasteQuestions(index)} buttonText={`Paste`} />}
+                                    <Button type="primary" width="small" onClick={() => handleAddQuestion(index)} buttonText="Add Question"/>
+                                    <Button type="secondary" width="small" onClick={() => handleAddBranch(index)} buttonText="Add Branch" />
+                                    {clipboard.length > 0 && allowModifiers && <Button type="tertiary" width="fit" onClick={() => handlePasteQuestions(index)} buttonText={`Paste`} />}
                                 </div>
                                 <p className="text-primary text-[12px] md:text-[13px] lg:text-[14px]">{pageErrors[index]?.questionCount}</p>
-                            </> ) : (
-                            <p className="text-sm text-gray-600">Page is hidden. Click the eye icon to show.</p>
-                        )}
+                            </Activity>
+                            <Activity mode={!showHidePages[index] ? "visible" : "hidden"}>
+                                <p className="text-sm text-gray-600">Page is hidden. Click the eye icon to show.</p>
+                            </Activity>
                         </div>
                 ))
             ) : (
@@ -673,7 +675,7 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                 </>
             )}
             </DragDropContext>
-            <Button type={ButtonTypes.PRIMARY} onClick={() => handleAddPage()} buttonText="Add Page"/>
+            <Button type="primary" onClick={() => handleAddPage()} buttonText="Add Page"/>
         </div>
     )
 });

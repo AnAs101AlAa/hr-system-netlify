@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useParams, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import FormLoadingComponent from "@/components/forms/Loading";
-import type { QuestionCardHandle } from "@/types/form";
+import type { form, QuestionCardHandle } from "@/types/form";
 import { SUBMISSION_CATCHER } from "@/constants/formConstants";
 import { useNavigate } from "react-router-dom";
 import { ErrorScreen, Button } from "tccd-ui";
@@ -30,17 +30,27 @@ export default function FormView() {
     }
   }, [didSubmit, navigate]);
   
-  
-  const { data: formData, isFetching, isError } = useForm(isPreview ? "local" : ID, false);
+  const { data: fetchedForm, isFetching, isError, isSuccess } = useForm(isPreview ? "local" : ID, false);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [, setPageHistory] = useState<number[]>([0]);
-  
+  const [formData, setFormData] = useState<form>(fetchedForm || { id: "", title: "", formType: "", sheetName: "", pages: [], description: "", googleSheetId: "", googleDriveId: "", isClosed: false, createdAt: "", updatedAt: "" });
+  const isFormInitialized = useRef<boolean>(false);
+
   const [answers, setAnswers] = useState<Answer[]>([]);
   const questionRefs = useRef<(QuestionCardHandle | null)[]>([]);
   
   const submitFormMutation = useSubmitForm(ID, formData?.sheetName ?? "Guest");
   const uploadMediaMutation = useUploadSubmissionMedia(ID);
   
+  useEffect(() => {
+    if(!isSuccess || isFormInitialized.current) return;
+    const formCleaned : form = { ...fetchedForm, pages: fetchedForm.pages?.filter((page) => !(page.title === "null" && page.nextPage == -1 && page.description === "nullDescKey")) || [] };
+    setFormData(formCleaned);
+    isFormInitialized.current = true;
+  }, [isSuccess]);
+
+  console.log(formData);
+
   const handleClear = () => {
     if (!formData || !formData.pages) return;
     const questionsOnPage = formData.pages[currentPage].questions;
