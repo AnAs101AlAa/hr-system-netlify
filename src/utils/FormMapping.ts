@@ -107,6 +107,8 @@ export const formRequestMapper = (formData: form) => {
         .filter((q) => q !== undefined),
     }));
 
+    mappedPages.push({pageNumber: mappedPages.length, title: "null", description: "nullDescKey", questions: [{questionType: "Essay", questionNumber: 99999, questionText: "null", isMandatory: false, description: "null"}], nextPage: -1});
+
     const formDataWithBranches: serverRequestForm = {
       googleSheetId: formData.googleSheetId,
       formType: formData.formType,
