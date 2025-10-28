@@ -49,8 +49,6 @@ export default function FormView() {
     isFormInitialized.current = true;
   }, [isSuccess]);
 
-  console.log(formData);
-
   const handleClear = () => {
     if (!formData || !formData.pages) return;
     const questionsOnPage = formData.pages[currentPage].questions;
