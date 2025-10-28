@@ -1,16 +1,14 @@
 import { DropdownMenu, InputField, NumberField, TextAreaField, Button } from "tccd-ui";
 import { IoCaretUp, IoCaretDown, IoTrashSharp, IoLockOpen, IoLockClosed } from "react-icons/io5";
-import type { form, formPage, formPageError, FormBranchHandle, formBranch, formBranchError } from "@/types/form";
 import toast from "react-hot-toast";
-import { QUESTION_TYPES } from "@/constants/formConstants";
-import React, { useState, useEffect, Activity } from "react";
-import BranchInfo from "./BranchInfo";
-import { forwardRef, useImperativeHandle } from "react";
-import { sanitize, addQuestionError} from "@/utils/formBuilderUtils";
-import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
-import type { Question } from "@/types/question";
+import React, { forwardRef, useImperativeHandle, useState, useEffect, Activity } from "react";
 import { TiTick, TiPlus } from "react-icons/ti";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
+import type { form, FormBranchHandle } from "@/types/form";
+import { QUESTION_TYPES } from "@/constants/formConstants";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import BranchInfo from "./BranchInfo";
+import useFormEditorHandlers from "@/utils/formEditor/formEditorUtils";
 
 interface PagesInfoProps {
     formDataState: form;
@@ -22,23 +20,21 @@ interface PagesInfoProps {
 }
 
 const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChange, setQuestionCount, isFetchSuccessful }: PagesInfoProps, ref) => {
-    const [choiceTextBuffer, setChoiceTextBuffer] = useState<string>("");
-    const [pageErrors, setPageErrors] = useState<{[index: number]: formPageError}>({});
-    const [showHidePages, setShowHidePages] = useState<{[index: number]: boolean}>({});
-    const [mainError, setMainError] = useState<string>("");
     const [allowModifiers, setAllowModifiers] = useState<boolean>(true);
-    const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
-    const [clipboard, setClipboard] = useState<Question[]>([]);
-    const [branchSections, setBranchSections] = useState<{formBranch: formBranch, ref: React.RefObject<FormBranchHandle | null>}[]>([]);
-    const [branchSectionErrors, setBranchSectionErrors] = useState<{[branchId: string]: formBranchError}>({});
     const isInitialized = React.useRef(false);
 
+    const { handleAddPage, handleDeletePage, handleMovePage, handleAddChoice, handleRemoveChoice, handleDragEnd,
+            handleAddBranch, handleMoveChoice, handleRemoveQuestion, handleAddQuestion, handlePasteQuestions,
+            handleQuestionChange, handleAdjustNextPages, clipboard, branchSections, setBranchSections, setClipboard,
+            choiceTextBuffer, setChoiceTextBuffer, selectedQuestions, showHidePages, setShowHidePages, setSelectedQuestions,
+            validatePages, pageErrors, mainError, branchSectionErrors } = useFormEditorHandlers(formDataState, setFormDataState, setQuestionCount);
+    
     useEffect(() => {
         if(Object.keys(showHidePages).length === 0) {
             setShowHidePages(formDataState.pages ? formDataState.pages.reduce((acc, _, idx) => ({ ...acc, [idx]: true }), {}) : {});
         }
     }, [formDataState.pages]);
-
+        
     useEffect(() => {
     if (!isFetchSuccessful || isInitialized.current || !formDataState.pages || formDataState.pages.length === 0) return;
 
@@ -102,394 +98,6 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [selectedQuestions, clipboard]);
 
-    const handlePasteQuestions = (pageIndex: number) => {
-        if (clipboard.length === 0) {
-            toast.error("Clipboard is empty");
-            return;
-        }
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            const updatedPages = [...prev.pages];
-            const newQuestions = clipboard.map((q) => ({ ...q, id: crypto.randomUUID() }));
-            const questions = [...(updatedPages[pageIndex].questions || []), ...newQuestions];
-            let newQuestionNumber = 1;
-            const reindexedPages = updatedPages.map((page, idx) => {
-            const qs = idx === pageIndex ? questions : (page.questions || []);
-            return {
-                ...page,
-                questions: qs.map(q => ({ ...q, questionNumber: newQuestionNumber++ })),
-            };
-            });
-            setQuestionCount(newQuestionNumber - 1);
-            setClipboard([]);
-            setSelectedQuestions([]);
-            return { ...prev, pages: reindexedPages };
-        });
-    }
-
-    const handleAddPage = () => {
-        setFormDataState((prev) => {
-            if (!prev) return prev;
-            const newPage: formPage = {title: `Page ${prev.pages ? prev.pages.length + 1 : 1}`, nextPage: 0, description: "", questions: []};
-            return { ...prev, pages: [...(prev.pages || []), newPage] };
-        });
-        setShowHidePages((prev) => ({ ...prev, [Object.keys(prev).length]: true }));
-    }
-
-    const handleDeletePage = (pageIndex: number) => {
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            // Remove the page
-            const updatedPages = [...prev.pages];
-            updatedPages.splice(pageIndex, 1);
-
-            // Reindex questionNumber across all pages
-            let newQuestionCount = 0;
-            const reindexedPages = updatedPages.map((page) => {
-                const questions = (page.questions || []).map((q) => ({
-                    ...q,
-                    questionNumber: ++newQuestionCount,
-                }));
-                return { ...page, questions };
-            });
-
-            setQuestionCount(newQuestionCount);
-
-            return { ...prev, pages: reindexedPages };
-        });
-
-        setShowHidePages((prev) => {
-            const newState = { ...prev };
-            newState[pageIndex] = !newState[pageIndex];
-            return newState;
-        });
-    };
-    
-    const handleMovePage = (pageIndex: number, direction: "up" | "down") => {
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            const updatedPages = [...prev.pages];
-            const [movedPage] = updatedPages.splice(pageIndex, 1);
-            updatedPages.splice(direction === "up" ? pageIndex - 1 : pageIndex + 1, 0, movedPage);
-
-            let newQuestionNumber = 1;
-            const reindexedPages = updatedPages.map(page => ({
-                ...page,
-                questions: (page.questions || []).map(q => ({
-                    ...q,
-                    questionNumber: newQuestionNumber++,
-                })),
-            }));
-            return { ...prev, pages: reindexedPages };
-        });
-
-        setShowHidePages((prev) => {
-            const newState = { ...prev };
-            if(direction === "up") {
-                const temp = newState[pageIndex - 1];
-                newState[pageIndex - 1] = prev[pageIndex];
-                newState[pageIndex] = temp;
-            } else {
-                const temp = newState[pageIndex + 1];
-                newState[pageIndex] = prev[pageIndex + 1];
-                newState[pageIndex + 1] = temp;
-            }
-            return newState;
-        });
-    };
-
-    const handleAddQuestion = (pageIndex: number) => {
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            const updatedPages = [...prev.pages];
-            const questions = [...(updatedPages[pageIndex].questions || [])];
-            questions.push({ questionNumber: 0, questionText: "", questionType: "Essay", isMandatory: false, id: crypto.randomUUID() });
-            // Reindex questionNumber for all questions in all pages
-            let newQuestionNumber = 1;
-            const reindexedPages = updatedPages.map((page, idx) => {
-                const qs = idx === pageIndex ? questions : (page.questions || []);
-                return {
-                    ...page,
-                    questions: qs.map(q => ({ ...q, questionNumber: newQuestionNumber++ })),
-                };
-            });
-            setQuestionCount(newQuestionNumber - 1);
-            return { ...prev, pages: reindexedPages };
-        });
-    }
-
-    const handleRemoveQuestion = (pageIndex: number, questionIndex: number) => {
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            const updatedPages = [...prev.pages];
-            const questions = (updatedPages[pageIndex].questions || []).filter((_, idx) => idx !== questionIndex);
-
-            let newQuestionNumber = 1;
-            const reindexedPages = updatedPages.map((page, idx) => {
-                const qs = idx === pageIndex ? questions : (page.questions || []);
-                return {
-                    ...page,
-                    questions: qs.map(q => ({ ...q, questionNumber: newQuestionNumber++ })),
-                };
-            });
-
-            setQuestionCount(newQuestionNumber - 1);
-            return { ...prev, pages: reindexedPages };
-        });
-    }
-
-    const handleQuestionChange = (index: number, pageIndex: number, field: string, value: string | string[] | boolean | number | null) => {
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            if (value === null) {
-                const updatedPages = [...prev.pages];
-                const updatedQuestions = [...(updatedPages[pageIndex].questions || [])];
-                delete (updatedQuestions[index] as any)[field];
-                updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
-                return { ...prev, pages: updatedPages };
-            } else {
-                const updatedPages = [...prev.pages];
-                const updatedQuestions = [...(updatedPages[pageIndex].questions || [])];
-                updatedQuestions[index] = { ...updatedQuestions[index], [field]: value };
-                updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
-                return { ...prev, pages: updatedPages };
-            }
-        });
-    }
-
-    const handleAddChoice = (questionIndex: number, pageIndex: number) => {
-        if (choiceTextBuffer.trim() === "") {
-            toast.error("Choice text cannot be empty");
-            return;
-        }
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            const updatedPages = [...prev.pages];
-            const updatedQuestions = [...(updatedPages[pageIndex].questions || [])];
-            const question = updatedQuestions[questionIndex];
-            if (question.questionType !== "MCQ") {
-                toast.error("Choices can only be added to MCQ type questions");
-                return prev;
-            }
-            const newChoice = { text: choiceTextBuffer, choiceNumber: (question.choices ? question.choices.length : 0) + 1 };
-            updatedQuestions[questionIndex] = { ...question, choices: [...(question.choices || []), newChoice] };
-            updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
-            return { ...prev, pages: updatedPages };
-        });
-        setChoiceTextBuffer("");
-    }
-
-    const handleRemoveChoice = (questionIndex: number, pageIndex: number, choiceIndex: number) => {
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            const updatedPages = [...prev.pages];
-            const updatedQuestions = [...(updatedPages[pageIndex].questions || [])];
-            const question = updatedQuestions[questionIndex];
-            if (question.questionType !== "MCQ" || !question.choices) {
-                toast.error("Invalid operation");
-                return prev;
-            }
-            // Remove the choice and reassign choiceNumber
-            const updatedChoices = question.choices
-                .filter((_, idx) => idx !== choiceIndex)
-                .map((choice, idx) => ({ ...choice, choiceNumber: idx + 1 }));
-            updatedQuestions[questionIndex] = { ...question, choices: updatedChoices };
-            updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
-            return { ...prev, pages: updatedPages };
-        });
-    }
-
-    const handleMoveChoice = (questionIndex: number, pageIndex: number, choiceIndex: number, direction: "up" | "down") => {
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-            const updatedPages = [...prev.pages];
-            const updatedQuestions = [...(updatedPages[pageIndex].questions || [])];
-            const question = updatedQuestions[questionIndex];
-            if (question.questionType !== "MCQ" || !question.choices) {
-                toast.error("Invalid operation");
-                return prev;
-            }
-            const choices = [...question.choices];
-            const [movedChoice] = choices.splice(choiceIndex, 1);
-            choices.splice(direction === "up" ? choiceIndex - 1 : choiceIndex + 1, 0, movedChoice);
-            // Reassign choiceNumber
-            const reindexedChoices = choices.map((choice, idx) => ({ ...choice, choiceNumber: idx + 1 }));
-            updatedQuestions[questionIndex] = { ...question, choices: reindexedChoices };
-            updatedPages[pageIndex] = { ...updatedPages[pageIndex], questions: updatedQuestions };
-            return { ...prev, pages: updatedPages };
-        })
-    };
-
-    const validatePages = (): { hasErrors: boolean; pages: formPage[] } => {
-        const currentPageErrors: formPageError[] = [];
-        const currentBranchErrors: {[branchId: string]: formBranchError} = {};
-
-
-        const sanitizedPages: formPage[] = formDataState.pages?.map((page) => ({ ...page, questions: page.questions?.map((q) => sanitize(q, q.questionType)) })) || [];
-        const branchFixedPages: formPage[] = [];
-
-        if (!formDataState.pages || formDataState.pages.length === 0) {
-            setMainError("At least one page is required.");
-            return { hasErrors: true, pages: [] };
-        }
-
-        sanitizedPages.forEach((page, pIndex) => {
-            if (!page.title || page.title.trim() === "") {
-            currentPageErrors[pIndex] = {
-                ...(currentPageErrors[pIndex] || {}),
-                title: "Page title is required.",
-            };
-            }
-
-            if (!page.questions || page.questions.length === 0) {
-            currentPageErrors[pIndex] = {
-                ...(currentPageErrors[pIndex] || {}),
-                questionCount: "At least one question is required on this page.",
-            };
-            }
-
-            page.questions?.forEach((question, qIndex) => {
-                if (!question.questionText || question.questionText.trim() === "") {
-                    addQuestionError(currentPageErrors, pIndex, qIndex, {
-                    questionText: "Question text is required.",
-                    });
-                }
-                if (!question.questionType || !QUESTION_TYPES.includes(question.questionType)) {
-                    addQuestionError(currentPageErrors, pIndex, qIndex, {
-                    questionType: "Invalid question type.",
-                    });
-                }
-                if (question.questionType === "MCQ" && (!question.choices || question.choices.length === 0)) {
-                    addQuestionError(currentPageErrors, pIndex, qIndex, {
-                    choices: "Question must have at least one choice.",
-                    });
-                }
-            });
-
-            const collectedBranches : formBranch[] = [];
-
-            branchSections.filter(branch => branch.formBranch.sourcePage === pIndex).forEach(branchSection => {
-                const branchInfoRef = branchSection.ref;
-                const selectedQuestionNumber = branchInfoRef.current?.fetchQuestionNumber();
-                let branchData = null;
-
-                const questionAnswers = selectedQuestionNumber ? page.questions.filter(q => q.questionNumber == selectedQuestionNumber).map(q => {
-                    if(q.questionType === "MCQ" && q.choices) {
-                        return q.choices.map(c => c.text);
-                    } else {
-                        return q.questionText ? [q.questionText] : [];
-                    }
-                }) : [];
-
-                branchData = branchInfoRef.current?.collect(questionAnswers.flat());
-
-                if (branchData?.questionNumber === undefined || isNaN(branchData.questionNumber) || branchData.questionNumber <= 0) {
-                    currentBranchErrors[branchSection.formBranch.id] = {
-                        ...(currentBranchErrors[branchSection.formBranch.id] || {}),
-                        questionNumber: "Has a branch with an invalid question number.",
-                    };
-                }
-
-                if (branchData?.targetPage === undefined || isNaN(branchData.targetPage) || branchData.targetPage <= 0 || branchData.targetPage > sanitizedPages.length + 1) {
-                    currentBranchErrors[branchSection.formBranch.id] = {
-                        ...(currentBranchErrors[branchSection.formBranch.id] || {}),
-                        targetPage: "Has a branch with an invalid target page.",
-                    };
-                }
-
-                if (!branchData?.assertOn || branchData.assertOn.trim() === "") {
-                    currentBranchErrors[branchSection.formBranch.id] = {
-                        ...(currentBranchErrors[branchSection.formBranch.id] || {}),
-                        assertOn: "Has a branch with empty assert-on value.",
-                    };
-                }
-
-                if (branchData?.questionNumber !== undefined && (branchData?.questionNumber > page.questions.length || branchData.questionNumber <= 0)) {
-                    currentBranchErrors[branchSection.formBranch.id] = {
-                        ...(currentBranchErrors[branchSection.formBranch.id] || {}),
-                        questionNumber: "Question Number for branching is out of the page's bounds.",
-                    };
-                }
-
-                collectedBranches.push(branchData || { questionNumber: 0, assertOn: "", targetPage: 0, sourcePage: pIndex, id: branchSection.formBranch.id });
-            });
-
-            const fixedPage = { ...page, toBranch: collectedBranches.length > 0 ? collectedBranches : undefined };
-            branchFixedPages.push(fixedPage);
-        });
-
-        setPageErrors(currentPageErrors);
-        setBranchSectionErrors(currentBranchErrors);
-        setFormDataState((prev) => ({ ...prev, pages: branchFixedPages }));
-        return { hasErrors: currentPageErrors.length !== 0 || Object.keys(currentBranchErrors).length > 0, pages: branchFixedPages };
-    };
-
-    const handleAddBranch = (pageIndex: number) => {
-        setBranchSections((prev) => {
-            const newBranch: {formBranch: formBranch, ref: React.RefObject<FormBranchHandle | null>} = {formBranch: { questionNumber: 0, assertOn: "", targetPage: 0, sourcePage: pageIndex, id: crypto.randomUUID() }, ref: React.createRef<FormBranchHandle | null>()};
-            return [...prev, newBranch];
-        });
-    }
-
-    const handleDragEnd = (result : DropResult) => {
-        const { source, destination } = result;
-
-        // dropped outside any droppable area
-        if (!destination) return;
-
-        const sourcePageIndex = parseInt(source.droppableId.split("-")[1], 10);
-        const destPageIndex = parseInt(destination.droppableId.split("-")[1], 10);
-
-        // nothing changed
-        if (
-            sourcePageIndex === destPageIndex &&
-            source.index === destination.index
-        ) {
-            return;
-        }
-
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-
-            const updatedPages = prev.pages.map((p) => ({ ...p, questions: [...(p.questions || [])] }));
-
-            const [movedQuestion] = updatedPages[sourcePageIndex].questions.splice(source.index, 1);
-
-            updatedPages[destPageIndex].questions.splice(destination.index, 0, movedQuestion);
-
-            let globalCounter = 1;
-            const pagesWithReindexedQuestions = updatedPages.map((page) => {
-            const reindexed = page.questions.map((q) => {
-                return { ...q, questionNumber: globalCounter++ };
-            });
-            return { ...page, questions: reindexed };
-            });
-
-            return {
-            ...prev,
-            pages: pagesWithReindexedQuestions,
-            };
-        });
-    };
-
-    const handleAdjustNextPages = (pageIndex: number, value: number) => {
-        setFormDataState((prev) => {
-            if (!prev || !prev.pages) return prev;
-
-            const updatedPages = prev.pages.map((page, index) => {
-                if (index === pageIndex) {
-                    return { ...page, nextPage: value };
-                }
-                return page;
-            });
-
-            return {
-                ...prev,
-                pages: updatedPages,
-            };
-        });
-    };
-
     useImperativeHandle(ref, () => ({
         collect: validatePages
     }));
@@ -531,9 +139,9 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                             <input
                             placeholder="0"
                             type="number"
-                            style={{ width: `${Math.max(12 * (page.nextPage.toString().length) + 14, 26)}px`, MozAppearance: "textfield" }}
+                            style={{ width: `${Math.max(13 * ((page.nextPage + 1).toString().length) + 14, 27)}px`, MozAppearance: "textfield" }}
                             className="shadow-md bg-white rounded-lg text-center focus:border-primary border-gray-300 border transition-colors duration-200 outline-none text-contrast"
-                            value={page.nextPage + 1}
+                            value={page.nextPage === -1 ? "" : page.nextPage + 1}
                             onChange={(e) => handleAdjustNextPages(index, Number(e.target.value) - 1)}
                             />
                         </p>  
@@ -646,13 +254,13 @@ const PagesInfo = forwardRef(({ formDataState, setFormDataState, handleInputChan
                                         {branchSections.filter((branch) => branch.formBranch.sourcePage === index).map((branch) => (
                                             <div className="space-y-2" key={branch.formBranch.id}>
                                                 <BranchInfo setBranchSections={setBranchSections} ref={branch.ref} initialValue={branch.formBranch} />
-                                                    <Activity mode ={branchSectionErrors[branch.formBranch.id] ? "visible" : "hidden"}>
+                                                    {branchSectionErrors[branch.formBranch.id] && (
                                                         <div className="space-y-2 text-primary text-[12px] md:text-[13px] lg:text-[14px]">
-                                                            {branchSectionErrors[branch.formBranch.id]?.questionNumber && <p>{branchSectionErrors[branch.formBranch.id].questionNumber}</p>}
-                                                            {branchSectionErrors[branch.formBranch.id]?.assertOn && <p>{branchSectionErrors[branch.formBranch.id].assertOn}</p>}
-                                                            {branchSectionErrors[branch.formBranch.id]?.targetPage && <p>{branchSectionErrors[branch.formBranch.id].targetPage}</p>}
+                                                            {branchSectionErrors[branch.formBranch.id]?.questionNumber !== "" && <p>{branchSectionErrors[branch.formBranch.id].questionNumber}</p>}
+                                                            {branchSectionErrors[branch.formBranch.id]?.assertOn !== "" && <p>{branchSectionErrors[branch.formBranch.id].assertOn}</p>}
+                                                            {branchSectionErrors[branch.formBranch.id]?.targetPage !== "" && <p>{branchSectionErrors[branch.formBranch.id].targetPage}</p>}
                                                         </div>
-                                                    </Activity>
+                                                    )}
                                             </div>
                                         ))}
                                     </Activity>
