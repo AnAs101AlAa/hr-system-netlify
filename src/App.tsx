@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import routes from "./routing/Routes";
+import routes from "@/shared/routing/Routes";
 import { Toaster } from "react-hot-toast";
-import MemberRoute from "./routing/ProtectedRoutes";
+import MemberRoute from "@/shared/routing/ProtectedRoutes";
 
 function App() {
   return (
