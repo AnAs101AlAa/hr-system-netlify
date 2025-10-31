@@ -9,8 +9,8 @@ import { toast } from "react-hot-toast";
 export default function FormAccessList({ isOpen, onClose, formId }: { isOpen: boolean; onClose: () => void; formId: string }) {
     const [nameKey, setNameKey] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const { data: accessList, isLoading, isError, refetch: refetchAccessList } = useFormAccessList(formId, nameKey, currentPage, 10);
-    const { data: members } = useGetHRUsers(nameKey, currentPage, 10);
+    const { data: accessList, isError: isAccessListError, refetch: refetchAccessList } = useFormAccessList(formId, nameKey, 1, 100);
+    const { data: members, isLoading, isError: isMembersError } = useGetHRUsers(nameKey, currentPage, 10);
     const grantFormAccessMutation = useGrantFormAccess();
     const revokeFormAccessMutation = useRevokeFormAccess();
 
@@ -50,10 +50,10 @@ export default function FormAccessList({ isOpen, onClose, formId }: { isOpen: bo
                     <div className="shadow-md bg-white rounded-lg w-full mt-4 pb-4">
                         <div className="overflow-x-auto max-h-[465px]">
                             {isLoading ? (
-                                <p className="p-4">Loading...</p>
-                            ) : isError ? (
-                                <p className="p-4">Error loading access list.</p>
-                            ) : members.length > 0 ? (
+                                <p className="p-4 text-center">Loading...</p>
+                            ) : (isAccessListError || isMembersError) ? (
+                                <p className="p-4 text-center">Error loading access list.</p>
+                            ) : members?.length > 0 ? (
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
                                     <tr>
@@ -84,7 +84,7 @@ export default function FormAccessList({ isOpen, onClose, formId }: { isOpen: bo
                                 <p className="p-4 text-center">No users found.</p>
                             )}
                         </div>
-                        {members && members.length > 0 && !isLoading && !isError && (
+                        {members && members?.length > 0 && !isLoading && !isMembersError && !isAccessListError && (
                             <div className="flex justify-center gap-2 items-center mt-4">
                                 <FaChevronLeft className={`cursor-pointer ${currentPage === 1 ? "text-gray-300" : "text-gray-700"}`} onClick={() => {
                                     if (currentPage > 1) setCurrentPage(currentPage - 1);
