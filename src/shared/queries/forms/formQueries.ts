@@ -14,6 +14,7 @@ const formKeys = {
     deleteForm: (formId: string) => [...formKeys.getForm(formId), "deleteForm"] as const,
     updateForm: (formId: string) => [...formKeys.getForm(formId), "updateForm"] as const,
     modifyFormStatus: () => [...formKeys.all, "modifyFormStatus"] as const,
+    getFormAccessList: (formId: string, nameKey: string, page: number, count: number) => [...formKeys.getForm(formId), "accessList", { nameKey, page, count }] as const,
 }
 
 export const useForms = (page: number, count: number, createdAfter: string, searchKey: string, selectedType: string, sortBy: string): UseQueryResult<form[], Error> => {
@@ -111,6 +112,32 @@ export const useUploadSubmissionMedia = (formId: string) => {
                 uploadUrls.push(formAPI.uploadSubmissionMedia(formId, file));
             });
             return Promise.all(uploadUrls);
+        },
+    });
+};
+
+export const useFormAccessList = (formId: string, nameKey: string, page: number, count: number): UseQueryResult<any, Error> => {
+    return useQuery({
+        queryKey: formKeys.getFormAccessList(formId, nameKey, page, count),
+        queryFn: async () => {
+            const data = await formAPI.getFormAccessList(formId, nameKey, page, count);
+            return data.data;
+        },
+    });
+};
+
+export const useGrantFormAccess = () => {
+    return useMutation({
+        mutationFn: ({ formId, userId }: { formId: string; userId: string }) => {
+            return formAPI.grantFormAccess(formId, userId);
+        },
+    });
+};
+
+export const useRevokeFormAccess = () => {
+    return useMutation({
+        mutationFn: ({ formId, userId }: { formId: string; userId: string }) => {
+            return formAPI.revokeFormAccess(formId, userId);
         },
     });
 };

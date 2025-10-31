@@ -74,7 +74,6 @@ export default function useFormEditorHandlers(formDataState: form, setFormDataSt
     };
 
     const handleAdjustNextPages = (pageIndex: number, value: number) => {
-        console.log("Adjusting next page of page index", pageIndex, "to", value);
         setFormDataState((prev: form) => {
             if (!prev || !prev.pages) return prev;
 

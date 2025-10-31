@@ -18,7 +18,7 @@ export async function getForms(page: number, count: number, createdAfter: string
     }
   }
 
-  const params: Record<string, any> = {
+  const params: Record<string, string | number> = {
     page,
     count,
   };
@@ -86,4 +86,26 @@ export async function uploadSubmissionMedia(formId: string, media: File) {
   );
 
   return response.data.data.webUrl;
+}
+
+export async function getFormAccessList(formId: string, nameKey: string, page: number, count: number) {
+  const params: Record<string, string | number> = {
+    page,
+    count
+  };
+
+  if (nameKey) params.Name = nameKey;
+
+  const response = await systemApi.get(`${FORMS_API_URL}Access/${formId}`, {params});
+  return response.data.data;
+}
+
+export async function grantFormAccess(formId: string, userId: string) {
+  const response = await systemApi.post(`${FORMS_API_URL}Access`, { formId, userId });
+  return response.data;
+}
+
+export async function revokeFormAccess(formId: string, userId: string) {
+  const response = await systemApi.delete(`${FORMS_API_URL}Access/${formId}/${userId}`);
+  return response.data;
 }

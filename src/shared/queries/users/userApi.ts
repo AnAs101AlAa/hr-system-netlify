@@ -24,4 +24,18 @@ export class UserApi {
     const { data } = await systemApi.get(`/v1/Members/${userId}`);
     return data.data; // Access the nested data property
   }
+
+  async getHRUsers(nameKey: string, page: number, count: number) {
+    const params: Record<string, string | number> = {
+      PageNumber: page,
+      PageSize: count,
+    };
+
+    if (nameKey) {
+      params.Name = nameKey;
+    }
+
+    const { data } = await systemApi.get(`/v1/User/HR`, { params });
+    return data.data.data;
+  }
 }

@@ -10,6 +10,7 @@ export const userKeys = {
   session: () => [...userKeys.all, "session"] as const,
   login: () => [...userKeys.all, "login"] as const,
   logout: () => [...userKeys.all, "logout"] as const,
+  getHRUsers: (nameKey: string, page: number, count: number) => [...userKeys.all, "HR", { nameKey, page, count }] as const,
 };
 
 const userApiInstance = new UserApi();
@@ -74,5 +75,12 @@ export const useSession = () => {
     queryKey: userKeys.session(),
     queryFn: () => userApiInstance.session(),
     staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useGetHRUsers = (nameKey: string, page: number, count: number) => {
+  return useQuery({
+    queryKey: userKeys.getHRUsers(nameKey, page, count),
+    queryFn: () => userApiInstance.getHRUsers(nameKey, page, count),
   });
 };
