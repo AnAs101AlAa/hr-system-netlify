@@ -5,7 +5,7 @@ import "./index.css";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import App from "./App";
-import store, { persistor } from "./redux/store/store";
+import store, { persistor } from "@/shared/redux/store/store";
 
 const queryClient = new QueryClient({
   defaultOptions: {

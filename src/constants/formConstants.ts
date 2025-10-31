@@ -1,4 +1,4 @@
-import type { DateQuestion, MCQQuestion, EssayQuestion, NumberQuestion, UploadQuestion } from "@/types/question";
+import type { DateQuestion, MCQQuestion, EssayQuestion, NumberQuestion, UploadQuestion } from "@/shared/types/question";
 
 const SUBMISSION_CATCHER = {
     title: "finished",
