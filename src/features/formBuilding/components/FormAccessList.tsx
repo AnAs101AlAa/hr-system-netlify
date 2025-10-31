@@ -74,7 +74,7 @@ export default function FormAccessList({ isOpen, onClose, formId }: { isOpen: bo
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{member.name}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{member.committee}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                <Button loading={grantFormAccessMutation.isPending || revokeFormAccessMutation.isPending} type="primary" buttonText={accessList?.find((user : MemberData) => user.id === member.id) ? "Remove Access" : "Grant Access"} onClick={() => handleAccessManagement(member.id, accessList?.find((user : MemberData) => user.id === member.id) ? "revoke" : "grant")} />
+                                                <Button loading={grantFormAccessMutation.isPending || revokeFormAccessMutation.isPending} type={accessList?.find((user : MemberData) => user.id === member.id) ? "secondary" : "primary"} buttonText={accessList?.find((user : MemberData) => user.id === member.id) ? "Remove Access" : "Grant Access"} onClick={() => handleAccessManagement(member.id, accessList?.find((user : MemberData) => user.id === member.id) ? "revoke" : "grant")} />
                                             </td>
                                         </tr>
                                     ))}

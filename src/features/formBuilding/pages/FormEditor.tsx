@@ -176,15 +176,13 @@ export default function FormEditor() {
             )}
             <div className="min-h-screen bg-background p-3 md:p-4">
                 <div className="max-w-6xl mx-auto">
-                    <div className="flex justify-between items-center mb-4  ">
-                        <div>
-                            <h1 className="lg:text-[24px] md:text-[22px] text-[20px] font-bold">{isEditMode ? `Edit Form` : "Create New Form"}</h1>
-                            <p className=" text-secondary"> {isEditMode ? `Modify the form details and questions as needed.` : "Fill in the details below to create a new form."} </p>
-                        </div>
+                    <div className="flex justify-between items-center">
+                        <h1 className="lg:text-[24px] text-[22px] font-bold">{isEditMode ? `Edit Form` : "Create New Form"}</h1>
                         {isEditMode && userRoles.includes("Admin") && (
-                            <Button type={ButtonTypes.SECONDARY} onClick={() => setIsAccessListOpen(true)} buttonText="Manage Access" />
+                            <Button type={ButtonTypes.SECONDARY} onClick={() => setIsAccessListOpen(true)} buttonText="Manage Access" width="auto" />
                         )}
                     </div>
+                    <p className=" text-secondary my-4"> {isEditMode ? `Modify the form details and questions as needed.` : "Fill in the details below to create a new form."} </p>
 
                     <div className="space-y-6">
                         <MainInfo handleInputChange={handleInputChange} formDataState={formDataState} ref={mainSectionRef} />
