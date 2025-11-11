@@ -182,6 +182,10 @@ export default function FormView() {
     
   }, [currentPage, formData, answers]);
 
+  if(formData?.isClosed && !isPreview) {
+      return <FormLockedPage />;
+    }
+    
   return (
     <div className="min-h-screen pb-4 md:pb-10 md:pt-4">
       {isFetching && <FormLoadingComponent />}
@@ -190,9 +194,6 @@ export default function FormView() {
           title="Error Loading Form"
           message="We encountered an error while loading this form, Please try again later."
         />
-      )}
-      {(formData?.isClosed && !isPreview) && (
-        <FormLockedPage />
       )}
 
       {formData && formData.pages && (
