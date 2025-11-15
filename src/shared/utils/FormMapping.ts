@@ -25,7 +25,7 @@ export const formBranchMapper = (
           mappedBranches.push({
             sourcePageNumber: branch.sourcePage,
             questionNumber: branch.questionNumber,
-            assertOn: branch.assertOn,
+            assertOn: branch.assertOn.trim(),
             targetPageNumber: branch.targetPage,
           });
         });
@@ -40,8 +40,8 @@ export const formRequestMapper = (formData: form) => {
     ) as serverResponseBranch[];
 
     const mappedPages = formData.pages?.map((page, index) => ({
-      title: page.title,
-      description: StringTagFormatter(page.description) as string,
+      title: page.title.trim(),
+      description: StringTagFormatter(page.description?.trim()) as string,
       pageNumber: index,
       nextPage: Number(page.nextPage),
       questions: page.questions
@@ -51,7 +51,7 @@ export const formRequestMapper = (formData: form) => {
               return {
                 questionType: "Essay",
                 questionNumber: q.questionNumber,
-                questionText: q.questionText,
+                questionText: q.questionText.trim(),
                 description: StringTagFormatter(q.description),
                 isMandatory: q.isMandatory,
                 ...(q.maxLength !== undefined ? { maxLength: q.maxLength } : {}),
@@ -64,10 +64,10 @@ export const formRequestMapper = (formData: form) => {
               return {
                 questionType: "MCQ",
                 questionNumber: q.questionNumber,
-                questionText: q.questionText,
+                questionText: q.questionText.trim(),
                 description: StringTagFormatter(q.description),
                 isMandatory: q.isMandatory,
-                choices: q.choices,
+                choices: q.choices.map((choice) => ({...choice, text: choice.text.trim()})),
                 isMultiSelect: q.isMultiSelect,
               } satisfies MCQQuestion;
 
@@ -75,7 +75,7 @@ export const formRequestMapper = (formData: form) => {
               return {
                 questionType: "Date",
                 questionNumber: q.questionNumber,
-                questionText: q.questionText,
+                questionText: q.questionText.trim(),
                 description: StringTagFormatter(q.description),
                 isMandatory: q.isMandatory,
               } satisfies DateQuestion;
@@ -84,7 +84,7 @@ export const formRequestMapper = (formData: form) => {
               return {
                 questionType: "Number",
                 questionNumber: q.questionNumber,
-                questionText: q.questionText,
+                questionText: q.questionText.trim(),
                 description: StringTagFormatter(q.description),
                 isMandatory: q.isMandatory,
               } satisfies NumberQuestion;
@@ -92,7 +92,7 @@ export const formRequestMapper = (formData: form) => {
               return {
                 questionType: "Upload",
                 questionNumber: q.questionNumber,
-                questionText: q.questionText,
+                questionText: q.questionText.trim(),
                 description: StringTagFormatter(q.description),
                 isMandatory: q.isMandatory,
                 maxFileSizeMB: q.maxFileSizeMB,
@@ -110,12 +110,12 @@ export const formRequestMapper = (formData: form) => {
     mappedPages.push({pageNumber: mappedPages.length, title: "null", description: "nullDescKey", questions: [{questionType: "Essay", questionNumber: 99999, questionText: "null", isMandatory: false, description: "null"}], nextPage: -1});
 
     const formDataWithBranches: serverRequestForm = {
-      googleSheetId: formData.googleSheetId,
+      googleSheetId: formData.googleSheetId.trim(),
       formType: formData.formType,
-      googleDriveId: formData.googleDriveId,
+      googleDriveId: formData.googleDriveId?.trim() ?? "",
       pages: mappedPages || [],
       branches: mappedBranches,
-      title: formData.title,
+      title: formData.title.trim(),
       isClosed: formData.isClosed,
       sheetName: formData.sheetName,
       description: StringTagFormatter(formData.description) as string,
