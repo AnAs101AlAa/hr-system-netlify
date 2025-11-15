@@ -94,7 +94,7 @@ export default function FormView() {
       const branches = formData.pages[currentPage].toBranch;
       if (branches && branches.length > 0) {
         const currentAnswer = answerArray.find((a) => branches.some(b => b.questionNumber === a.qid));
-        const selectedBranch: formBranch = branches.filter(b => { return b.sourcePage === currentPage && b.questionNumber === currentAnswer?.qid })[0];
+        const selectedBranch: formBranch = branches.filter(b => { return b.sourcePage === currentPage && b.assertOn === currentAnswer?.answer })[0];
         
         const currentQuestion = formData.pages[currentPage].questions.filter(q => q.questionNumber === currentAnswer?.qid)[0];
         const answersToAssert = currentAnswer ? branchAssertionFormatter(selectedBranch.assertOn) : [];
