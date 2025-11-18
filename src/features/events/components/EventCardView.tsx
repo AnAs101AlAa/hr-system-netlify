@@ -1,40 +1,43 @@
-import type { Team } from "@/shared/types/judgingSystem";
 import { Button } from "tccd-ui";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { IoTrashSharp } from "react-icons/io5";
 import { FaEdit } from "react-icons/fa";
-import TeamDeleteModal from "./TeamDeleteModal";
+import { TbListDetails } from "react-icons/tb";
 import { useSelector } from "react-redux";
+import type { Event } from "@/shared/types/event";
+import { format } from "@/shared/utils";
+import EventDeleteModal from "./EventDeleteModal";
 
-interface TeamCardViewProps {
-  teams: Team[];
-  setOpenModal: (teamData: Team) => void;
+interface EventCardViewProps {
+  events: Event[];
+  setOpenModal: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const TeamCardView = ({
-  teams,
+  events,
   setOpenModal
-}: TeamCardViewProps) => {
+}: EventCardViewProps) => {
   const navigate = useNavigate();
   const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
   const [showDeleteModal, setShowDeleteModal] = useState("");
-  const [displayedTeams, setDisplayedTeams] = useState<Team[]>(teams);
+  const [displayedEvents, setDisplayedEvents] = useState<Event[]>(events);
   
   useEffect(() => {
-    setDisplayedTeams(teams);
-  }, [teams]);
+    setDisplayedEvents(events);
+  }, [events]);
 
   return (
     <div className="lg:hidden divide-y divide-gray-100">
-      <TeamDeleteModal showModal={showDeleteModal} setShowModal={setShowDeleteModal} />
-      {displayedTeams && displayedTeams.length > 0 ? (
-        displayedTeams.map((team, index) => (
-          <div key={team.id || index} className="p-4 space-y-3">
+      <EventDeleteModal eventId={showDeleteModal} isOpen={!!showDeleteModal} onClose={() => setShowDeleteModal("")} />
+        
+      {displayedEvents && displayedEvents.length > 0 ? (
+        displayedEvents.map((event, index) => (
+          <div key={event.id || index} className="p-4 space-y-3">
             <div className="flex justify-between items-start">
               <div>
                 <p className="font-semibold text-contrast text-[18px] md:text-[20px]">
-                  {team.name || "N/A"}
+                  {event.title || "N/A"}
                 </p>
               </div>
             </div>
@@ -42,53 +45,50 @@ const TeamCardView = ({
             <div className="grid grid-cols-2 gap-4 text-sm mt-4">
               <div>
                 <span className="font-medium text-dashboard-heading">
-                  Code:
+                  Start Date:
                 </span>
                 <p className="text-dashboard-card-text">
-                  {team.code || "N/A"}
+                  {format(event.startDate, "full") || "N/A"}
                 </p>
               </div>
               <div>
                 <span className="font-medium text-dashboard-heading">
-                  Total Score:
+                  End Date:
                 </span>
                 <p className="text-dashboard-card-text">
-                  {team.totalScore || "N/A"}
+                  {format(event.endDate, "full") || "N/A"}
                 </p>
               </div>
             </div>
 
-            <div className="mt-4 flex justify-center items-center gap-3">
-                {(userRoles.includes("Judge") && userRoles.length === 1) ? (
-                  <Button
-                  type="primary"
-                  buttonText="Assess Team"
-                  onClick={() => { navigate(`/judging-system/assess-team/${team.id}`); }}
-                  width="fit"
-                  />
-                ) : (
-                  <>
+            {userRoles.includes("Admin") &&
+                <div className="mt-4 flex justify-center items-center gap-3">
                     <Button
-                        type="secondary"
-                        onClick={() => setOpenModal(team)}
+                        type="tertiary"
+                        onClick={() => setOpenModal(2)}
                         buttonIcon={<FaEdit size={16} />}
                         width="fit"
                     />
                     <Button
                         type="danger"
-                        onClick={() => setShowDeleteModal(team.id || "")}
+                        onClick={() => setShowDeleteModal(event.id || "")}
                         buttonIcon={<IoTrashSharp size={17} />}
                         width="fit"
                     />
-                  </>
-                    )}
-            </div>
+                    <Button
+                    type="secondary"
+                    buttonIcon={<TbListDetails size={16} />}
+                    onClick={() => { navigate(`/events/${event.id}`); }}
+                    width="fit"
+                    />
+                </div>
+            }
           </div>
         ))
       ) : (
         <div className="p-8 text-center">
           <div className="text-dashboard-description">
-            <p className="text-lg font-medium">No teams found</p>
+            <p className="text-lg font-medium">No events found</p>
           </div>
         </div>
       )}

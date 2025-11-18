@@ -8,39 +8,12 @@ class eventsApi {
     const response = await systemApi.get(`${EVENTS_API_URL}Events/${id}`);
     return response.data.data;
   }
-
-  async fetchUpcomingEvents(page: number, pageSize: number): Promise<Event[]> {
-    const response = await systemApi.get(
-      `${EVENTS_API_URL}Events/filtered?&eventStatuses=Running&eventStatuses=Upcoming&page=${page}&count=${pageSize}`
-    );
-
-    const items = response.data?.data?.items;
-    if (Array.isArray(items)) {
-      return items;
-    }
-
-    console.warn(
-      "Unexpected response structure for fetchUpcomingEvents:",
-      response.data
-    );
-    return [];
-  }
-
-  async fetchUpcomingEventsCount(): Promise<number> {
-    const response = await systemApi.get(
-      `${EVENTS_API_URL}Events/filtered?&eventStatuses=Running&eventStatuses=Upcoming`
-    );
-
-    const items = response.data?.data?.items;
-    if (Array.isArray(items)) {
-      return items.length;
-    }
-
-    console.warn(
-      "Unexpected response structure for fetchUpcomingEvents:",
-      response.data
-    );
-    return 0;
+  
+  async fetchAllEvents(page: number, pageSize: number,eventType: string, title: string, eventStatuses: string[]): Promise<{items: Event[], totalCount: number}> {
+    const statusParams = eventStatuses.map(status => `eventStatuses=${status}`).join('&');
+    const eventTypeParam = eventType && eventType !== "All" ? `eventType=${eventType}&` : "";
+    const response = await systemApi.get(`${EVENTS_API_URL}Events/filtered?${eventTypeParam}${statusParams}&page=${page}&count=${pageSize}&${title != "" ? `title=${title}` : ""}&page=${page}&count=${pageSize}&OrderBy=startDate&Descending=true`);
+    return {items: response.data.data.items, totalCount: response.data.data.totalCount};
   }
 
   async createEvent(eventData: Omit<Event, "id">) {
@@ -64,29 +37,6 @@ class eventsApi {
       EVENTS_API_URL + `Events/${eventId}`
     );
     return response.data;
-  }
-
-  async fetchPastEventsCount(
-    eventType: string,
-    title: string
-  ): Promise<number> {
-    const response = await systemApi.get(
-      `${EVENTS_API_URL}Events/filtered?eventStatuses=Past&${
-        eventType != "" ? `eventType=${eventType}` : ""
-      }&${title != "" ? `title=${title}` : ""}`
-    );
-
-    // Access count using the correct structure: response.data.data.items.length
-    const items = response.data?.data?.totalCount;
-    if (typeof items === "number") {
-      return items;
-    }
-
-    console.warn(
-      "Unexpected response structure for fetchPastEventsCount:",
-      response.data
-    );
-    return 0;
   }
 
   async checkOngoingEvent(toDate: string): Promise<Event | null> {
@@ -173,22 +123,6 @@ class eventsApi {
     return response.data.data.status;
   }
 
-  async fetchPastEvents(eventType: string,title: string, page: number,pageSize: number): Promise<Event[]> {
-    const response = await systemApi.get(`${EVENTS_API_URL}Events/filtered?${eventType != "" ? `eventType=${eventType}` : ""}&eventStatuses=Past&${title != "" ? `title=${title}` : ""}&page=${page}&count=${pageSize}&OrderBy=startDate&Descending=true`
-    );
-
-    // Access the array using the correct structure: response.data.data.items
-    const items = response.data?.data?.items;
-    if (Array.isArray(items)) {
-      return items;
-    }
-
-    console.warn(
-      "Unexpected response structure for fetchPastEvents:",
-      response.data
-    );
-    return [];
-  }
 
   async requestAttendance(memberId: string, eventId: string) {
     const response = await systemApi.post(

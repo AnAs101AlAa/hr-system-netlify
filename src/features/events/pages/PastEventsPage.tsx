@@ -1,182 +1,32 @@
-import { EventsList } from "../components";
-import Pagination from "@/shared/components/pagination";
 import WithNavbar from "@/shared/components/hoc/WithNavbar";
-import { SearchField, DropdownMenu } from "tccd-ui";
 import { EventModal } from "@/features/events/components";
-import { useState, useEffect } from "react";
-import { usePastEvents } from "@/shared/queries/events/eventQueries";
-import EVENT_TYPES from "@/constants/eventTypes";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/shared/redux/store/store";
+import { useState } from "react";
+import EventList from "../components/EventList";
+import { FaPlus } from "react-icons/fa";
+import { Button } from "tccd-ui";
 
 const PastEventsPage = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedEventType, setSelectedEventType] = useState("");
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-  const { user } = useSelector((state: RootState) => state.auth);
-  const userRole = user?.roles || [];
-  const isAdmin = userRole.includes("Admin");
-
-  // Responsive events per page - fewer on mobile, more on desktop
-  const getEventsPerPage = () => {
-    if (typeof window !== "undefined") {
-      if (window.innerWidth < 640) return 4; // Mobile: 4 events
-      //   if (window.innerWidth < 1024) return 6; // Tablet: 6 events
-      //   if (window.innerWidth < 1536) return 8; // Desktop: 8 events
-      return 6; // Large desktop: 6 events
-    }
-    return 6; // Default fallback
-  };
-
-  const [eventsPerPage, setEventsPerPage] = useState(getEventsPerPage());
-  const {
-    data,
-    error: eventsError,
-    isLoading,
-    isError: isEventsError,
-  } = usePastEvents(selectedEventType, searchTerm, currentPage, eventsPerPage);
-  const pastEvents = data?.items ?? [];
-  const totalCount = data?.total ?? 0;
-  const totalFilteredPages = Math.max(1, Math.ceil(totalCount / eventsPerPage));
-
-  useEffect(() => {
-    const handleResize = () => {
-      const newEventsPerPage = getEventsPerPage();
-
-      setEventsPerPage((prev) => {
-        if (prev !== newEventsPerPage) {
-          setCurrentPage(1);
-          return newEventsPerPage;
-        }
-        return prev;
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (isEventsError && eventsError) {
-      toast.error(`Failed to fetch past events, please try again`);
-    }
-  }, [isEventsError, eventsError]);
-
-  // Reset to first page when search term or event type changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, selectedEventType]);
-
-  const handlePrevious = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalFilteredPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const onAdd = () => {
-    setIsAddModalOpen(true);
-  };
+  const [modalOpen, setModalOpen] = useState(0);
 
   return (
     <WithNavbar>
-      <section className="flex flex-col min-h-screen mb-3">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-6 sm:space-y-8 md:space-y-10">
-            <div>
-              <div className="-mt-2 sm:-mt-5 md:-mt-6">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalFilteredPages}
-                  onPrevious={handlePrevious}
-                  onNext={handleNext}
-                  onAdd={isAdmin ? onAdd : undefined}
-                  title="Past Events"
-                />
-              </div>
-              <div className="flex lg:flex-row flex-col lg:justify-between items-center gap-4 lg:mb-0 mb-4 w-full">
-                <SearchField
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                  placeholder="Search past events..."
-                />
-                <div className="w-full lg:w-64 lg:-mt-6">
-                  <DropdownMenu
-                    placeholder="Filter by event type"
-                    options={[{ value: "", label: "All" }, ...EVENT_TYPES]}
-                    value={selectedEventType}
-                    onChange={setSelectedEventType}
-                  />
-                </div>
-              </div>
-
-              {/* Error state */}
-              {eventsError && (
-                <div className="text-center py-8">
-                  <p className="text-primary text-lg">
-                    Failed to load events. Please try again later.
-                  </p>
-                </div>
-              )}
-
-              {/* Empty state */}
-              {!eventsError &&
-                pastEvents.length === 0 &&
-                pastEvents.length === 0 &&
-                !isLoading && (
-                  <div className="text-center py-8">
-                    <p className="text-muted-secondary text-lg">
-                      No past events available.
-                    </p>
-                  </div>
-                )}
-
-              {/* No filtered results */}
-              {!eventsError &&
-                pastEvents.length === 0 &&
-                pastEvents.length > 0 && (
-                  <div className="text-center py-8">
-                    <p className="text-muted-secondary text-lg">
-                      No events found matching your search criteria.
-                    </p>
-                  </div>
-                )}
-
-              {isLoading && (
-                <div className="flex justify-center items-center w-full flex-col mt-10">
-                  <div className="animate-spin inline-block text-[26px] text-secondary">
-                    <AiOutlineLoading3Quarters />
-                  </div>
-                  <p className="text-inactive-tab-text text-center w-full text-[16px] md:text-[18px] lg:text-[20px]">
-                    Loading events...
-                  </p>
-                </div>
-              )}
-              {/* Events list */}
-              {!eventsError && pastEvents.length > 0 && (
-                <EventsList events={pastEvents} userRole={userRole} />
-              )}
+      <EventModal
+        isOpen={modalOpen !== 0}
+        onClose={() => setModalOpen(0)}
+        event={null}
+        mode="create"
+      />
+      <div className="min-h-screen bg-background p-4">
+        <div className="w-[96%] md:w-[94%] lg:w-[84%] xl:w-[73%] mx-auto">
+            <h1 className="lg:text-[24px] md:text-[22px] text-[20px] font-bold">Past Events</h1>
+            <p className="mb-2 lg:text-[16px] md:text-[14px] text-[13px] text-inactive-tab-text">View and manage all past events.</p>
+            <div className="w-full my-4">
+            <Button buttonText="New Event" onClick={() => setModalOpen(1)} type="primary" width="auto" buttonIcon={<FaPlus />} />
             </div>
-          </div>
+              <EventList fetchedEventStatuses={["Past"]} setModalOpen={setModalOpen} />
         </div>
+      </div>
 
-        {/* Add Event Modal */}
-        <EventModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-          event={null}
-          mode="create"
-        />
-      </section>
     </WithNavbar>
   );
 };

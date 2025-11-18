@@ -1,18 +1,29 @@
 import WithNavbar from "@/shared/components/hoc/WithNavbar";
 import {FormList} from "@/features/formBuilding/components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ButtonTypes, Button, Modal, SearchField } from "tccd-ui";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaChevronLeft,FaChevronRight } from "react-icons/fa";
 import { ImInsertTemplate } from "react-icons/im";
 import { VscEmptyWindow } from "react-icons/vsc";
 import { useForms } from "@/shared/queries/forms/formQueries";
 
 export default function FormBuilder() {
     const [modalOpen, setModalOpen] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [formSearchTerm, setFormSearchTerm] = useState("");
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(formSearchTerm);
+
+    useEffect(() => {
+        const t = setTimeout(() => setDebouncedSearchTerm(formSearchTerm), 300);
+        return () => clearTimeout(t);
+    }, [formSearchTerm]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [debouncedSearchTerm]);
+
     const [selectedTemplate, setSelectedTemplate] = useState<null | string>(null);
-    const { data: Forms } = useForms(1, 1000, "", "", "", "");
-    const filteredForms = Forms?.filter((form) => form.title.toLowerCase().includes(formSearchTerm.toLowerCase())) || [];
+    const { data: Forms, isLoading } = useForms(currentPage, 15, "", debouncedSearchTerm, "", "");
     
     return (
         <WithNavbar>
@@ -41,7 +52,7 @@ export default function FormBuilder() {
                         <div className="w-full rounded-lg shadow-lg md:p-4 p-2">
                             <SearchField className="lg:w-full" placeholder="Search for a form..." value={formSearchTerm} onChange={(value) => setFormSearchTerm(value)} />
                             <div className="max-h-[400px] overflow-y-auto mt-4 overflow-x-auto">
-                                {(filteredForms.length === 0) ? (
+                                {(Forms?.length === 0) ? (
                                     <p className="text-center text-inactive-tab-text mt-10">No forms found.</p>
                                 ) : (
                                     <>
@@ -53,7 +64,7 @@ export default function FormBuilder() {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-200">
-                                            {filteredForms.map((form) => (
+                                            {Forms?.map((form) => (
                                                 <tr key={form.id} className={`text-[12px] md:text-[14px] lg:text-[16px] whitespace-nowrap rounded-lg cursor-pointer ${selectedTemplate === form.id ? 'bg-gray-200' : 'hover:bg-gray-100'}`} onClick={() => setSelectedTemplate(form.id)}>
                                                     <td className="px-3 py-2">{form.title}</td>
                                                     <td className="px-3 py-2">{form.id}</td>
@@ -64,7 +75,22 @@ export default function FormBuilder() {
                                     </>
                                 )}
                             </div>
-                            <div className="mt-8 mb-2 flex justify-center items-center gap-3">
+                            <div className="flex justify-center items-center gap-3 mt-4">
+                                <FaChevronLeft className={`cursor-pointer size-4 ${currentPage === 1 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`} onClick={() => {
+                                    if (currentPage > 1 && !isLoading) {
+                                        setCurrentPage(currentPage - 1);
+                                    }
+                                }} />
+                                <span className="text-[14px] md:text-[15px] lg:text-[16px] font-medium text-contrast">
+                                    Page {currentPage}
+                                </span>
+                                <FaChevronRight className={`cursor-pointer size-4 ${Forms && Forms.length < 15 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`} onClick={() => {
+                                    if (Forms && Forms.length === 15 && !isLoading) {
+                                        setCurrentPage(currentPage + 1);
+                                    }
+                                }} />
+                            </div>
+                            <div className="mt-5 md:mt-8 mb-2 flex justify-center items-center gap-3">
                                 <Button type={ButtonTypes.SECONDARY} onClick={() => setModalOpen(1)} buttonText="Back" />
                                 <Button type={ButtonTypes.PRIMARY} onClick={() => { if (selectedTemplate) window.location.href = `/form-builder/new?template=${selectedTemplate}` }} buttonText="Use Template" disabled={!selectedTemplate} />
                             </div>

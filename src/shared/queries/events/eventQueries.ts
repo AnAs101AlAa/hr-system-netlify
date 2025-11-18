@@ -140,16 +140,18 @@ export const useEvent = (id: string) => {
   });
 };
 
-export const useUpcomingEvents = (
+export const useAllEvents = (
   page: number,
   pageSize: number,
+  eventType: string,
+  title: string,
+  eventStatuses: string[]
 ) => {
   return useQuery({
-    queryKey: [...eventKeys.upcomingEvents(), page, pageSize],
+    queryKey: [...eventKeys.lists(), page, eventType, title, eventStatuses],
     queryFn: async () => {
-      const data = await eventsApiInstance.fetchUpcomingEvents(page, pageSize);
-      const count = await eventsApiInstance.fetchUpcomingEventsCount();
-      return { items: data, total: count };
+      const data = await eventsApiInstance.fetchAllEvents(page, pageSize, eventType, title, eventStatuses);
+      return data;
     },
   });
 };
@@ -275,31 +277,6 @@ export const useUpdateVestStatus = () => {
       action: "Returned" | "Received";
     }) => {
       await eventsApiInstance.updateVestStatus(memberId, eventId, action);
-    },
-  });
-};
-
-// Hook to fetch past events
-export const usePastEvents = (
-  eventType: string,
-  title: string,
-  page: number,
-  pageSize: number
-) => {
-  return useQuery({
-    queryKey: [eventKeys.pastEvents(), eventType, title, page],
-    queryFn: async () => {
-      const data = await eventsApiInstance.fetchPastEvents(
-        eventType,
-        title,
-        page,
-        pageSize
-      );
-      const count = await eventsApiInstance.fetchPastEventsCount(
-        eventType,
-        title
-      );
-      return { items: data, total: count };
     },
   });
 };

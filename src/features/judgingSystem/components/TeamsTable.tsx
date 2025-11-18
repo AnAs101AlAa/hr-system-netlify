@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 
 interface TeamsTableProps {
     teams: Team[];
-    setOpenModal: React.Dispatch<React.SetStateAction<number>>;
+    setOpenModal: (teamData: Team) => void;
 }
 
 const TeamsTable = ({ teams, setOpenModal }: TeamsTableProps) => {
@@ -69,7 +69,7 @@ const TeamsTable = ({ teams, setOpenModal }: TeamsTableProps) => {
                   <div className="flex items-center gap-2">
                     <Button
                       type="secondary"
-                      onClick={() => setOpenModal(2)}
+                      onClick={() => setOpenModal(team)}
                       buttonText="Edit"
                       width="fit"
                     />

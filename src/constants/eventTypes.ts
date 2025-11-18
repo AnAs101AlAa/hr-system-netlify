@@ -1,4 +1,5 @@
 const EVENT_TYPES = [
+  { value: "All", label: "All" },
   { value: "Orientation", label: "Orientation" },
   { value: "Meeting", label: "Meeting" },
   { value: "ResearchDay", label: "Research Day" },
