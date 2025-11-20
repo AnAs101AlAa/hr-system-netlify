@@ -1,23 +1,75 @@
 import { useMutation, useQuery, type UseQueryResult } from "@tanstack/react-query"
-import type { Team } from "@/shared/types/judgingSystem"
+import type { EvaluationSubmission, JudgeQuestion, Team } from "@/shared/types/judgingSystem"
 import * as JudgeAPI from "./judgeAPI";
 
 const judgeKeys = {
     all: ["judgingSystem"] as const,
-    getTeams: (page: number, count: number, sortBy: string, nameKey: string) => [...judgeKeys.all, { page, count, sortBy, nameKey }] as const,
+    getTeams: (page: number, count: number, sortBy: string, nameKey: string, codeKey: string) => [...judgeKeys.all, { page, count, sortBy, nameKey, codeKey }] as const,
     getTeam: (teamId: string) => [...judgeKeys.all, teamId] as const,
+    createTeam: () => [...judgeKeys.all] as const,
+    updateTeam: () => [...judgeKeys.all] as const,
     deleteTeam: () => [...judgeKeys.all] as const,
+    getQuestions: (eventId: string) => [...judgeKeys.all, eventId] as const,
+    addQuestion: () => [...judgeKeys.all] as const,
+    deleteQuestion: () => [...judgeKeys.all] as const,
+    updateQuestion: () => [...judgeKeys.all] as const,
+    submitEvaluation: () => [...judgeKeys.all] as const,
+    updateEvaluation: () => [...judgeKeys.all] as const,
+    getEvaluation: (teamId: string, judgeName: string) => [...judgeKeys.all, teamId, judgeName] as const,
 }
 
-export const useResearchTeams = (page: number, count: number, sortBy: string, nameKey: string): UseQueryResult<Team[], Error> => {
+export const useResearchTeams = (eventId: string, page: number, count: number, sortBy: string, nameKey: string, codeKey: string): UseQueryResult<Team[], Error> => {
     return useQuery({
-        queryKey: judgeKeys.getTeams(page, count, sortBy, nameKey),
+        queryKey: judgeKeys.getTeams(page, count, sortBy, nameKey, codeKey),
             queryFn: async () => {
-            const teams = await JudgeAPI.getTeams(page, count, sortBy, nameKey);
+            const teams = await JudgeAPI.getEventTeams(eventId, page, count, sortBy, nameKey, codeKey);
             return teams;
         },
     });
 };
+
+export const useGetTeam = (teamId: string): UseQueryResult<Team, Error> => {
+    return useQuery({
+        queryKey: judgeKeys.getTeam(teamId),
+        queryFn: async () => {
+            const team = await JudgeAPI.getTeam(teamId);
+            return team;
+        }
+    });
+}
+
+export const useCreateTeam = () => {
+    return useMutation({
+        mutationKey: judgeKeys.createTeam(),
+        mutationFn: async ({ eventId, teamData }: { eventId: string; teamData: Team }) => {
+            await JudgeAPI.createTeam(eventId, teamData);
+        },
+    });
+}
+
+export const useUpdateTeam = () => {
+    return useMutation({
+        mutationKey: judgeKeys.updateTeam(),
+        mutationFn: async ({teamData, oldTeamData}: {teamData: Team, oldTeamData: Team}) => {
+            const addedMembers = teamData.teamMembers.filter(tm => !oldTeamData.teamMembers.some(otm => otm.id === tm.id));
+            const removedMembers = oldTeamData.teamMembers.filter(otm => !teamData.teamMembers.some(tm => tm.id === otm.id));
+
+            for (const member of addedMembers) {
+                await JudgeAPI.addTeamMember(teamData.id, member.name);
+            }
+            for (const member of removedMembers) {
+                await JudgeAPI.removeTeamMember(member.id);
+            }
+            for (const member of teamData.teamMembers) {
+                const oldMember = oldTeamData.teamMembers.find(otm => otm.id === member.id);
+                if (oldMember && oldMember.name !== member.name) {
+                    await JudgeAPI.updateTeamMember(member.id, member.name);
+                }
+            }
+            await JudgeAPI.updateTeam(teamData);
+        },
+    });
+}
 
 export const useDeleteTeam = () => {
     return useMutation({
@@ -26,4 +78,68 @@ export const useDeleteTeam = () => {
             await JudgeAPI.deleteTeam(teamId);
         },
     });
+};
+
+export const useEventQuestions = (eventId: string): UseQueryResult<JudgeQuestion[], Error> => {
+    return useQuery({
+        queryKey: judgeKeys.getQuestions(eventId),
+        queryFn: async () => {
+            const questions = await JudgeAPI.getEventQuestions(eventId);
+            return questions;
+        }
+    });
+}
+
+export const useCreateEventQuestion = () => {
+    return useMutation({
+        mutationKey: judgeKeys.addQuestion(),
+        mutationFn: async (questionData: JudgeQuestion) => {
+            await JudgeAPI.createEventQuestion(questionData);
+        },
+    });
+}
+
+export const useDeleteEventQuestion = () => {
+    return useMutation({
+        mutationKey: judgeKeys.deleteQuestion(),
+        mutationFn: async (questionId: string) => {
+            await JudgeAPI.deleteEventQuestion(questionId);
+        },
+    });
+}
+
+export const useUpdateEventQuestion = () => {
+    return useMutation({
+        mutationKey: judgeKeys.updateQuestion(),
+        mutationFn: async (questionData: JudgeQuestion) => {
+            await JudgeAPI.updateEventQuestion(questionData);
+        },
+    });
+}
+
+export const useSubmitTeamEvaluation = () => {
+    return useMutation({
+        mutationKey: judgeKeys.submitEvaluation(),
+        mutationFn: async (payload: EvaluationSubmission) => {
+            await JudgeAPI.submitTeamEvaluation(payload);
+        },
+    });
+}
+
+export const useUpdateTeamEvaluation = () => {
+    return useMutation({
+        mutationKey: judgeKeys.updateEvaluation(),
+        mutationFn: async (payload: EvaluationSubmission) => {
+            await JudgeAPI.updateTeamEvaluation(payload);
+        }
+    });
+}
+
+export const useGetTeamEvaluation = () => {
+  return useMutation({
+    mutationFn: async ({teamId, judgeName}: {teamId: string; judgeName: string}) => {
+      const evaluation = await JudgeAPI.getTeamEvaluation(teamId, judgeName);
+      return evaluation;
+    },
+  });
 };

@@ -2,13 +2,32 @@ export interface Team {
     id: string;
     name: string;
     code: string;
-    scores: number[];
+    course: string;
+    scores?: number[];
     totalScore?: number;
-    members: TeamMember[];
+    teamMembers: TeamMember[];
 }
 
 export interface TeamMember {
     id: string;
     name: string;
-    contribution: string;
+}
+
+export interface JudgeQuestion {
+    id: string;
+    name: string;
+    itemNumber: number;
+    eventId?: string;
+}
+
+export interface EvaluationSubmission {
+    teamId: string;
+    judgeName: string;
+    evaluationItemScores: EvaluationItem[];
+}
+
+export interface EvaluationItem {
+    evaluationItemId: string;
+    score: number;
+    evaluationItemName?: string;
 }

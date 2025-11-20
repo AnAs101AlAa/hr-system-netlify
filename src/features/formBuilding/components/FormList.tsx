@@ -1,5 +1,5 @@
 import { SearchField, DropdownMenu, DatePicker, ErrorScreen } from "tccd-ui";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FormTable from "./FormTable";
 import FormCardView from "./FormCardView";
 import { FORM_SORTING_OPTIONS, FORM_TYPES } from "@/constants/formConstants";
@@ -9,10 +9,21 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 const FormList = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchKey, setSearchKey] = useState<string>("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchKey);
+
+  useEffect(() => {
+      const t = setTimeout(() => setDebouncedSearchTerm(searchKey), 300);
+      return () => clearTimeout(t);
+  }, [searchKey]);
+
+  useEffect(() => {
+      setCurrentPage(1);
+  }, [debouncedSearchTerm]);
+
   const [sortOption, setSortOption] = useState<string>("");
   const [filterType, setFilterType] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const { data: Forms, isLoading, isError } = useForms(currentPage, 15, selectedDate || "", searchKey, filterType, sortOption);
+  const { data: Forms, isLoading, isError } = useForms(currentPage, 15, selectedDate || "", debouncedSearchTerm, filterType, sortOption);
 
   if(isError) {
     return <ErrorScreen title={"An error occurred while fetching forms."} message="an error occurred while fetching forms, please try again and contact IT team if the issue persists." />;

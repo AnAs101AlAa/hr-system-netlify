@@ -95,8 +95,7 @@ const VestAttendeesTable = ({ attendees, eventId, setAttendees }: VestAttendeesT
                         setIsSubmitting(false);
                         handleModalClose();
                     }, 500);
-                } catch (error) {
-                    console.error("Error updating vest status:", error);
+                } catch {
                     toast.error("Failed to update vest status. Please try again.");
                 }
             };

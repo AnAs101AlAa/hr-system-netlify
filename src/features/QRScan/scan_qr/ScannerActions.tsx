@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ButtonTypes, ButtonWidths, Button } from "tccd-ui";
 import { useUpdateVestStatus, useVestStatus } from "@/shared/queries/events";
-import { getErrorMessage } from "@/shared/utils";
 import type { MemberData } from "@/shared/types/attendance";
 
 /**
@@ -93,8 +92,8 @@ const ScannerActions = ({
           );
           setCurrentVestStatus(action);
         },
-        onError: (error) => {
-          toast.error(getErrorMessage(error));
+        onError: () => {
+          toast.error("An error occurred. Please try again.");
         },
       }
     );

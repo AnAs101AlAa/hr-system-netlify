@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { WelcomeCard, ActionCards, Pagination, EventsList } from "../components";
 import WithNavbar from "@/shared/components/hoc/WithNavbar";
-import { useUpcomingEvents } from "@/shared/queries/events/eventQueries";
+import { useAllEvents } from "@/shared/queries/events/eventQueries";
 import { BiLoaderAlt } from "react-icons/bi";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
@@ -13,12 +13,15 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 4;
 
-  const { data, isLoading, error, isError } = useUpcomingEvents(
+  const { data, isLoading, error, isError } = useAllEvents(
     currentPage,
     eventsPerPage,
+    "",
+    "",
+    ["Upcoming"]
   );
   const upcomingEvents = data?.items ?? [];
-  const totalCount = data?.total ?? 0;
+  const totalCount = data?.totalCount ?? 0;
 
   const totalPages = Math.ceil(totalCount / eventsPerPage);
 

@@ -38,8 +38,11 @@ const MemberRoute = ({
   }, []);
 
   if (!user || user == null) return <Navigate to="/login" replace />;
-  if (allowedRoles && !allowedRoles.some((role) => user.roles.includes(role)))
+  if (allowedRoles && !allowedRoles.some((role) => user.roles.includes(role))) {
+    if(user.roles.includes("Judge"))
+      return <Navigate to="/judging-system/events" replace />;
     return <Navigate to="/unauthorized" replace />;
+  }
   return <>{children}</>;
 };
 
