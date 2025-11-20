@@ -7,6 +7,7 @@ import type { Event } from "@/shared/types/event";
 import { format } from "@/shared/utils";
 import ConditionalWrapper from "@/shared/utils/conditionalWrapper";
 import { useSelector } from "react-redux";
+import logo from "@/assets/TCCD_logo.svg";
 
 export default function EventSelectionPage() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -25,12 +26,12 @@ export default function EventSelectionPage() {
         setCurrentPage(1);
     }, [debouncedSearchTerm]);
 
-    const { data, isLoading } = useAllEvents(currentPage, 10, "ResearchDay", debouncedSearchTerm, ["Upcoming","Running", "Past"]);
+    const { data, isLoading } = useAllEvents(currentPage, 10, "ResearchDay", debouncedSearchTerm, ["Upcoming","Running"]);
     const events = data?.items ?? [];
     const [selectedEvent, setSelectedEvent] = useState<string>("");
 
     const children = (
-        <div className="p-4 w-[94%] md:w-[90%] lg:w-[80%] xl:w-[70%] mx-auto mt-3">
+        <div className="p-4 w-[94%] md:w-[90%] lg:w-[80%] xl:w-[70%] mx-auto">
         <p className="lg:text-[26px] md:text-[24px] text-[22px] font-bold text-center mb-2">Welcome to our Judging System</p>
         <p className="mb-6 lg:text-[18px] md:text-[15px] text-[14px] font-semibold text-center">Please select the event you wish to evaluate or manage the teams of</p>
         <div className="w-full rounded-lg shadow-lg md:p-4 p-2">
@@ -90,7 +91,10 @@ export default function EventSelectionPage() {
 
   return (
     <ConditionalWrapper condition={!isJudge} wrapper={(children) => <WithNavbar>{children}</WithNavbar>}>
+        <>
+        <img src={logo} alt="TCCD Logo" className="w-24 md:w-28 h-auto mx-auto mt-6" />
         {children}
+        </>
     </ConditionalWrapper>
   )
 }

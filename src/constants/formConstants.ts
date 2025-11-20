@@ -40,6 +40,7 @@ const FORM_TYPES = [
   { label: "Job Fair", value: "JobFair" },
   { label: "Workshop", value: "Workshop" },
   { label: "Session", value: "Session" },
+  { label: "Site Visit", value: "FieldVisit"},
   { label: "Meeting Availability", value: "MeetingAvailability" },
   { label: "Feedback Collection", value: "FeedbackCollection" },
   { label: "Testing", value: "Testing" },

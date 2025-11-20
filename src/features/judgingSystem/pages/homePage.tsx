@@ -1,12 +1,13 @@
 import WithNavbar from "@/shared/components/hoc/WithNavbar";
 import TeamsPage from "./TeamPage";
-import QUestionManagePage from "./QuestionManagePage";
+import QuestionManagePage from "./QuestionManagePage";
 import { useEvent } from "@/shared/queries/events";
 import { useParams } from "react-router-dom";
 import { LoadingPage, ErrorScreen } from "tccd-ui";
 import { useState, Activity } from "react";
 import { useSelector } from "react-redux";
 import ConditionalWrapper from "@/shared/utils/conditionalWrapper";
+import logo from "@/assets/TCCD_logo.svg";
 
 export default function JudgingSystemHomePage() {
     const { eventId } = useParams();
@@ -24,8 +25,8 @@ export default function JudgingSystemHomePage() {
     }
 
     const children = (
-        <div className="min-h-screen bg-background p-4 w-[96%] md:w-[94%] lg:w-[84%] xl:w-[73%] mx-auto">
-            <p className="text-center text-[22px] md:text-[24px] lg:text-[26px] text-primary font-semibold">{event?.title}'s Judging Board</p>
+        <div className="min-h-screen bg-background p-4 pt-0 w-[96%] md:w-[94%] lg:w-[84%] xl:w-[73%] mx-auto">
+            <p className="text-center text-[22px] md:text-[24px] lg:text-[26px] text-primary font-bold">{event?.title}'s Judging Board</p>
             <p className="text-center mb-4 md:mb-6 lg:text-[16px] md:text-[15px] text-[14px] text-inactive-tab-text">Manage teams and their scoring for this event.</p>
             {!isJudge && (
                 <div className="flex flex-row justify-between mx-auto border-b-2 border-primary shadow-md w-full md:w-2/3 lg:w-1/2 mb-5">
@@ -41,10 +42,10 @@ export default function JudgingSystemHomePage() {
                     </div>
                 </div>
             )}
-            <Activity mode={activeTab === "teams" && !isJudge ? "visible" : "hidden"}>
-                <QUestionManagePage event={event} />
+            <Activity mode={activeTab === "questions" && !isJudge ? "visible" : "hidden"}>
+                <QuestionManagePage event={event} />
             </Activity>
-            <Activity mode={activeTab === "questions" || isJudge ? "visible" : "hidden"}>
+            <Activity mode={activeTab === "teams" || isJudge ? "visible" : "hidden"}>
                 <TeamsPage event={event} mode={!isJudge} />
             </Activity>
         </div>
@@ -52,7 +53,10 @@ export default function JudgingSystemHomePage() {
     
     return (
         <ConditionalWrapper condition={!isJudge} wrapper={(children) => <WithNavbar>{children}</WithNavbar>}>
+            <>
+            <img src={logo} alt="TCCD Logo" className="w-24 md:w-28 h-auto mx-auto mt-6 mb-2" />
             {children}
+            </>
         </ConditionalWrapper>
     );
 }
