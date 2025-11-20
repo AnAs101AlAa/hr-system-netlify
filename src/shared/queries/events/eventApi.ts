@@ -123,7 +123,6 @@ class eventsApi {
     return response.data.data.status;
   }
 
-
   async requestAttendance(memberId: string, eventId: string) {
     const response = await systemApi.post(
       EVENTS_API_URL + `Attendance/${eventId}/${memberId}`,

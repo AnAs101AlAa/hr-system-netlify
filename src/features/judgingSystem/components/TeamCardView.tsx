@@ -1,6 +1,6 @@
 import type { Team } from "@/shared/types/judgingSystem";
 import { Button } from "tccd-ui";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { IoTrashSharp } from "react-icons/io5";
 import { FaEdit } from "react-icons/fa";
@@ -17,6 +17,7 @@ const TeamCardView = ({
   setOpenModal
 }: TeamCardViewProps) => {
   const navigate = useNavigate();
+  const { eventId } = useParams<{ eventId: string }>();
   const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
   const [showDeleteModal, setShowDeleteModal] = useState("");
   const [displayedTeams, setDisplayedTeams] = useState<Team[]>(teams);
@@ -62,8 +63,8 @@ const TeamCardView = ({
                 {(userRoles.includes("Judge") && userRoles.length === 1) ? (
                   <Button
                   type="primary"
-                  buttonText="Assess Team"
-                  onClick={() => { navigate(`/judging-system/assess-team/${team.id}`); }}
+                  buttonText="Start Assessment"
+                  onClick={() => { navigate(`/judging-system/assess-team/${eventId}/${team.id}`); }}
                   width="fit"
                   />
                 ) : (

@@ -5,9 +5,14 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { SearchField, Button } from "tccd-ui";
 import type { Event } from "@/shared/types/event";
 import { format } from "@/shared/utils";
+import ConditionalWrapper from "@/shared/utils/conditionalWrapper";
+import { useSelector } from "react-redux";
 
 export default function EventSelectionPage() {
     const [currentPage, setCurrentPage] = useState(1);
+    const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
+    const isJudge = userRoles.includes("Judge") && userRoles.length === 1;
+
     const [eventSearchTerm, setEventSearchTerm] = useState("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(eventSearchTerm);
 
@@ -24,9 +29,8 @@ export default function EventSelectionPage() {
     const events = data?.items ?? [];
     const [selectedEvent, setSelectedEvent] = useState<string>("");
 
-  return (
-    <WithNavbar>
-      <div className="p-4 w-[94%] md:w-[90%] lg:w-[80%] xl:w-[70%] mx-auto mt-3">
+    const children = (
+        <div className="p-4 w-[94%] md:w-[90%] lg:w-[80%] xl:w-[70%] mx-auto mt-3">
         <p className="lg:text-[26px] md:text-[24px] text-[22px] font-bold text-center mb-2">Welcome to our Judging System</p>
         <p className="mb-6 lg:text-[18px] md:text-[15px] text-[14px] font-semibold text-center">Please select the event you wish to evaluate or manage the teams of</p>
         <div className="w-full rounded-lg shadow-lg md:p-4 p-2">
@@ -81,6 +85,12 @@ export default function EventSelectionPage() {
             </div>
         </div>
       </div>
-    </WithNavbar>
+    )
+
+
+  return (
+    <ConditionalWrapper condition={!isJudge} wrapper={(children) => <WithNavbar>{children}</WithNavbar>}>
+        {children}
+    </ConditionalWrapper>
   )
 }

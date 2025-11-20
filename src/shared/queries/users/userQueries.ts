@@ -3,7 +3,6 @@ import { UserApi } from "./userApi";
 import { useDispatch } from "react-redux";
 import { setUser, logout as logoutAction } from "@/shared/redux/slices/authSlice";
 import toast from "react-hot-toast";
-import { getErrorMessage } from "@/shared/utils";
 
 export const userKeys = {
   all: ["user"] as const,
@@ -38,10 +37,8 @@ export const useLogin = () => {
       );
       toast.success("Login successful! Welcome back!");
     },
-    onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      toast.error(`Login failed: ${errorMessage}`);
-      console.error("Login failed:", error);
+    onError: () => {
+      toast.error("Login failed. Please try again.");
     },
   });
 };
@@ -57,10 +54,8 @@ export const useLogout = () => {
       queryClient.removeQueries({ queryKey: userKeys.session() });
       dispatch(logoutAction());
     },
-    onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      toast.error(`Logout failed: ${errorMessage}`);
-      console.error("Logout failed:", error);
+    onError: () => {
+      toast.error("Logout failed. Please try again.");
     },
   });
 

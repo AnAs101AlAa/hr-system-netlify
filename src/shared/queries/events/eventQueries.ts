@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { eventsApiInstance } from "./eventApi";
 import toast from "react-hot-toast";
-import { getErrorMessage } from "@/shared/utils";
 import type { Event } from "@/shared/types/event";
 
 export const eventKeys = {
@@ -45,8 +44,7 @@ export const useRequestAttendance = () => {
       try {
         return await eventsApiInstance.requestAttendance(memberId, eventId);
       } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        toast.error(`Attendance request failed: ${errorMessage}`);
+        toast.error("Attendance request failed. Please try again.");
         throw error;
       }
     },
@@ -66,8 +64,7 @@ export const useCheckAttendanceStatus = () => {
       try {
         return await eventsApiInstance.checkAttendanceStatus(memberId, eventId);
       } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        toast.error(`Check attendance status failed: ${errorMessage}`);
+        toast.error("Check attendance status failed. Please try again.");
         throw error;
       }
     },
@@ -93,8 +90,7 @@ export const useRecordLateArrivalExcuse = () => {
           excuse
         );
       } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        toast.error(`Late arrival excuse failed: ${errorMessage}`);
+        toast.error("Late arrival excuse failed. Please try again.");
         throw error;
       }
     },
@@ -120,8 +116,7 @@ export const useRecordLeaveEarly = () => {
           excuse
         );
       } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        toast.error(`Leave early excuse failed: ${errorMessage}`);
+        toast.error("Leave early excuse failed. Please try again.");
         throw error;
       }
     },
@@ -168,10 +163,8 @@ export const useAddEvent = () => {
       queryClient.invalidateQueries({ queryKey: eventKeys.eventTypes() });
       toast.success("Event created successfully");
     },
-    onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      console.error("Error creating event:", errorMessage);
-      toast.error("Failed to create event: " + errorMessage);
+    onError: () => {
+      toast.error("Failed to create event. Please try again.");
     },
   });
 };
@@ -200,10 +193,8 @@ export const useUpdateEvent = () => {
       }
       toast.success("Event updated successfully");
     },
-    onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      console.error("Error updating event: ", errorMessage);
-      toast.error("Failed to update event: " + errorMessage);
+    onError: () => {
+      toast.error("Failed to update event. Please try again.");
     },
   });
 };
@@ -224,10 +215,8 @@ export const useDeleteEvent = () => {
       }
       toast.success("Event deleted successfully");
     },
-    onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      console.error("Error deleting event: ", errorMessage);
-      toast.error("Failed to delete event: " + errorMessage);
+    onError: () => {
+      toast.error("Failed to delete event. Please try again.");
     },
   });
 };
@@ -240,8 +229,7 @@ export const useOngoingEvent = (toDate: string) => {
         const data = await eventsApiInstance.checkOngoingEvent(toDate);
         return data;
       } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        toast.error(`Failed to fetch ongoing event: ${errorMessage}`);
+        toast.error("Failed to fetch ongoing event. Please try again.");
         throw error;
       }
     },
