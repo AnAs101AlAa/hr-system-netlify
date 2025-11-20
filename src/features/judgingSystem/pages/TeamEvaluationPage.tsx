@@ -14,7 +14,8 @@ export default function TeamEvaluationPage() {
     }
 
     return (
-        <div className="xl:w-1/2 lg:w-[60%] md:w-3/4 w-[94%] mx-auto rounded-lg bg-slate-50 shadow-md mt-4">
+        <div className="xl:w-[45%] lg:w-[58%] md:w-[70%] sm:w-[80%] w-[94%] mx-auto rounded-lg bg-slate-50 shadow-md mt-4">
+            <img src="/banner.png" alt="TCCD Banner" className="w-full h-24 md:h-32 lg:h-[130px] xl:h-[150px] object-fill rounded-lg mb-3" />
             <div className="space-y-3 rounded-lg border-t-10 border-primary p-4 shadow-md bg-background">
                 <h1 className="text-2xl lg:text-3xl font-bold text-primary">
                     {event?.title}'s Evaluation Form

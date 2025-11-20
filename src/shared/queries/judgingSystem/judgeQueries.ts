@@ -138,8 +138,14 @@ export const useUpdateTeamEvaluation = () => {
 export const useGetTeamEvaluation = () => {
   return useMutation({
     mutationFn: async ({teamId, judgeName}: {teamId: string; judgeName: string}) => {
-      const evaluation = await JudgeAPI.getTeamEvaluation(teamId, judgeName);
-      return evaluation;
+        try {
+            const evaluation = await JudgeAPI.getTeamEvaluation(teamId, judgeName);
+            return evaluation;
+        } catch (error : any) {
+            if(error.status === 404) {
+                return null;
+            }  
+        }
     },
   });
 };
