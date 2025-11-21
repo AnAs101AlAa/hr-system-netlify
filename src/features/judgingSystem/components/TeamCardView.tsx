@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { IoTrashSharp } from "react-icons/io5";
 import { FaEdit } from "react-icons/fa";
+import { TbListDetails } from "react-icons/tb";
 import TeamDeleteModal from "./TeamDeleteModal";
 import { useSelector } from "react-redux";
 
@@ -69,6 +70,12 @@ const TeamCardView = ({
                   />
                 ) : (
                   <>
+                    <Button
+                        type="tertiary"
+                        onClick={() => { navigate(`/judging-system/team/${team.id}`); }}
+                        width="fit"
+                        buttonIcon={<TbListDetails size={16} />}
+                    />
                     <Button
                         type="secondary"
                         onClick={() => setOpenModal(team)}

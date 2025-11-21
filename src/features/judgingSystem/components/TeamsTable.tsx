@@ -78,6 +78,12 @@ const TeamsTable = ({ teams, setOpenModal }: TeamsTableProps) => {
                     ) : (
                       <>
                         <Button
+                          type="tertiary"
+                          buttonText="View Details"
+                          onClick={() => { navigate(`/judging-system/team/${team.id}`); }}
+                          width="fit"
+                        />
+                        <Button
                           type="secondary"
                           onClick={() => setOpenModal(team)}
                           buttonText="Edit"

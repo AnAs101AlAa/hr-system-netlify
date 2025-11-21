@@ -23,6 +23,7 @@ export interface JudgeQuestion {
 export interface EvaluationSubmission {
     teamId: string;
     judgeName: string;
+    totalScore?: number;
     evaluationItemScores: EvaluationItem[];
 }
 
