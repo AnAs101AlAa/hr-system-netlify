@@ -5,7 +5,7 @@ import * as JudgeAPI from "./judgeAPI";
 const judgeKeys = {
     all: ["judgingSystem"] as const,
     getTeams: (page: number, count: number, sortBy: string, nameKey: string, codeKey: string) => [...judgeKeys.all, { page, count, sortBy, nameKey, codeKey }] as const,
-    getTeam: (teamId: string) => [...judgeKeys.all, teamId] as const,
+    getTeam: (teamId: string) => [...judgeKeys.all, "team", teamId] as const,
     createTeam: () => [...judgeKeys.all] as const,
     updateTeam: () => [...judgeKeys.all] as const,
     deleteTeam: () => [...judgeKeys.all] as const,
@@ -16,7 +16,8 @@ const judgeKeys = {
     submitEvaluation: () => [...judgeKeys.all] as const,
     updateEvaluation: () => [...judgeKeys.all] as const,
     getEvaluation: (teamId: string, judgeName: string) => [...judgeKeys.all, teamId, judgeName] as const,
-}
+    getAllEvaluations: (teamId: string) => [...judgeKeys.all, "evaluations", teamId] as const,
+};
 
 export const useResearchTeams = (eventId: string, page: number, count: number, sortBy: string, nameKey: string, codeKey: string): UseQueryResult<Team[], Error> => {
     return useQuery({
@@ -149,3 +150,20 @@ export const useGetTeamEvaluation = () => {
     },
   });
 };
+
+
+export const useGetAllTeamEvaluations = (teamId: string) => {
+  return useQuery({
+    queryKey: judgeKeys.getAllEvaluations(teamId),
+    queryFn: async () => {
+        try {
+            const evaluations = await JudgeAPI.getAllTeamEvaluations(teamId);
+            return evaluations;
+        } catch (error : any) {
+            if(error.status === 404) {
+                return null;
+            }
+        }
+    },
+  });
+}

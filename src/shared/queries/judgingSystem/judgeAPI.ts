@@ -107,3 +107,8 @@ export async function getTeamEvaluation(teamId: string, judgeName: string): Prom
 
     return data || null;
 }
+
+export async function getAllTeamEvaluations(teamId: string): Promise<EvaluationSubmission[]> {
+    const response = await systemApi.get(`${JUDGING_API_URL}/Evaluation/team/${teamId}`);
+    return response.data.data;
+}
