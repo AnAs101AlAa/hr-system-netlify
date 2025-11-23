@@ -18,7 +18,7 @@ const Dashboard = () => {
     eventsPerPage,
     "",
     "",
-    ["Upcoming"]
+    ["Upcoming", "Running"]
   );
   const upcomingEvents = data?.items ?? [];
   const totalCount = data?.totalCount ?? 0;
