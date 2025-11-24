@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import FormDeleteModal from "./FormDeleteModal";
 import { useModifyFormStatus } from "@/shared/queries/forms/formQueries";
 import { getErrorMessage } from "@/shared/utils";
+import { useSelector } from "react-redux";
 
 interface FormsTableProps {
     forms: form[];
@@ -14,6 +15,7 @@ interface FormsTableProps {
 
 const FormTable = ({ forms }: FormsTableProps) => {
   const navigate = useNavigate();
+  const userRoles = useSelector((state: any) => state.auth?.user.roles);
   const [displayedForms, setDisplayedForms] = useState<form[]>(forms);
   const [showDeleteModal, setShowDeleteModal] = useState("");
   const modifyFormStatusMutation = useModifyFormStatus();
@@ -129,12 +131,14 @@ const FormTable = ({ forms }: FormsTableProps) => {
                           width="full"/>
                       </div>
                     )}
-                    <Button
-                      type={ButtonTypes.DANGER}
-                      onClick={() => setShowDeleteModal(form.id)}
-                      buttonText="Delete"
-                      width="fit"
-                    />
+                    {userRoles.includes("Admin") && userRoles.length === 1  && (
+                      <Button
+                        type={ButtonTypes.DANGER}
+                        onClick={() => setShowDeleteModal(form.id)}
+                        buttonText="Delete"
+                        width="fit"
+                      />
+                    )}
                   </div>
                 </td>
               </tr>
