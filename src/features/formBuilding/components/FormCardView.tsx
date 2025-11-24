@@ -10,6 +10,7 @@ import { getErrorMessage } from "@/shared/utils";
 import { IoTrashSharp } from "react-icons/io5";
 import { FaRegCopy } from "react-icons/fa6";
 import { FaEdit, FaLock, FaUnlock } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 interface FormCardViewProps {
   forms: form[];
@@ -19,6 +20,7 @@ const FormCardView = ({
   forms
 }: FormCardViewProps) => {
   const navigate = useNavigate();
+  const userRoles = useSelector((state: any) => state.auth?.user.roles);
   const [showDeleteModal, setShowDeleteModal] = useState("");
   const [displayedForms, setDisplayedForms] = useState<form[]>(forms);
   const modifyFormStatusMutation = useModifyFormStatus();
@@ -117,12 +119,14 @@ const FormCardView = ({
                       disabled={modifyFormStatusMutation.isPending && modifyFormStatusMutation.variables?.formId === form.id}
                       width="fit"/>
                 )}
-                <Button
-                    type={ButtonTypes.DANGER}
-                    onClick={() => setShowDeleteModal(form.id || "")}
-                    buttonIcon={<IoTrashSharp size={17} />}
-                    width="fit"
-                />
+                {userRoles.includes("Admin") && userRoles.length === 1 && (
+                  <Button
+                      type={ButtonTypes.DANGER}
+                      onClick={() => setShowDeleteModal(form.id || "")}
+                      buttonIcon={<IoTrashSharp size={17} />}
+                      width="fit"
+                  />
+                )}
             </div>
           </div>
         ))
