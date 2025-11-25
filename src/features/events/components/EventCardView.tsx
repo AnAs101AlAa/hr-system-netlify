@@ -60,29 +60,30 @@ const TeamCardView = ({
                 </p>
               </div>
             </div>
-
-            {userRoles.includes("Admin") &&
-                <div className="mt-4 flex justify-center items-center gap-3">
-                    <Button
-                        type="tertiary"
-                        onClick={() => setOpenModal(2)}
-                        buttonIcon={<FaEdit size={16} />}
-                        width="fit"
-                    />
-                    <Button
-                        type="danger"
-                        onClick={() => setShowDeleteModal(event.id || "")}
-                        buttonIcon={<IoTrashSharp size={17} />}
-                        width="fit"
-                    />
-                    <Button
-                    type="secondary"
-                    buttonIcon={<TbListDetails size={16} />}
-                    onClick={() => { navigate(`/events/${event.id}`); }}
+            <div className="mt-4 flex justify-center items-center gap-3">
+              {userRoles.includes("Admin") &&
+                <>
+                <Button
+                    type="tertiary"
+                    onClick={() => setOpenModal(2)}
+                    buttonIcon={<FaEdit size={16} />}
                     width="fit"
-                    />
-                </div>
-            }
+                />
+                <Button
+                    type="danger"
+                    onClick={() => setShowDeleteModal(event.id || "")}
+                    buttonIcon={<IoTrashSharp size={17} />}
+                    width="fit"
+                />
+                </>
+              }
+                <Button
+                type="secondary"
+                buttonIcon={<TbListDetails size={16} />}
+                onClick={() => { navigate(`/events/${event.id}`); }}
+                width="fit"
+                />
+            </div>
           </div>
         ))
       ) : (

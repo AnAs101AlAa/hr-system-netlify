@@ -287,6 +287,7 @@ export const useVestStatus = (memberId: string, eventId: string) => {
     queryFn: async () => {
       const data = await eventsApiInstance.fetchVestStatus(memberId, eventId);
       return data;
-    }
+    },
+    enabled: !!memberId && !!eventId,
   });
 };
