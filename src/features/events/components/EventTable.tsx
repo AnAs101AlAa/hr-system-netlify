@@ -77,30 +77,32 @@ const EventsTable = ({ events, setOpenModal }: EventsTableProps) => {
                       {event.location || "N/A"}
                     </div>
                 </td>
-                {userRoles.includes("Admin") && (
-                    <td className="px-4 py-4">
-                        <div className="flex items-center gap-2">
-                            <Button
-                            type="tertiary"
-                            onClick={() => setOpenModal(2)}
-                            buttonText="Edit"
-                            width="fit"
-                            />
-                            <Button
-                            type="danger"
-                            onClick={() => setShowDeleteModal(event.id)}
-                            buttonText="Delete"
-                            width="fit"
-                            />
-                            <Button
-                                type="secondary"
-                                buttonText="Details"
-                                onClick={() => { navigate(`/events/${event.id}`); }}
-                                width="fit"
-                            />
-                        </div>
-                    </td>
-                )}
+                <td className="px-4 py-4">
+                  <div className="flex items-center gap-2">
+                      {userRoles.includes("Admin") && (
+                        <>
+                        <Button
+                        type="tertiary"
+                        onClick={() => setOpenModal(2)}
+                        buttonText="Edit"
+                        width="fit"
+                        />
+                        <Button
+                        type="danger"
+                        onClick={() => setShowDeleteModal(event.id)}
+                        buttonText="Delete"
+                        width="fit"
+                        />
+                        </>
+                      )}
+                      <Button
+                          type="secondary"
+                          buttonText="Details"
+                          onClick={() => { navigate(`/events/${event.id}`); }}
+                          width="fit"
+                      />
+                  </div>
+                </td>
               </tr>
             ))
           ) : (

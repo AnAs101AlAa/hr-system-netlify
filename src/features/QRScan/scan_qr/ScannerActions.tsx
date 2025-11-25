@@ -65,7 +65,7 @@ const ScannerActions = ({
 
   useEffect(() => {
     if (vestStatus) {
-      setCurrentVestStatus(vestStatus);
+      setCurrentVestStatus(vestStatus || "NotReceived");
     }
   }, [vestStatus]);
 
