@@ -8,8 +8,8 @@ const ActionCards = () => {
   const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
 
   return (
-    <div className="space-y-4">
-      <p className="text-dashboard-heading font-bold text-[18px] md:text-[20px] lg:text-[24px] leading-[20px] font-inter">
+    <div className="space-y-4 w-full">
+      <p className="text-dashboard-heading font-bold text-[18px] md:text-[20px] lg:text-[24px] leading-[20px] font-inter px-3">
         Quick Actions
       </p>
       <div className="flex flex-row justify-between mx-auto border-y-4 border-primary shadow-lg">

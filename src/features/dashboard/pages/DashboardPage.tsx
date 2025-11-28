@@ -45,11 +45,9 @@ const Dashboard = () => {
 
   return (
     <WithNavbar>
-      <div className="mx-4 md:mx-6 lg:mx-8 flex flex-col md:items-center">
-        <div className="md:w-[90%] lg:w-[80%] xl:w-3/4 space-y-6 md:space-y-7 lg:space-y-8">
+      <div className="xl:w-2/3 lg:w-3/4 md:w-[82%] sm:w-[92%] w-full mx-auto flex flex-col md:items-center gap-3 rounded-xl shadow-[0_6px_20px_rgba(0,0,0,0.1)] mt-4">
           <WelcomeCard />
           <ActionCards />
-        </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center w-full flex-col mt-10">
@@ -59,8 +57,8 @@ const Dashboard = () => {
             </p>
           </div>
         ) : (
-          <div className="md:w-[90%] lg:w-[80%] xl:w-3/4 space-y-4 md:space-y-5 lg:space-y-6 md:block">
-            <div className="mt-3 md:mt-4 lg:mt-5">
+          <div className="w-full space-y-4 md:space-y-5 lg:space-y-6 md:block pb-5 px-3">
+            <div className="-mt-3 md:-mt-4 lg:mt-5">
               {upcomingEvents.length > 0 && (
                 <Pagination
                   currentPage={currentPage}

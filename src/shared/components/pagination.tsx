@@ -25,7 +25,7 @@ const Pagination = ({
     <div className="relative mx-auto my-8 sm:my-9 md:my-10">
       <div className="h-full w-full relative gap-6 flex flex-col ">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
-          <h3 className="text-dashboard-heading font-bold text-[18px] sm:text-[22px] md:text-[25px] lg:text-[28px]">
+          <h3 className="text-dashboard-heading font-bold text-[18px] md:text-[20px] lg:text-[24px]">
             {title}
           </h3>
           {onAdd && (
