@@ -1,8 +1,8 @@
 import type { DateQuestion, MCQQuestion, EssayQuestion, NumberQuestion, UploadQuestion } from "@/shared/types/question";
 
 const SUBMISSION_CATCHER = {
-    title: "finished",
-    description: "You have successfully submitted the form. Thank you!",
+    title: "Finished",
+    description: "You may now click submit to finish up your form submission.",
     questions: [],
 }
 
