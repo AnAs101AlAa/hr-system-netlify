@@ -36,9 +36,14 @@ const TeamCardView = ({
             <div className="flex justify-between items-start">
               <div>
                 <p className="font-semibold text-contrast text-[18px] md:text-[20px]">
-                  {team.name || "N/A"}
+                  {`Team: ${team.name || "N/A"}`}
                 </p>
               </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-dashboard-heading">
+                {"Department: " + (team.department || "N/A")}
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-sm mt-4">
@@ -48,6 +53,14 @@ const TeamCardView = ({
                 </span>
                 <p className="text-dashboard-card-text">
                   {team.code || "N/A"}
+                </p>
+              </div>
+              <div>
+                <span className="font-medium text-dashboard-heading">
+                  Course:
+                </span>
+                <p className="text-dashboard-card-text">
+                  {team.course || "N/A"}
                 </p>
               </div>
               <div>

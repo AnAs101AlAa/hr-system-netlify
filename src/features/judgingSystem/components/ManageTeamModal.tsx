@@ -1,29 +1,36 @@
 import type { Team } from "@/shared/types/judgingSystem";
-import { Modal, TextDisplayEdit, Button } from "tccd-ui";
+import { Modal, InputField, Button, DropdownMenu } from "tccd-ui";
 import { HiOutlineTrash } from "react-icons/hi2";
 import useManageTeamModalUtils from "../utils/ManageTeamFormUtils";
+import DEPARTMENT_LIST from "@/constants/departments";
 
 export default function ManageTeamModal({isOpen, onClose, mode, teamData, eventId}: {isOpen: boolean; onClose: () => void; mode: number; teamData?: Team; eventId: string}) {
     const { teamDataState, handleAddMember, handleDeleteMember, handleChangeMemberName, handleChangeTeamData, formErrors, submitTeam, isLoading } = useManageTeamModalUtils(eventId, mode, teamData);
-    
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={mode === 1 ? "Create New Team" : "Edit Team"}>
             <div className="space-y-3.5 md:mb-8 mb-6">
                 <p className="text-[16px] md:text-[17px] lg:text-[18px] font-semibold text-contrast">Team Information</p>
                 <div className="space-y-0.5">
-                    <TextDisplayEdit label="Team Name" value={teamDataState ? teamDataState.name : ""} placeholder="Enter team name" onChange={val => handleChangeTeamData("name", val)} />
+                    <InputField id="teamName" label="Team Name" value={teamDataState ? teamDataState.name : ""} placeholder="Enter team name" onChange={e => handleChangeTeamData("name", e.target.value)} />
                     {formErrors.find(err => err.attr === "name") && 
                         <p className="text-red-500 text-sm">{formErrors.find(err => err.attr === "name")?.value}</p>
                     }
                 </div>
                 <div className="space-y-0.5">
-                    <TextDisplayEdit label="Team Code" value={teamDataState ? teamDataState.code : ""} placeholder="Enter team code" onChange={val => handleChangeTeamData("code", val)} />
+                    <DropdownMenu id="department" label="Department" options={DEPARTMENT_LIST} value={teamDataState ? teamDataState.department : ""} placeholder="Select Department" onChange={(option) => handleChangeTeamData("department", option)} />
+                    {formErrors.find(err => err.attr === "department") && 
+                        <p className="text-red-500 text-sm">{formErrors.find(err => err.attr === "department")?.value}</p>
+                    }                
+                </div>
+                <div className="space-y-0.5">
+                    <InputField id="teamCode" label="Team Code" value={teamDataState ? teamDataState.code : ""} placeholder="Enter team code" onChange={e => handleChangeTeamData("code", e.target.value)} />
                     {formErrors.find(err => err.attr === "code") && 
                         <p className="text-red-500 text-sm">{formErrors.find(err => err.attr === "code")?.value}</p>
                     }
                 </div>
                 <div className="space-y-0.5">
-                    <TextDisplayEdit label="Course" value={teamDataState ? teamDataState.course : ""} placeholder="Enter course name" onChange={val => handleChangeTeamData("course", val)} />
+                    <InputField id="course" label="Course" value={teamDataState ? teamDataState.course : ""} placeholder="Enter course name" onChange={e => handleChangeTeamData("course", e.target.value)} />
                     {formErrors.find(err => err.attr === "course") && 
                         <p className="text-red-500 text-sm">{formErrors.find(err => err.attr === "course")?.value}</p>
                     }                
@@ -37,11 +44,11 @@ export default function ManageTeamModal({isOpen, onClose, mode, teamData, eventI
                     ) : (
                         <div className="max-h-[272px] overflow-auto space-y-2">
                         {teamDataState && teamDataState.teamMembers.map((member, index) => (
-                            <div key={index} className="flex h-9 md:h-11">
-                                <div className="flex justify-center border border-r-0 border-gray-300 rounded-l-lg flex-grow items-center lg:text-[16px] md:text-[15px] text-[14px] font-medium text-contrast">
+                            <div key={index} className="flex h-9 md:h-10">
+                                <div className="flex justify-center pl-2 border border-r-0 border-gray-300 rounded-l-full flex-grow items-center lg:text-[16px] md:text-[15px] text-[14px] font-medium text-contrast">
                                     <input placeholder={`Member ${index + 1}`} className="h-full w-full px-2 focus:outline-none" onChange={(e) => handleChangeMemberName(member.id, e.target.value)} value={member.name} />
                                 </div>
-                                <div className="flex justify-center items-center bg-primary/85 w-[15%] lg:w-[10%] rounded-r-lg cursor-pointer hover:bg-primary transition-colors" onClick={() => handleDeleteMember(member.id)}>
+                                <div className="flex justify-center items-center bg-primary/85 w-[15%] lg:w-[10%] rounded-r-full cursor-pointer hover:bg-primary transition-colors" onClick={() => handleDeleteMember(member.id)}>
                                     <HiOutlineTrash className="lg:size-4.5 text-white" />
                                 </div>
                             </div>
@@ -51,7 +58,7 @@ export default function ManageTeamModal({isOpen, onClose, mode, teamData, eventI
                     <Button type="primary" buttonText="Add Member" width="fit" onClick={handleAddMember} />
                 </div>
             </div>
-            <hr className="mt-2 md:mt-3 border-muted-primary" />
+            <hr className="mt-3 md:mt-5 border-gray-300" />
             <div className="flex justify-center gap-2 mt-4">
                 <Button type="secondary" buttonText="Cancel" width="auto" onClick={onClose} />
                 <Button type="primary" buttonText={mode === 1 ? "Create Team" : "Save Changes"} width="auto" onClick={submitTeam} loading={isLoading} />

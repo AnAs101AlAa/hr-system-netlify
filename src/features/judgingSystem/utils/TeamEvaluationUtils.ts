@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import { useEventQuestions, useSubmitTeamEvaluation, useGetTeamEvaluation, useUpdateTeamEvaluation, useGetTeam } from "@/shared/queries/judgingSystem/judgeQueries";
 import { useEvent } from "@/shared/queries/events/eventQueries";
@@ -13,13 +13,33 @@ export default function UseTeamEvaluationUtils() {
     const { data: questions, isLoading: isQuestionsLoading, isError: isQuestionsError } = useEventQuestions(eventId!);
     const { data: event, isLoading: isEventLoading, isError: isEventError } = useEvent(eventId!);
     const { data: teamData, isLoading: isTeamLoading, isError: isTeamError } = useGetTeam(teamId!);
-    const getTeamEvaluationMutation = useGetTeamEvaluation();
+    const { data: teamEvaluation, isLoading: isEvaluationLoading, isError: isEvaluationError } = useGetTeamEvaluation(teamId!);
+
     const submitTeamEvaluationMutation = useSubmitTeamEvaluation();
     const updateTeamEvaluationMutation = useUpdateTeamEvaluation();
 
     const [assessmentScores, setAssessmentScores] = useState<{ [questionId: string]: number }>({});
-    const [judgeName, setJudgeName] = useState<string>("");
+    const [extraNotes, setExtraNotes] = useState<string>("");
+    const [teamAttendance, setTeamAttendance] = useState<{ [memberId: string]: boolean }>({});
     const [formErrors, setFormErrors] = useState<{name: string, questions: { [questionId: string]: string }} | null>(null);
+
+    useEffect(() => {
+        if(teamEvaluation) {
+            const initialScores: { [questionId: string]: number } = {};
+            teamEvaluation.evaluationItemScores.forEach(item => {
+                initialScores[item.evaluationItemId] = item.score;
+            });
+            setAssessmentScores(initialScores);
+            setExtraNotes(teamEvaluation.note || "");
+        }
+        if(teamData && teamData.teamMembers) {
+            const attendanceStatus: { [memberId: string]: boolean } = {};
+            teamData.teamMembers.forEach(member => {
+                attendanceStatus[member.id] = false;
+            });
+            setTeamAttendance(attendanceStatus);
+        }
+    }, [teamEvaluation, teamData]);
 
     const handleChangeAssessmentScore = (questionId: string, score: number) => {
         setAssessmentScores(prevScores => ({
@@ -28,40 +48,9 @@ export default function UseTeamEvaluationUtils() {
         }));
     }
 
-    const handleChangeJudgeName = (name: string) => {
-        setJudgeName(name);
-    }
-
-    const handleGetPreviousEvaluation = () => {
-        if (!teamId || judgeName.trim() === "") {
-            toast.error("Please enter your name to retrieve previous evaluation.");
-            return;
-        }
-        getTeamEvaluationMutation.mutate({ teamId, judgeName }, {
-            onSuccess: (evaluation) => {
-                if (evaluation) {
-                    setAssessmentScores(prevScores => {
-                        const newScores = { ...prevScores };
-                        evaluation.forEach(item => {
-                            newScores[item.evaluationItemId] = item.score;
-                        });
-                        return newScores;
-                    });
-                    toast.success("Previous evaluation loaded successfully.");
-                } else {
-                    toast.error("No previous evaluation found for the given name.");
-                }
-            }
-        });
-    }
-
     const validateData = (): boolean => {
         const errors: {name: string, questions: { [questionId: string]: string }} = { name: "", questions: {} };
         let isValid = true;
-        if(judgeName.trim() === "") {
-            errors.name = "Judge name is required.";
-            isValid = false;
-        }
         questions?.forEach(question => {
             const score = assessmentScores[question.id];
             if(score === undefined || score < 0 || score > 10) {
@@ -79,26 +68,16 @@ export default function UseTeamEvaluationUtils() {
             return;
         }
 
-        let submissionMode = false; // false for create, true for update
-
-        await getTeamEvaluationMutation.mutateAsync({ teamId: teamId!, judgeName }, {
-            onSuccess: (existingEvaluation) => {
-                if (existingEvaluation && existingEvaluation?.length > 0) {
-                    submissionMode = true;
-                }
-            }
-        });
-
         const payload : EvaluationSubmission = {
             teamId: teamId!,
-            judgeName: judgeName.trim().toLocaleLowerCase(),
             evaluationItemScores: Object.entries(assessmentScores).map(([questionId, score]) => ({
                 evaluationItemId: questionId,
                 score,
             })),
+            note: extraNotes,
         }
 
-        if(!submissionMode) {
+        if(!teamEvaluation) {
             submitTeamEvaluationMutation.mutate(payload, {
                 onSuccess: () => {
                     toast.success("Evaluation submitted successfully!");
@@ -129,21 +108,28 @@ export default function UseTeamEvaluationUtils() {
         navigate(-1);
     }
 
+    const handleChangeTeamAttendance = (memberId: string, isPresent: boolean) => {
+        setTeamAttendance(prevStatus => ({
+            ...prevStatus,
+            [memberId]: isPresent,
+        }));
+    }
+
     return {
         questions,
+        extraNotes,
+        teamAttendance,
+        setExtraNotes,
         teamData,
-        isFetchingData: isQuestionsLoading || isEventLoading || isTeamLoading,
-        isFetchingError: isQuestionsError || isEventError || isTeamError,
+        isFetchingData: isQuestionsLoading || isEventLoading || isTeamLoading || isEvaluationLoading,
+        isFetchingError: isQuestionsError || isEventError || isTeamError || isEvaluationError,
         event,
         assessmentScores,
-        judgeName,
         handleNavigateBack,
-        handleGetPreviousEvaluation,
         handleChangeAssessmentScore,
-        handleChangeJudgeName,
         handleSubmitEvaluation,
+        handleChangeTeamAttendance,
         isSubmittingEvaluation: submitTeamEvaluationMutation.isPending || updateTeamEvaluationMutation.isPending,
-        isFetchingPreviousEvaluation: getTeamEvaluationMutation.isPending,
         formErrors,
     }
 }

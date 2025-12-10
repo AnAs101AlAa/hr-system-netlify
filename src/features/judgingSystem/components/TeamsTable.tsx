@@ -16,7 +16,7 @@ const TeamsTable = ({ teams, setOpenModal }: TeamsTableProps) => {
   const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
   const [displayedTeams, setDisplayedTeams] = useState<Team[]>(teams);
   const [showDeleteModal, setShowDeleteModal] = useState("");
-
+  
   useEffect(() => {
     setDisplayedTeams(teams);
   }, [teams]);
@@ -33,6 +33,12 @@ const TeamsTable = ({ teams, setOpenModal }: TeamsTableProps) => {
             </th>
             <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
               Code
+            </th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+              Course
+            </th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
+              Department
             </th>
             <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C]">
               Total Score
@@ -59,6 +65,16 @@ const TeamsTable = ({ teams, setOpenModal }: TeamsTableProps) => {
                 <td className="px-4 py-4">
                   <div className="font-medium text-dashboard-card-text whitespace-nowrap">
                     {team.code || "N/A"}
+                  </div>
+                </td>
+                <td className="px-4 py-4">
+                  <div className="font-medium text-dashboard-card-text whitespace-nowrap">
+                    {team.course || "N/A"}
+                  </div>
+                </td>
+                <td className="px-4 py-4">
+                  <div className="font-medium text-dashboard-card-text whitespace-nowrap">
+                    {team.department || "N/A"}
                   </div>
                 </td>
                 <td className="px-4 py-4">

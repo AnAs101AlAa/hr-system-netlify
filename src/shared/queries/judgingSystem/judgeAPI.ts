@@ -3,7 +3,7 @@ import type { JudgeQuestion, Team, EvaluationSubmission, EvaluationItem } from "
 
 const JUDGING_API_URL = "/v1";
 
-export async function getEventTeams(eventId: string, page: number, count: number, sortBy: string, nameKey: string, codeKey: string): Promise<Team[]> {
+export async function getEventTeams(eventId: string, page: number, count: number, sortBy: string, nameKey: string, codeKey: string, courseKey: string, departmentKey: string): Promise<Team[]> {
     let SortBy: string | undefined = undefined;
     let Order: string | undefined = undefined;
 
@@ -26,17 +26,11 @@ export async function getEventTeams(eventId: string, page: number, count: number
     if (Order) params.SortingDirection = Order;
     if (nameKey) params.Name = nameKey;
     if (codeKey) params.Code = codeKey;
+    if (courseKey) params.Course = courseKey;
+    if (departmentKey) params.Department = departmentKey;
 
     const response = await systemApi.get(`${JUDGING_API_URL}/Team/event/${eventId}`, { params });
-    return response.data.data.data.map((team: Team) => ({
-        id: team.id,
-        name: team.name,
-        teamMembers: team.teamMembers,
-        scores: team.scores,
-        totalScore: team.totalScore,
-        code: team.code,
-        course: team.course,
-    }));
+    return response.data.data.data;
 };
 
 export async function getTeam(teamId: string): Promise<Team> {
@@ -98,14 +92,18 @@ export async function updateTeamEvaluation(payload: EvaluationSubmission): Promi
     await systemApi.put(`${JUDGING_API_URL}/Evaluation/evaluate`, payload);
 }
 
-export async function getTeamEvaluation(teamId: string, judgeName: string): Promise<EvaluationItem[] | null> {
-    const response = await systemApi.get(`${JUDGING_API_URL}/Evaluation/team/${teamId}/${judgeName.trim().toLocaleLowerCase()}`);
+export async function getTeamEvaluation(teamId: string): Promise<EvaluationSubmission | null> {
+    const response = await systemApi.get(`${JUDGING_API_URL}/Evaluation/team/${teamId}/judge`);
     const data = response.data.data.evaluationItemScores.map((item : EvaluationItem) => ({
         evaluationItemId: item.evaluationItemId,
         score: item.score,
     }));
 
-    return data || null;
+    return {
+        teamId: response.data.data.teamId,
+        evaluationItemScores: data,
+        note: response.data.data.note,
+    };
 }
 
 export async function getAllTeamEvaluations(teamId: string): Promise<EvaluationSubmission[]> {

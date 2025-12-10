@@ -8,6 +8,7 @@ import { useState, Activity } from "react";
 import { useSelector } from "react-redux";
 import ConditionalWrapper from "@/shared/utils/conditionalWrapper";
 import logo from "@/assets/TCCD_logo.svg";
+import JudgesPage from "./JudgePage";
 
 export default function JudgingSystemHomePage() {
     const { eventId } = useParams();
@@ -31,15 +32,20 @@ export default function JudgingSystemHomePage() {
             {!isJudge && (
                 <div className="flex flex-row justify-between mx-auto border-b-2 border-primary shadow-md w-full md:w-2/3 lg:w-1/2 mb-5">
                     <div onClick={() => setActiveTab("teams")} className={`flex-1 hover:bg-muted-primary/30 ${activeTab === "teams" ? "bg-muted-primary/15" : "bg-white"} transition-colors duration-200 ease-in-out py-4 md:py-5 shadow-lg flex items-center justify-center p-2 cursor-pointer`}>
-                    <div className="text-dashboard-card-text font-bold text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] leading-[10px] md:leading-[14px] font-inter text-center">
-                        Teams
-                    </div>
+                        <div className="text-dashboard-card-text font-bold text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] leading-[10px] md:leading-[14px] font-inter text-center">
+                            Teams
+                        </div>
                     </div>
                     <div onClick={() => setActiveTab("questions")} className={`flex-1 hover:bg-muted-primary/30 ${activeTab === "questions" ? "bg-muted-primary/15" : "bg-white"} transition-colors duration-200 ease-in-out shadow-lg flex items-center justify-center p-2 cursor-pointer`}>
                         <div className="text-dashboard-card-text font-bold text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] leading-[10px] md:leading-[14px] font-inter text-center">
                             Question
                         </div>
                     </div>
+                    {!isJudge && <div onClick={() => setActiveTab("judges")} className={`flex-1 hover:bg-muted-primary/30 ${activeTab === "judges" ? "bg-muted-primary/15" : "bg-white"} transition-colors duration-200 ease-in-out shadow-lg flex items-center justify-center p-2 cursor-pointer`}>
+                        <div className="text-dashboard-card-text font-bold text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] leading-[10px] md:leading-[14px] font-inter text-center">
+                            Judges
+                        </div>
+                    </div>}
                 </div>
             )}
             <Activity mode={activeTab === "questions" && !isJudge ? "visible" : "hidden"}>
@@ -47,6 +53,9 @@ export default function JudgingSystemHomePage() {
             </Activity>
             <Activity mode={activeTab === "teams" || isJudge ? "visible" : "hidden"}>
                 <TeamsPage event={event} mode={!isJudge} />
+            </Activity>
+            <Activity mode={activeTab === "judges" && !isJudge ? "visible" : "hidden"}>
+                <JudgesPage event={event} />
             </Activity>
         </div>
     )
