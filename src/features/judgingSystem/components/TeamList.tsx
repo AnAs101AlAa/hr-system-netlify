@@ -1,4 +1,4 @@
-import { DropdownMenu } from "tccd-ui";
+import { DropdownMenu, Button } from "tccd-ui";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useResearchTeams } from "@/shared/queries/judgingSystem/judgeQueries";
@@ -7,18 +7,27 @@ import type { FilterSearchParams } from "../types";
 import { TEAM_SORTING_OPTIONS } from "@/constants/judgingSystemConstants";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaFilter } from "react-icons/fa6";
-import TeamsTable from "./TeamsTable";
-import TeamCardView from "./TeamCardView";
 import FilterModal from "./FiltersModal";
+import Table from "@/shared/components/table/Table";
+import CardView from "@/shared/components/table/CardView";
+import { useDeleteTeam } from "@/shared/queries/judgingSystem/judgeQueries";
+import { toast } from "react-hot-toast";
+import { getErrorMessage } from "@/shared/utils/errorHandler";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => {
-    const eventId = useParams().eventId || "";
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
-    const [debouncedTeamName, setDebouncedTeamName] = useState<string>("");
-    const [debouncedTeamCode, setDebouncedTeamCode] = useState<string>("");
-    const [debouncedDepartmentKey, setDebouncedDepartmentKey] = useState<string>("");
-    const [debouncedCourseKey, setDebouncedCourseKey] = useState<string>("");
+  const eventId = useParams().eventId || "";
+  const navigate = useNavigate();
+  const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
+  
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
+  const [debouncedTeamName, setDebouncedTeamName] = useState<string>("");
+  const [debouncedTeamCode, setDebouncedTeamCode] = useState<string>("");
+  const [debouncedDepartmentKey, setDebouncedDepartmentKey] = useState<string>("");
+  const [debouncedCourseKey, setDebouncedCourseKey] = useState<string>("");
+  const deleteTeamMutation = useDeleteTeam();
 
     const searchParams: FilterSearchParams = {
         nameKey: debouncedTeamName,
@@ -31,12 +40,28 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
         setCourseKey: setDebouncedCourseKey,
     };
 
+    
+    const handleConfirmDelete = (item: Team) => {
+      deleteTeamMutation.mutate(item.id, {
+        onSuccess: () => {
+          toast.success("Form deleted successfully");
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        },
+        onError: (error: any) => {
+          const errorMessage = getErrorMessage(error);
+          toast.error(errorMessage);
+        },
+      });
+    };
+
     useEffect(() => {
         setCurrentPage(1);
     }, [debouncedTeamName, debouncedTeamCode]);
 
     const [sortOption, setSortOption] = useState<string>("");
-    const { data: teams, isLoading, isError } = useResearchTeams(eventId, currentPage, 20, sortOption, debouncedTeamName, debouncedTeamCode, debouncedCourseKey, debouncedDepartmentKey);
+    const { data: teams, isLoading, isError } = useResearchTeams(eventId, currentPage, 20, sortOption, debouncedTeamName, debouncedTeamCode, debouncedCourseKey, debouncedDepartmentKey, userRoles.includes("Judge") && userRoles.length === 1 ? "judge" : "admin");
 
     return (
       <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
@@ -98,16 +123,100 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
           </div>
         ) : (
         <>
-          {/* Desktop Table View */}
-          <TeamsTable
-            teams={teams?.teams || []}
-            setOpenModal={setModalOpen}
+          <Table
+            items={teams?.teams || []}
+            columns={[
+              { key: "name", label: "Team Name", width: "w-1/3" },
+              { key: "code", label: "Team Code", width: "w-1/4" },
+              { key: "department", label: "Department", width: "w-1/4" },
+              { key: "course", label: "Course", width: "w-1/6" },
+              { key: "totalScore", label: "Total Score", width: "w-1/6"}
+            ]}
+            renderActions={(item, triggerDelete) => 
+              <>
+                  {(userRoles.includes("Judge") && userRoles.length === 1) ? (
+                    <Button
+                      type="primary"
+                      buttonText="Start Assessment "
+                      onClick={() => { navigate(`/judging-system/assess-team/${eventId}/${item.id}`); }}
+                      width="fit"
+                    />
+                  ) : (
+                    <>
+                      <Button
+                        type="tertiary"
+                        buttonText="View Details"
+                        onClick={() => { navigate(`/judging-system/team/${item.id}`); }}
+                        width="fit"
+                      />
+                      <Button
+                        type="secondary"
+                        onClick={() => setModalOpen(item)}
+                        buttonText="Edit"
+                        width="fit"
+                      />
+                      <Button
+                        type="danger"
+                        onClick={() => triggerDelete(item.id)}
+                        buttonText="Delete"
+                        width="fit"
+                      />
+                    </>
+                  )}
+            </>}
+            confirmationAction={handleConfirmDelete}
+            isSubmitting={deleteTeamMutation.isPending}
+            modalTitle="Delete Team"
+            modalSubTitle="Are you sure you want to delete this team? This action cannot be undone."
           />
 
-          {/* Mobile Card View */}
-          <TeamCardView
-            teams={teams?.teams || []}
-            setOpenModal={setModalOpen}
+          <CardView
+            items={teams?.teams || []}
+            titleKey="name"
+            renderButtons={(item, triggerDelete) =>
+              <>
+                {(userRoles.includes("Judge") && userRoles.length === 1) ? (
+                  <Button
+                    type="primary"
+                    buttonText="Start Assessment "
+                    onClick={() => { navigate(`/judging-system/assess-team/${eventId}/${item.id}`); }}
+                    width="fit"
+                  />
+                ) : (
+                  <>
+                    <Button
+                      type="tertiary"
+                      buttonText="View Details"
+                      onClick={() => { navigate(`/judging-system/team/${item.id}`); }}
+                      width="fit"
+                    />
+                    <Button
+                      type="secondary"
+                      onClick={() => setModalOpen(item)}
+                      buttonText="Edit"
+                      width="fit"
+                    />
+                    <Button
+                      type="danger"
+                      onClick={() => triggerDelete(item.id)}
+                      buttonText="Delete"
+                      width="fit"
+                    />
+                  </>
+                )}
+              </>
+            }
+            renderedFields={[
+              { key: "code", label: "Team Code" },
+              { key: "department", label: "Department" },
+              { key: "course", label: "Course" },
+              { key: "totalScore", label: "Total Score" }
+            ]}
+            modalTitle="Delete Team"
+            modalSubTitle="Are you sure you want to delete this team? This action cannot be undone."
+            confirmationAction={handleConfirmDelete}
+            isSubmitting={deleteTeamMutation.isPending}
+            emptyMessage="No teams found."
           />
         </>
         )}

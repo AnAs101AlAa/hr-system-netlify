@@ -4,26 +4,34 @@ import ConfirmActionModal from "@/features/judgingSystem/components/ConfirmActio
 interface CardViewProps<T> {
   items: T[];
   titleKey: keyof T;
-  renderedFields: { label: string; key: keyof T; formatter?: (value: any) => string }[];
-  modalTitle: string;
-  modalSubTitle: string;
-  isSubmitting: boolean;
-  confirmationAction: (item: T) => void;
-  renderButtons?: (item: T, index: number) => React.ReactNode;
+  renderedFields: { 
+    label: string; 
+    key: keyof T; 
+    formatter?: (value: any, item?: T) => any;
+    fullWidth?: boolean;
+  }[];
+  modalTitle?: string;
+  modalSubTitle?: string;
+  isSubmitting?: boolean;
+  confirmationAction?: (item: T) => void;
+  renderButtons?: (item: T, triggerDelete: (id: string) => void, index: number, setItem: (item: T) => void) => React.ReactNode;
+  emptyMessage?: string;
 }
 
 const CardView = <T extends { id?: string }>({ 
   items, 
   titleKey,
   renderedFields,
-  modalTitle, 
-  modalSubTitle, 
+  modalTitle = "", 
+  modalSubTitle = "", 
   confirmationAction,
-  isSubmitting,
+  isSubmitting = false,
   renderButtons,
+  emptyMessage = "No items found",
 }: CardViewProps<T>) => {
   const [showDeleteModal, setShowDeleteModal] = useState("");
   const [displayedItems, setDisplayedItems] = useState<T[]>(items);
+  const [, setSelectedItem] = useState<T | null>(null);
   
   useEffect(() => {
     setDisplayedItems(items);
@@ -31,15 +39,17 @@ const CardView = <T extends { id?: string }>({
 
   return (
     <div className="lg:hidden divide-y divide-gray-100">
-      <ConfirmActionModal 
-        item={items.find(item => item.id === showDeleteModal) as T}
-        title={modalTitle} 
-        subtitle={modalSubTitle} 
-        isOpen={!!showDeleteModal} 
-        onClose={() => setShowDeleteModal("")} 
-        onSubmit={(target: T) => confirmationAction(target)} 
-        isSubmitting={isSubmitting}
-      />
+      {modalTitle && confirmationAction && (
+        <ConfirmActionModal 
+          item={items.find(item => item.id === showDeleteModal) as T}
+          title={modalTitle} 
+          subtitle={modalSubTitle} 
+          isOpen={!!showDeleteModal} 
+          onClose={() => setShowDeleteModal("")} 
+          onSubmit={(target: T) => confirmationAction(target)} 
+          isSubmitting={isSubmitting}
+        />
+      )}
         
       {displayedItems && displayedItems.length > 0 ? (
         displayedItems.map((item, index) => (
@@ -52,21 +62,21 @@ const CardView = <T extends { id?: string }>({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-sm mt-4">
+            <div className="flex flex-wrap gap-4 text-sm mt-4">
               {renderedFields.map((field, idx) => {
                 const value = item[field.key];
                 const displayValue = field.formatter 
-                  ? field.formatter(value) 
+                  ? field.formatter(value, item) 
                   : String(value || "N/A");
                 
                 return (
-                  <div key={idx}>
-                    <span className="font-medium text-dashboard-heading">
-                      {field.label}:
+                  <div key={idx} className={field.fullWidth ? "col-span-2" : ""}>
+                    <span className="font-medium text-dashboard-heading mb-1">
+                      {field.label}
                     </span>
-                    <p className="text-dashboard-card-text">
+                    <div className="text-dashboard-card-text">
                       {displayValue}
-                    </p>
+                    </div>
                   </div>
                 );
               })}
@@ -74,7 +84,7 @@ const CardView = <T extends { id?: string }>({
 
             {renderButtons && (
               <div className="mt-4 flex justify-center items-center gap-3">
-                {renderButtons(item, index)}
+                {renderButtons(item, (id: string) => setShowDeleteModal(id), index, (item: T) => setSelectedItem(item))}
               </div>
             )}
           </div>
@@ -82,7 +92,7 @@ const CardView = <T extends { id?: string }>({
       ) : (
         <div className="p-8 text-center">
           <div className="text-dashboard-description">
-            <p className="text-lg font-medium">No items found</p>
+            <p className="text-lg font-medium">{emptyMessage}</p>
           </div>
         </div>
       )}

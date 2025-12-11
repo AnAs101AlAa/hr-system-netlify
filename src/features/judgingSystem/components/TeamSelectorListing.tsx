@@ -4,24 +4,71 @@ import { useParams } from "react-router-dom";
 import { useResearchTeams, useGetAssignedTeamsForJudge, useAssignTeamsToJudge, useRemoveTeamFromJudge } from "@/shared/queries/judgingSystem/judgeQueries";
 import { TEAM_SORTING_OPTIONS } from "@/constants/judgingSystemConstants";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import TeamsTable from "./TeamsTable";
-import TeamCardView from "./TeamCardView";
 import { SearchField } from "tccd-ui";
 import type { Team } from "@/shared/types/judgingSystem";
 import toast from "react-hot-toast";
+import Table from "@/shared/components/table/Table";
+import CardView from "@/shared/components/table/CardView";
 
 const TeamSelectorListing = () => {
     const { eventId, judgeId } = useParams<{ eventId: string; judgeId: string }>();
+
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [debouncedTeamName, setDebouncedTeamName] = useState<string>("");
     const [sortOption, setSortOption] = useState<string>("");
     const [availableTeams, setAvailableTeams] = useState<{teams: Team[]; total: number}>({teams: [], total: 0});
     const [assignedTeams, setAssignedTeams] = useState<Team[]>([]);
 
-    const { data: teams, isLoading: isTeamsLoading, isError: isTeamsError } = useResearchTeams(eventId!, currentPage, 1000, sortOption, debouncedTeamName, "", "", "");
+    const { data: teams, isLoading: isTeamsLoading, isError: isTeamsError } = useResearchTeams(eventId!, currentPage, 1000, sortOption, debouncedTeamName, "", "", "", "admin");
     const { data: assignedTeamsData, isLoading: isAssignedTeamsLoading, isError: isAssignedTeamsError } = useGetAssignedTeamsForJudge(judgeId!);
     const assignTeamsToJudgeMutation = useAssignTeamsToJudge();
     const removeTeamFromJudgeMutation = useRemoveTeamFromJudge();
+
+    const renderDataSections = (items: Team[], mode: number) => {
+      return (
+        <>
+          <Table
+            items={items || []}
+            columns={[
+              { key: "name", label: "Team Name", width: "w-1/3" },
+              { key: "code", label: "Team Code", width: "w-1/4" },
+              { key: "department", label: "Department", width: "w-1/4" },
+              { key: "course", label: "Course", width: "w-1/6" },
+              { key: "totalScore", label: "Total Score", width: "w-1/6"}
+            ]}
+            renderActions={(item) => 
+              <Button
+                type={mode === 1 ? "tertiary" : "danger"}
+                buttonText={mode === 1 ? "Add" : "Remove"}
+                onClick={() => { if (handleAdjustTeam){ handleAdjustTeam(item, mode === 1);} }}
+                width="fit"
+              /> 
+            }
+            emptyMessage="No teams found."
+          />
+
+          <CardView
+            items={teams?.teams || []}
+            titleKey="name"
+            renderButtons={(item) =>
+              <Button
+                    type={mode === 1 ? "tertiary" : "danger"}
+                    buttonText={mode === 1 ? "Add" : "Remove"}
+                    onClick={() => { if (handleAdjustTeam) handleAdjustTeam(item, mode === 1); }}
+                    width="fit"
+                  />
+            }
+            renderedFields={[
+              { key: "code", label: "Team Code" },
+              { key: "department", label: "Department" },
+              { key: "course", label: "Course" },
+              { key: "totalScore", label: "Total Score" }
+            ]}
+            emptyMessage="No teams found."
+          />
+        </>
+      )
+    }
 
     const handleAdjustTeam = (team: Team, op: boolean) => {
       if(op) {
@@ -56,7 +103,6 @@ const TeamSelectorListing = () => {
         for (const team of teamsToRemove) {
           await removeTeamFromJudgeMutation.mutateAsync({ judgeId: judgeId!, teamId: team.id });
         }
-        
         toast.success("Team assignments updated successfully.");
         setTimeout(() => {
           window.history.back();
@@ -98,23 +144,7 @@ const TeamSelectorListing = () => {
               <p className="text-contrast">Error loading teams. Please try again.</p>
             </div>
           ) : (
-          <>
-            {/* Desktop Table View */}
-            <TeamsTable
-              teams={assignedTeams || []}
-              setOpenModal={() => {}}
-              handleAdjustTeam={handleAdjustTeam}
-              mode={2}
-            />
-
-            {/* Mobile Card View */}
-            <TeamCardView
-              teams={assignedTeams || []}
-              setOpenModal={() => {}}
-              handleAdjustTeam={handleAdjustTeam}
-              mode={2}
-            />
-          </>
+            renderDataSections(assignedTeams, 2)
           )}
         </div>
         <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
@@ -171,23 +201,7 @@ const TeamSelectorListing = () => {
               <p className="text-contrast">Error loading teams. Please try again.</p>
             </div>
           ) : (
-          <>
-            {/* Desktop Table View */}
-            <TeamsTable
-              teams={availableTeams.teams || []}
-              handleAdjustTeam={handleAdjustTeam}
-              setOpenModal={() => {}}
-              mode={1}
-            />
-
-            {/* Mobile Card View */}
-            <TeamCardView
-              teams={availableTeams.teams || []}
-              handleAdjustTeam={handleAdjustTeam}
-              setOpenModal={() => {}}
-              mode={1}
-            />
-          </>
+            renderDataSections(availableTeams.teams, 1)
           )}
         </div>
         <hr className="border-gray-200" />
