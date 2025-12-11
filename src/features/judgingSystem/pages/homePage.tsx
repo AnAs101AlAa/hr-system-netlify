@@ -30,7 +30,7 @@ export default function JudgingSystemHomePage() {
             <p className="text-center text-[22px] md:text-[24px] lg:text-[26px] text-primary font-bold">{event?.title}'s Judging Board</p>
             <p className="text-center mb-4 md:mb-6 lg:text-[16px] md:text-[15px] text-[14px] text-inactive-tab-text">Manage teams and their scoring for this event.</p>
             {!isJudge && (
-                <div className="flex flex-row justify-between mx-auto border-b-2 border-primary shadow-md w-full md:w-2/3 lg:w-1/2 mb-5">
+                <div className="flex flex-row justify-between mx-auto border-b-2 border-primary shadow-md w-full md:w-3/4 lg:w-2/3 mb-5">
                     <div onClick={() => setActiveTab("teams")} className={`flex-1 hover:bg-muted-primary/30 ${activeTab === "teams" ? "bg-muted-primary/15" : "bg-white"} transition-colors duration-200 ease-in-out py-4 md:py-5 shadow-lg flex items-center justify-center p-2 cursor-pointer`}>
                         <div className="text-dashboard-card-text font-bold text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] leading-[10px] md:leading-[14px] font-inter text-center">
                             Teams

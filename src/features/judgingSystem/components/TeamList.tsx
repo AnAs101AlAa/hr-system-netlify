@@ -44,7 +44,7 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
         <div className="p-4 border-b border-dashboard-border space-y-2">
           <div className="flex items-center justify-between mb-4">
             <p className="text-md md:text-lg lg:text-xl font-bold text-[#72747A]">
-              Teams {teams ? `(${teams.length})` : ""}
+              Teams {teams ? `(${teams.total})` : ""}
             </p>
             <div className="flex gap-2 items-center justify-center">
               <FaChevronLeft
@@ -59,9 +59,9 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
                 Page {currentPage}
               </span>
               <FaChevronRight
-                className={`cursor-pointer size-4 ${teams && teams.length < 20 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
+                className={`cursor-pointer size-4 ${teams && teams.teams.length < 20 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
                 onClick={() => {
-                  if (teams && teams.length === 20) {
+                  if (teams && teams.teams.length === 20) {
                     setCurrentPage(currentPage + 1);
                   }
                 }}
@@ -100,13 +100,13 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
         <>
           {/* Desktop Table View */}
           <TeamsTable
-            teams={teams || []}
+            teams={teams?.teams || []}
             setOpenModal={setModalOpen}
           />
 
           {/* Mobile Card View */}
           <TeamCardView
-            teams={teams || []}
+            teams={teams?.teams || []}
             setOpenModal={setModalOpen}
           />
         </>

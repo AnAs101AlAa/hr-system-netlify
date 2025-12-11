@@ -1,5 +1,5 @@
 import { useMutation, useQuery, type UseQueryResult } from "@tanstack/react-query"
-import type { EvaluationSubmission, JudgeQuestion, Team } from "@/shared/types/judgingSystem"
+import type { EvaluationSubmission, Judge, JudgeQuestion, Team } from "@/shared/types/judgingSystem"
 import * as JudgeAPI from "./judgeAPI";
 import DEPARTMENT_LIST from "@/constants/departments";
 
@@ -20,19 +20,16 @@ const judgeKeys = {
     getAllEvaluations: (teamId: string) => [...judgeKeys.all, "evaluations", teamId] as const,
 };
 
-export const useResearchTeams = (eventId: string, page: number, count: number, sortBy: string, nameKey: string, codeKey: string, courseKey: string, departmentKey: string): UseQueryResult<Team[], Error> => {
+export const useResearchTeams = (eventId: string, page: number, count: number, sortBy: string, nameKey: string, codeKey: string, courseKey: string, departmentKey: string): UseQueryResult<{teams:Team[]; total: number}, Error> => {
     return useQuery({
         queryKey: judgeKeys.getTeams(page, count, sortBy, nameKey, codeKey, courseKey, departmentKey),
             queryFn: async () => {
             const teams = await JudgeAPI.getEventTeams(eventId, page, count, sortBy, nameKey, codeKey, courseKey, departmentKey);
-            const formattedTeams = teams.map(team => {
+            const formattedTeams = teams.data.map((team: Team) => {
                 const departmentName = DEPARTMENT_LIST.find(dept => dept.value === team.department)?.label || team.department;
-                return {
-                    ...team,
-                    department: departmentName,
-                };
+                return { ...team, department: departmentName };
             });
-            return formattedTeams;
+            return { teams: formattedTeams, total: teams.total };
         },
     });
 };
@@ -176,4 +173,51 @@ export const useGetAllTeamEvaluations = (teamId: string) => {
         }
     },
   });
+}
+
+export const useGetJudgesForEvent = (page: number, count: number, nameKey: string): UseQueryResult<Judge[], Error> => {
+    return useQuery({
+        queryKey: ['judgingSystem', 'judges', page, count, nameKey],
+        queryFn: async () => {
+            const judges = await JudgeAPI.getJudgesForEvent(page, count, nameKey);
+            return judges;
+        }
+    });
+}
+
+export const useGetAssignedTeamsForJudge = (judgeId: string): UseQueryResult<Team[], Error> => {
+    return useQuery({
+        queryKey: ['judgingSystem', 'assignedTeams', judgeId],
+        queryFn: async () => {
+            const teams = await JudgeAPI.getAssignedTeamsForJudge(judgeId);
+            return teams;
+        }
+    });
+}
+
+export const useCreateJudge = () => {
+    return useMutation({
+        mutationKey: ['judgingSystem', 'createJudge'],
+        mutationFn: async (judgeData: Judge) => {
+            await JudgeAPI.createJudge(judgeData);
+        },
+    });
+}
+
+export const useAssignTeamsToJudge = () => {
+    return useMutation({
+        mutationKey: ['judgingSystem', 'assignTeamsToJudge'],
+        mutationFn: async (payload: { judgeId: string; teamIds: string[] }) => {
+            await JudgeAPI.assignTeamToJudge(payload.judgeId, payload.teamIds);
+        },
+    });
+}
+
+export const useRemoveTeamFromJudge = () => {
+    return useMutation({
+        mutationKey: ['judgingSystem', 'removeTeamFromJudge'],
+        mutationFn: async (payload: { judgeId: string; teamId: string }) => {
+            await JudgeAPI.removeTeamFromJudge(payload.judgeId, payload.teamId);
+        },
+    });
 }

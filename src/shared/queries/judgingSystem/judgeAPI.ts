@@ -1,9 +1,9 @@
 import { systemApi } from "../axiosInstance";
-import type { JudgeQuestion, Team, EvaluationSubmission, EvaluationItem } from "@/shared/types/judgingSystem";
+import type { JudgeQuestion, Team, EvaluationSubmission, EvaluationItem, Judge } from "@/shared/types/judgingSystem";
 
 const JUDGING_API_URL = "/v1";
 
-export async function getEventTeams(eventId: string, page: number, count: number, sortBy: string, nameKey: string, codeKey: string, courseKey: string, departmentKey: string): Promise<Team[]> {
+export async function getEventTeams(eventId: string, page: number, count: number, sortBy: string, nameKey: string, codeKey: string, courseKey: string, departmentKey: string): Promise<any> {
     let SortBy: string | undefined = undefined;
     let Order: string | undefined = undefined;
 
@@ -30,7 +30,7 @@ export async function getEventTeams(eventId: string, page: number, count: number
     if (departmentKey) params.Department = departmentKey;
 
     const response = await systemApi.get(`${JUDGING_API_URL}/Team/event/${eventId}`, { params });
-    return response.data.data.data;
+    return response.data.data;
 };
 
 export async function getTeam(teamId: string): Promise<Team> {
@@ -101,6 +101,9 @@ export async function getTeamEvaluation(teamId: string): Promise<EvaluationSubmi
 
     return {
         teamId: response.data.data.teamId,
+        judgeId: response.data.data.judgeId,
+        judgeName: response.data.data.judgeName,
+        totalScore: response.data.data.totalScore,
         evaluationItemScores: data,
         note: response.data.data.note,
     };
@@ -109,4 +112,36 @@ export async function getTeamEvaluation(teamId: string): Promise<EvaluationSubmi
 export async function getAllTeamEvaluations(teamId: string): Promise<EvaluationSubmission[]> {
     const response = await systemApi.get(`${JUDGING_API_URL}/Evaluation/team/${teamId}`);
     return response.data.data;
+}
+
+export async function getJudgesForEvent(page: number, count: number, nameKey: string): Promise<Judge[]> {
+    const params: Record<string, any> = {
+        page,
+        count,
+    };
+
+    if (nameKey) params.Name = nameKey;
+    const response = await systemApi.get(`${JUDGING_API_URL}/Admin/judges`, { params });
+    return response.data.data.data;
+}
+
+export async function createJudge(judgeData: Judge): Promise<void> {
+    await systemApi.post(`${JUDGING_API_URL}/Admin/judges`, judgeData);
+}
+
+export async function deleteJudge(judgeId: string): Promise<void> {
+    await systemApi.delete(`${JUDGING_API_URL}/Admin/judges/${judgeId}`);
+}
+
+export async function getAssignedTeamsForJudge(judgeId: string): Promise<Team[]> {
+    const response = await systemApi.get(`${JUDGING_API_URL}/Admin/judges/${judgeId}/teams`);
+    return response.data.data.assignedTeams;
+}
+
+export async function assignTeamToJudge(judgeId: string, teamIds: string[]): Promise<void> {
+    await systemApi.post(`${JUDGING_API_URL}/Admin/judges/${judgeId}/teams`, { teamIds });
+}
+
+export async function removeTeamFromJudge(judgeId: string, teamId: string): Promise<void> {
+    await systemApi.delete(`${JUDGING_API_URL}/Admin/judges/${judgeId}/teams/${teamId}`);
 }

@@ -71,9 +71,10 @@ export default function UseTeamEvaluationUtils() {
         const payload : EvaluationSubmission = {
             teamId: teamId!,
             evaluationItemScores: Object.entries(assessmentScores).map(([questionId, score]) => ({
-                evaluationItemId: questionId,
+                evaluationItemId: questionId,                
                 score,
             })),
+            
             note: extraNotes,
         }
 

@@ -3,13 +3,16 @@ import { Modal, InputField, Button, DropdownMenu } from "tccd-ui";
 import { HiOutlineTrash } from "react-icons/hi2";
 import useManageTeamModalUtils from "../utils/ManageTeamFormUtils";
 import DEPARTMENT_LIST from "@/constants/departments";
+import { FaPlus } from "react-icons/fa6";
 
 export default function ManageTeamModal({isOpen, onClose, mode, teamData, eventId}: {isOpen: boolean; onClose: () => void; mode: number; teamData?: Team; eventId: string}) {
     const { teamDataState, handleAddMember, handleDeleteMember, handleChangeMemberName, handleChangeTeamData, formErrors, submitTeam, isLoading } = useManageTeamModalUtils(eventId, mode, teamData);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={mode === 1 ? "Create New Team" : "Edit Team"}>
-            <div className="space-y-3.5 md:mb-8 mb-6">
+            <p className="text-contrast text-[13px] md:text-[14px] lg:text-[15px] mb-2 -mt-3">Fill in the details below to create a new team for this event.</p>
+            <hr className="mb-4 border-gray-300" />
+            <div className="space-y-3 md:mb-8 mb-6">
                 <p className="text-[16px] md:text-[17px] lg:text-[18px] font-semibold text-contrast">Team Information</p>
                 <div className="space-y-0.5">
                     <InputField id="teamName" label="Team Name" value={teamDataState ? teamDataState.name : ""} placeholder="Enter team name" onChange={e => handleChangeTeamData("name", e.target.value)} />
@@ -36,26 +39,27 @@ export default function ManageTeamModal({isOpen, onClose, mode, teamData, eventI
                     }                
                 </div>
             </div>
+            <hr className="mb-4 border-gray-300" />
             <div className="space-y-6">
                 <div className="space-y-2">
-                    <p className="text-[16px] md:text-[17px] lg:text-[18px] font-semibold text-contrast">Team Members</p>
+                    <div className="flex justify-between items-center mb-4">
+                        <p className="text-[16px] md:text-[17px] lg:text-[18px] font-semibold text-contrast">Team Members</p>
+                        <Button type="primary" buttonIcon={<FaPlus className="size-4"/>} width="fit" onClick={handleAddMember} />
+                    </div>
                     {teamDataState?.teamMembers && teamDataState.teamMembers.length === 0 ? (
                         <p className="text-contrast text-[14px] md:text-[15px] lg:text-[16px]">No team members added yet.</p>
                     ) : (
                         <div className="max-h-[272px] overflow-auto space-y-2">
                         {teamDataState && teamDataState.teamMembers.map((member, index) => (
-                            <div key={index} className="flex h-9 md:h-10">
-                                <div className="flex justify-center pl-2 border border-r-0 border-gray-300 rounded-l-full flex-grow items-center lg:text-[16px] md:text-[15px] text-[14px] font-medium text-contrast">
+                            <div key={index} className="flex justify-between px-3 p-2 border border-gray-300 rounded-full">
+                                <div className="flex justify-center items-center lg:text-[16px] md:text-[15px] text-[14px] font-medium text-contrast">
                                     <input placeholder={`Member ${index + 1}`} className="h-full w-full px-2 focus:outline-none" onChange={(e) => handleChangeMemberName(member.id, e.target.value)} value={member.name} />
                                 </div>
-                                <div className="flex justify-center items-center bg-primary/85 w-[15%] lg:w-[10%] rounded-r-full cursor-pointer hover:bg-primary transition-colors" onClick={() => handleDeleteMember(member.id)}>
-                                    <HiOutlineTrash className="lg:size-4.5 text-white" />
-                                </div>
+                                <HiOutlineTrash className="lg:size-4.5 text-primary cursor-pointer" onClick={() => handleDeleteMember(member.id)} />
                             </div>
                         ))}
                         </div>
                     )}
-                    <Button type="primary" buttonText="Add Member" width="fit" onClick={handleAddMember} />
                 </div>
             </div>
             <hr className="mt-3 md:mt-5 border-gray-300" />

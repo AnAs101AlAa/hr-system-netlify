@@ -2,28 +2,52 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "tccd-ui";
 import { useEffect, useState } from "react";
 import type { Team } from "@/shared/types/judgingSystem";
-import TeamDeleteModal from "./TeamDeleteModal";
+import ConfirmCationModal from "./ConfirmActionModal";
 import { useSelector } from "react-redux";
+import { useDeleteTeam } from "@/shared/queries/judgingSystem/judgeQueries";
+import { toast } from "react-hot-toast";
+import { getErrorMessage } from "@/shared/utils/errorHandler";
 
 interface TeamsTableProps {
     teams: Team[];
     setOpenModal: (teamData: Team) => void;
+    mode?: number;
+    handleAdjustTeam?: (team: Team, op: boolean) => void;
 }
 
-const TeamsTable = ({ teams, setOpenModal }: TeamsTableProps) => {
+const TeamsTable = ({ teams, setOpenModal, mode=0, handleAdjustTeam }: TeamsTableProps) => {
   const navigate = useNavigate();
   const { eventId} = useParams<{ eventId: string }>();
   const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
   const [displayedTeams, setDisplayedTeams] = useState<Team[]>(teams);
   const [showDeleteModal, setShowDeleteModal] = useState("");
   
+  const deleteTeamMutation = useDeleteTeam();
+
+  const handleConfirmDelete = (item: Team) => {
+    if (!showDeleteModal) return;
+    deleteTeamMutation.mutate(item.id, {
+      onSuccess: () => {
+        toast.success("Form deleted successfully");
+        setShowDeleteModal("");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      },
+      onError: (error: any) => {
+        const errorMessage = getErrorMessage(error);
+        toast.error(errorMessage);
+      },
+    });
+  };
+
   useEffect(() => {
     setDisplayedTeams(teams);
   }, [teams]);
   
   return (
     <div className="hidden lg:block overflow-x-auto">
-      <TeamDeleteModal showModal={showDeleteModal} setShowModal={setShowDeleteModal} />
+      <ConfirmCationModal item={teams.find(team => team.id === showDeleteModal) || {} as Team} isOpen={!!showDeleteModal} onClose={() => setShowDeleteModal("")} title="Delete Team" subtitle="Are you sure you want to delete this team? this action cannot be undone." onSubmit={handleConfirmDelete} isSubmitting={deleteTeamMutation.isPending} />
       <table className="w-full">
         {/* Table Header */}
         <thead className="bg-gray-50">
@@ -44,7 +68,7 @@ const TeamsTable = ({ teams, setOpenModal }: TeamsTableProps) => {
               Total Score
             </th>
             <th className="px-4 py-3 text-left text-sm font-medium text-[#555C6C] whitespace-nowrap">
-              Actions
+              {mode ? "Actions" : ""}
             </th>
           </tr>
         </thead>
@@ -83,7 +107,7 @@ const TeamsTable = ({ teams, setOpenModal }: TeamsTableProps) => {
                     </div>
                 </td>
                 <td className="px-4 py-4">
-                  <div className="flex items-center gap-2">
+                  {mode === 0 ? <div className="flex items-center gap-2">
                     {(userRoles.includes("Judge") && userRoles.length === 1) ? (
                       <Button
                         type="primary"
@@ -114,12 +138,18 @@ const TeamsTable = ({ teams, setOpenModal }: TeamsTableProps) => {
                       </>
                     )}
                   </div>
+                  : <Button
+                      type={mode === 1 ? "tertiary" : "danger"}
+                      buttonText={mode === 1 ? "Add" : "Remove"}
+                      onClick={() => { if (handleAdjustTeam) handleAdjustTeam(team, mode === 1); }}
+                      width="fit"
+                    /> }
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={4} className="px-4 py-8 text-center">
+              <td colSpan={6} className="px-4 py-8 text-center">
                 <div className="text-dashboard-description">
                   <p className="text-lg font-medium">No Teams found</p>
                 </div>
