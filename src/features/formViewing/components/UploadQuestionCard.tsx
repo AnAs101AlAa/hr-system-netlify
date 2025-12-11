@@ -112,7 +112,7 @@ const UploadQuestionCard = forwardRef<QuestionCardHandle, UploadQuestionCardProp
               setFileNames(selected.map(f => f.name));
             }}
             value={files.length === 0 ? "" : undefined}
-            className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/80"
+            className="block w-full text-[11px] md:text-[12px] file:mr-4 file:py-2 file:md:px-4 file:px-3 file:rounded-full file:border-0 file:text-[11px] file:md:text-[12px] file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/80"
           />
 
           {/* display selected or reassigned filenames */}
