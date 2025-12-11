@@ -1,0 +1,202 @@
+import { Button, DropdownMenu } from "tccd-ui";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useResearchTeams, useGetAssignedTeamsForJudge, useAssignTeamsToJudge, useRemoveTeamFromJudge } from "@/shared/queries/judgingSystem/judgeQueries";
+import { TEAM_SORTING_OPTIONS } from "@/constants/judgingSystemConstants";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import TeamsTable from "./TeamsTable";
+import TeamCardView from "./TeamCardView";
+import { SearchField } from "tccd-ui";
+import type { Team } from "@/shared/types/judgingSystem";
+import toast from "react-hot-toast";
+
+const TeamSelectorListing = () => {
+    const { eventId, judgeId } = useParams<{ eventId: string; judgeId: string }>();
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [debouncedTeamName, setDebouncedTeamName] = useState<string>("");
+    const [sortOption, setSortOption] = useState<string>("");
+    const [availableTeams, setAvailableTeams] = useState<{teams: Team[]; total: number}>({teams: [], total: 0});
+    const [assignedTeams, setAssignedTeams] = useState<Team[]>([]);
+
+    const { data: teams, isLoading: isTeamsLoading, isError: isTeamsError } = useResearchTeams(eventId!, currentPage, 1000, sortOption, debouncedTeamName, "", "", "");
+    const { data: assignedTeamsData, isLoading: isAssignedTeamsLoading, isError: isAssignedTeamsError } = useGetAssignedTeamsForJudge(judgeId!);
+    const assignTeamsToJudgeMutation = useAssignTeamsToJudge();
+    const removeTeamFromJudgeMutation = useRemoveTeamFromJudge();
+
+    const handleAdjustTeam = (team: Team, op: boolean) => {
+      if(op) {
+      setAvailableTeams((prevState) => {
+        const updatedTeams = prevState.teams.filter(t => t.id !== team.id);
+        return { teams: updatedTeams, total: updatedTeams.length };
+      });
+      setAssignedTeams((prevState) => [...prevState, team]);
+      } else {
+        setAssignedTeams((prevState) => {
+          const updatedTeams = prevState.filter(t => t.id !== team.id);
+          return updatedTeams;
+        });
+        setAvailableTeams((prevState) => {
+          const updatedTeams = [...prevState.teams, team];
+          return { teams: updatedTeams, total: updatedTeams.length };
+        });
+      }
+    };
+
+    const handleSubmit = async () => {
+      const assignedTeamIds = new Set(assignedTeams.map(team => team.id));
+      const initialTeamIds = new Set(assignedTeamsData?.map(team => team.id) || []);
+      
+      const teamsToAdd = assignedTeams.filter(team => !initialTeamIds.has(team.id));
+      const teamsToRemove = assignedTeamsData?.filter(team => !assignedTeamIds.has(team.id)) || [];
+      try {
+        if (teamsToAdd.length > 0) {
+          await assignTeamsToJudgeMutation.mutateAsync({ judgeId: judgeId!, teamIds: teamsToAdd.map(t => t.id) });
+        }
+        
+        for (const team of teamsToRemove) {
+          await removeTeamFromJudgeMutation.mutateAsync({ judgeId: judgeId!, teamId: team.id });
+        }
+        
+        toast.success("Team assignments updated successfully.");
+        setTimeout(() => {
+          window.history.back();
+        }, 2000);
+      } catch {
+        toast.error("An error occurred while updating team assignments. Please try again.");
+      }
+    };
+
+    useEffect(() => {
+        if (teams && assignedTeamsData) {
+            setAssignedTeams(assignedTeamsData);
+            const assignedTeamIds = new Set(assignedTeamsData.map(team => team.id));
+            const filteredTeams = teams.teams.filter(team => !assignedTeamIds.has(team.id));
+            setAvailableTeams({ teams: filteredTeams, total: filteredTeams.length });
+        }
+    }, [teams, assignedTeamsData]);
+
+    const isLoading = isTeamsLoading || isAssignedTeamsLoading;
+    const isError = isTeamsError || isAssignedTeamsError;
+
+    return (
+      <div className="space-y-4">
+        <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
+          <div className="p-4 border-b border-dashboard-border space-y-2">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-md md:text-lg lg:text-xl font-bold text-[#72747A]">
+                Assigned Teams {assignedTeams ? `(${assignedTeams.length})` : ""}
+              </p>
+            </div>
+            <hr className="border-gray-200" />
+          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center h-48">
+              <p className="text-contrast">Loading teams...</p>
+            </div>
+          ) : isError ? (
+            <div className="flex justify-center items-center h-48">
+              <p className="text-contrast">Error loading teams. Please try again.</p>
+            </div>
+          ) : (
+          <>
+            {/* Desktop Table View */}
+            <TeamsTable
+              teams={assignedTeams || []}
+              setOpenModal={() => {}}
+              handleAdjustTeam={handleAdjustTeam}
+              mode={2}
+            />
+
+            {/* Mobile Card View */}
+            <TeamCardView
+              teams={assignedTeams || []}
+              setOpenModal={() => {}}
+              handleAdjustTeam={handleAdjustTeam}
+              mode={2}
+            />
+          </>
+          )}
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
+          <div className="p-4 border-b border-dashboard-border space-y-2">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-md md:text-lg lg:text-xl font-bold text-[#72747A]">
+                Available Teams {availableTeams ? `(${availableTeams.total})` : ""}
+              </p>
+              <div className="flex gap-2 items-center justify-center">
+                <FaChevronLeft
+                  className={`cursor-pointer size-4 ${currentPage === 1 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
+                  onClick={() => {
+                    if (currentPage > 1) {
+                      setCurrentPage(currentPage - 1);
+                    }
+                  }}
+                />
+                <span className="text-[14px] md:text-[15px] lg:text-[16px] font-medium text-contrast">
+                  Page {currentPage}
+                </span>
+                <FaChevronRight
+                  className={`cursor-pointer size-4 ${teams && teams.teams.length < 20 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
+                  onClick={() => {
+                    if (teams && teams.teams.length === 20) {
+                      setCurrentPage(currentPage + 1);
+                    }
+                  }}
+                />
+              </div>
+            </div>
+            <hr className="border-gray-200" />
+              <p className="text-[14px] md:text-[15px] lg:text-[16px] font-semibold text-contrast">Filters</p>
+              <div className="flex gap-2 md:flex-row flex-col justify-between">
+                  <div className="md:min-w-76">
+                      <SearchField placeholder="Search by team name" value={debouncedTeamName} onChange={(value) => setDebouncedTeamName(value)} />
+                  <div/>
+                  </div>
+                  <div className="flex-grow md:max-w-72">
+                  <DropdownMenu
+                      options={TEAM_SORTING_OPTIONS}
+                      value={sortOption}
+                      onChange={(val) => setSortOption(val)}
+                      placeholder="Sort By"
+                  />
+                  </div>
+              </div>
+          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center h-48">
+              <p className="text-contrast">Loading teams...</p>
+            </div>
+          ) : isError ? (
+            <div className="flex justify-center items-center h-48">
+              <p className="text-contrast">Error loading teams. Please try again.</p>
+            </div>
+          ) : (
+          <>
+            {/* Desktop Table View */}
+            <TeamsTable
+              teams={availableTeams.teams || []}
+              handleAdjustTeam={handleAdjustTeam}
+              setOpenModal={() => {}}
+              mode={1}
+            />
+
+            {/* Mobile Card View */}
+            <TeamCardView
+              teams={availableTeams.teams || []}
+              handleAdjustTeam={handleAdjustTeam}
+              setOpenModal={() => {}}
+              mode={1}
+            />
+          </>
+          )}
+        </div>
+        <hr className="border-gray-200" />
+        <div className="flex justify-center gap-2 items-center">
+          <Button buttonText="cancel" type="secondary" width="auto" onClick={() => window.history.back()} disabled={assignTeamsToJudgeMutation.isPending || removeTeamFromJudgeMutation.isPending} />
+          <Button buttonText="Save Changes" type="primary" width="auto" onClick={handleSubmit} loading={assignTeamsToJudgeMutation.isPending || removeTeamFromJudgeMutation.isPending} />
+        </div>
+      </div>
+    );
+};
+
+export default TeamSelectorListing;

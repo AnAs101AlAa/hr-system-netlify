@@ -9,7 +9,7 @@ const ActionCards = () => {
 
   return (
     <div className="space-y-4 w-full">
-      <p className="text-dashboard-heading font-bold text-[18px] md:text-[20px] lg:text-[24px] leading-[20px] font-inter px-3">
+      <p className="text-dashboard-heading font-bold text-[18px] md:text-[20px] lg:text-[24px] leading-[20px] font-inter px-3 sm:text-start text-center">
         Quick Actions
       </p>
       <div className="flex flex-row justify-between mx-auto border-y-4 border-primary shadow-lg">

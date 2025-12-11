@@ -4,7 +4,7 @@ import { useCreateTeam, useUpdateTeam } from "@/shared/queries/judgingSystem/jud
 import toast from "react-hot-toast";
 
 export default function useManageTeamModalUtils (eventId: string, mode: number, teamData: Team | undefined) {
-    const [teamDataState, setTeamDataState] = useState<Team | undefined>({id: "", name: "", code: "", course: "", teamMembers: []});
+    const [teamDataState, setTeamDataState] = useState<Team | undefined>({id: "", name: "", code: "", course: "", department: "", teamMembers: []});
     const [formErrors, setFormErrors] = useState<{attr: string, value:string}[]>([]);
     const createTeamMutation = useCreateTeam();
     const updateTeamMutation = useUpdateTeam();
@@ -22,6 +22,7 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
         if (!teamDataState?.name || teamDataState.name.trim() === "") errors.push({attr: "name", value: "Team name is required."});
         if (!teamDataState?.code || teamDataState.code.trim() === "") errors.push({attr: "code", value: "Team Code is required."});
         if (!teamDataState?.course || teamDataState.course.trim() === "") errors.push({attr: "course", value: "Team Course is required"});
+        if (!teamDataState?.department || teamDataState.department.trim() === "") errors.push({attr: "department", value: "Team Department is required"});
         if (!teamDataState?.teamMembers || teamDataState.teamMembers.length === 0) errors.push({attr: "teamMembers", value: "Team Must include at least 1 member."});
         return errors;
     }
@@ -29,7 +30,7 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
     const submitTeam = () => {
         setTeamDataState((prev : Team | undefined) => {
             if (!prev) return prev;
-            return {id: prev.id, name: prev.name.trim(), code: prev.code.trim(), course: prev.course.trim(), teamMembers: prev.teamMembers.map(mem => {return {...mem, name: mem.name.trim()}})};
+            return {id: prev.id, name: prev.name.trim(), code: prev.code.trim(), course: prev.course.trim(), department: prev.department.trim(), teamMembers: prev.teamMembers.map(mem => {return {...mem, name: mem.name.trim()}})};
         });
         const errors = validateTeamData();
         if(errors.length > 0) {
