@@ -29,7 +29,7 @@ export default function TeamEvaluationPage() {
                 <div className="space-y-3 flex-col flex">
                     <div className="text-[18px] md:text-[19px] lg:text-[20px] font-semibold">a) Team Attendance</div>
                     {teamData.teamMembers && teamData.teamMembers.length > 0 && teamData.teamMembers.map((member, index) => (
-                        <Checkbox key={index} label={member.name} checked={teamAttendance[member.id]} onChange={() => handleChangeTeamAttendance(member.id, !teamAttendance[member.id])} />
+                        <Checkbox key={index} label={member.name} checked={!!teamAttendance.find(att => att.teamMemberId === member.id)?.attended} onChange={() => handleChangeTeamAttendance(member.id, !teamAttendance.find(att => att.teamMemberId === member.id)?.attended)} />
                     ))}
                 </div>
 
@@ -37,7 +37,7 @@ export default function TeamEvaluationPage() {
                 <div className="space-y-2 flex-col flex">
                     <div className="text-[18px] md:text-[19px] lg:text-[20px] font-semibold mb-4">b) Team Evaluation</div>
                     {questions.map((question, index) => (
-                        <div key={index} className="mb-4 last:mb-0">
+                        <div key={index} className="mb-4 last:mb-0 border border-gray-200 p-2 rounded-lg">
                             <div className="flex gap-1 lg:text-[16px] md:text-[15px] text-[14px]">
                                 <p className="font-semibold text-primary">{question.itemNumber}.</p>
                                 <p className="text-contrast">{question.name}</p>
@@ -45,7 +45,18 @@ export default function TeamEvaluationPage() {
                             <div className="flex gap-2 mt-2 items-center">
                                 <p className="text-contrast lg:text-[17px] md:text-[16px] text-[15px]">Score:</p>
                                 <div className="flex gap-1 items-center">
-                                    <input placeholder="0" type="number" style={{ width: `${Math.max(13 * ((assessmentScores[question.id] ? assessmentScores[question.id] + 1 : 0).toString().length) + 14, 27)}px`, MozAppearance: "textfield", height: "30px" }} className="shadow-md bg-white rounded-lg text-center focus:border-primary border-gray-300 border transition-colors duration-200 outline-none text-contrast" value={assessmentScores[question.id] === -1 ? "" : assessmentScores[question.id]} onChange={(e) => handleChangeAssessmentScore(question.id, Number(e.target.value))} />
+                                    <input 
+                                        placeholder="0" 
+                                        type="number" 
+                                        style={{ 
+                                            width: `${Math.max((assessmentScores[question.id]?.toString().length || 1) * 11 + 14, 30)}px`,
+                                            MozAppearance: "textfield", 
+                                            height: "27px" 
+                                        }} 
+                                        className="shadow-md bg-white rounded-lg text-center focus:border-primary border-gray-300 border transition-colors duration-200 outline-none text-contrast" 
+                                        value={assessmentScores[question.id] === -1 ? "" : assessmentScores[question.id]} 
+                                        onChange={(e) => handleChangeAssessmentScore(question.id, Number(e.target.value))} 
+                                    />
                                     <p className="text-primary font-semibold text-[17px] md:text-[18px]">/ 10.0</p>
                                 </div>
                             </div>

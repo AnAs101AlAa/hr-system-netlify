@@ -14,6 +14,11 @@ export interface TeamMember {
     name: string;
 }
 
+export interface TeamMemberAttendance {
+    teamMemberId: string;
+    attended: boolean;
+}
+
 export interface JudgeQuestion {
     id: string;
     name: string;
@@ -41,6 +46,7 @@ export interface Judge {
     name: string;
     email: string;
     assignedTeams: Team[];
+    judgeId?: string;
     password?: string;
     firstName?: string;
     lastName?: string;

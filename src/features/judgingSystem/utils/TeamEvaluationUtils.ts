@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
-import { useEventQuestions, useSubmitTeamEvaluation, useGetTeamEvaluation, useUpdateTeamEvaluation, useGetTeam } from "@/shared/queries/judgingSystem/judgeQueries";
+import { useEventQuestions, useSubmitTeamEvaluation, useGetTeamEvaluation, useUpdateTeamEvaluation, useGetTeam, useAddTeamAttendance } from "@/shared/queries/judgingSystem/judgeQueries";
 import { useEvent } from "@/shared/queries/events/eventQueries";
 import toast from "react-hot-toast";
-import type { EvaluationSubmission } from "@/shared/types/judgingSystem";
+import type { EvaluationSubmission, TeamMemberAttendance } from "@/shared/types/judgingSystem";
 import { useNavigate } from "react-router-dom";
 
 export default function UseTeamEvaluationUtils() {
@@ -17,12 +17,14 @@ export default function UseTeamEvaluationUtils() {
 
     const submitTeamEvaluationMutation = useSubmitTeamEvaluation();
     const updateTeamEvaluationMutation = useUpdateTeamEvaluation();
+    const addTeamAttendanceMutation = useAddTeamAttendance();
 
     const [assessmentScores, setAssessmentScores] = useState<{ [questionId: string]: number }>({});
     const [extraNotes, setExtraNotes] = useState<string>("");
-    const [teamAttendance, setTeamAttendance] = useState<{ [memberId: string]: boolean }>({});
+    const [teamAttendance, setTeamAttendance] = useState<TeamMemberAttendance[]>([]);
     const [formErrors, setFormErrors] = useState<{name: string, questions: { [questionId: string]: string }} | null>(null);
 
+    console.log("teamEvaluation", teamEvaluation);
     useEffect(() => {
         if(teamEvaluation) {
             const initialScores: { [questionId: string]: number } = {};
@@ -33,9 +35,9 @@ export default function UseTeamEvaluationUtils() {
             setExtraNotes(teamEvaluation.note || "");
         }
         if(teamData && teamData.teamMembers) {
-            const attendanceStatus: { [memberId: string]: boolean } = {};
+            const attendanceStatus: TeamMemberAttendance[] = [];
             teamData.teamMembers.forEach(member => {
-                attendanceStatus[member.id] = false;
+                attendanceStatus.push({ teamMemberId: member.id, attended: false });
             });
             setTeamAttendance(attendanceStatus);
         }
@@ -74,12 +76,18 @@ export default function UseTeamEvaluationUtils() {
                 evaluationItemId: questionId,                
                 score,
             })),
-            
+
             note: extraNotes,
         }
 
         if(!teamEvaluation) {
-            submitTeamEvaluationMutation.mutate(payload, {
+            await submitTeamEvaluationMutation.mutateAsync(payload, {
+                onError: () => {
+                    toast.error("Failed to submit evaluation. Please try again.");
+                }
+            });
+
+            await addTeamAttendanceMutation.mutateAsync(teamAttendance, {
                 onSuccess: () => {
                     toast.success("Evaluation submitted successfully!");
                     setTimeout(() => {
@@ -87,7 +95,7 @@ export default function UseTeamEvaluationUtils() {
                     }, 1500);
                 },
                 onError: () => {
-                    toast.error("Failed to submit evaluation. Please try again.");
+                    toast.error("Failed to submit attendance. Please try again.");
                 }
             });
         } else {
@@ -109,11 +117,10 @@ export default function UseTeamEvaluationUtils() {
         navigate(-1);
     }
 
-    const handleChangeTeamAttendance = (memberId: string, isPresent: boolean) => {
-        setTeamAttendance(prevStatus => ({
-            ...prevStatus,
-            [memberId]: isPresent,
-        }));
+    const handleChangeTeamAttendance = (memberId: string, attended: boolean) => {
+        setTeamAttendance((prevAttendance) => {
+            return prevAttendance.map(att => att.teamMemberId === memberId ? { ...att, attended } : att);
+        });
     }
 
     return {

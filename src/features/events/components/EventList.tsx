@@ -1,16 +1,41 @@
-import { SearchField, DropdownMenu } from "tccd-ui";
+import { SearchField, DropdownMenu, Button } from "tccd-ui";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import EventTable from "./EventTable";
-import EventCardView from "./EventCardView";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { useAllEvents } from "@/shared/queries/events";
+import { useAllEvents, useDeleteEvent } from "@/shared/queries/events";
 import EVENT_TYPES from "@/constants/eventTypes";
+import Table from "@/shared/components/table/Table";
+import CardView from "@/shared/components/table/CardView";
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import type { Event } from "@/shared/types/event";
+import { IoTrashSharp } from "react-icons/io5";
+import { FaEdit } from "react-icons/fa";
+import { TbListDetails } from "react-icons/tb";
 
-const EventList = ({setModalOpen, fetchedEventStatuses} : {setModalOpen?: React.Dispatch<React.SetStateAction<number>>, fetchedEventStatuses: string[]}) => {
+const EventList = ({setModalOpen, fetchedEventStatuses} : {setModalOpen?: React.Dispatch<React.SetStateAction<string>>, fetchedEventStatuses: string[]}) => {
+    const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [searchKey, setSearchKey] = useState<string>("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchKey);
-    
+    const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
+
+    const deleteEventMutation = useDeleteEvent();
+
+    const handleDelete = (event : Event) => {
+        deleteEventMutation.mutate(event.id, {
+            onSuccess: () => {
+                toast.success("Event deleted successfully");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            },
+            onError: () => {
+                toast.error("Failed to delete event");
+            }
+        });
+    };
+
     useEffect(() => {
         const t = setTimeout(() => setDebouncedSearchTerm(searchKey), 300);
         return () => clearTimeout(t);
@@ -83,16 +108,86 @@ const EventList = ({setModalOpen, fetchedEventStatuses} : {setModalOpen?: React.
         </div>
       ) : (
       <>
-        {/* Desktop Table View */}
-        <EventTable
-          events={events || []}
-          setOpenModal={setModalOpen? setModalOpen : () => {}}
+        <Table 
+          items={events || []}
+          modalTitle="Delete Event"
+          modalSubTitle="Are you sure you want to delete this event? This action cannot be undone."
+          isSubmitting={deleteEventMutation.isPending}
+          confirmationAction={handleDelete}
+          columns={[
+            { key: "title", label: "Event Title", width: "w-1/3" },
+            { key: "startDate", label: "Start Date", width: "w-1/4", formatter: (value) => new Date(value).toLocaleDateString() },
+            { key: "endDate", label: "End Date", width: "w-1/4", formatter: (value) => new Date(value).toLocaleDateString() },
+            { key: "location", label: "Location", width: "w-1/6" },
+          ]}
+          emptyMessage="No events found."
+          renderActions={(item, triggerDelete) => (
+          <>
+            {userRoles.includes("Admin") && (
+              <>
+                <Button
+                type="tertiary"
+                onClick={() => setModalOpen? setModalOpen("edit") : () => {}}
+                buttonText="Edit"
+                width="fit"
+                />
+                <Button
+                type="danger"
+                onClick={() => triggerDelete(item.id)}
+                buttonText="Delete"
+                width="fit"
+                />
+              </>
+            )}
+            <Button
+                type="secondary"
+                buttonText="Details"
+                onClick={() => { navigate(`/events/${item.id}`); }}
+                width="fit"
+            />
+          </>
+          )}
         />
 
         {/* Mobile Card View */}
-        <EventCardView
-          events={events || []}
-          setOpenModal={setModalOpen? setModalOpen : () => {}}
+        <CardView
+          items={events || []}
+          titleKey="title"
+          renderedFields={[
+            { key: "startDate", label: "Start Date", formatter: (value) => new Date(value).toLocaleDateString() },
+            { key: "endDate", label: "End Date", formatter: (value) => new Date(value).toLocaleDateString() },
+            { key: "location", label: "Location" },
+          ]}
+          modalTitle="Delete Event"
+          modalSubTitle="Are you sure you want to delete this event? This action cannot be undone."
+          confirmationAction={handleDelete}
+          isSubmitting={deleteEventMutation.isPending}
+          renderButtons={(item, triggerDelete) => (
+            <>
+              {userRoles.includes("Admin") &&
+                <>
+                <Button
+                    type="tertiary"
+                    onClick={() => setModalOpen? setModalOpen("edit") : () => {}}
+                    buttonIcon={<FaEdit size={16} />}
+                    width="fit"
+                />
+                <Button
+                    type="danger"
+                    onClick={() => triggerDelete(item.id)}
+                    buttonIcon={<IoTrashSharp size={17} />}
+                    width="fit"
+                />
+                </>
+              }
+                <Button
+                type="secondary"
+                buttonIcon={<TbListDetails size={16} />}
+                onClick={() => { navigate(`/events/${item.id}`); }}
+                width="fit"
+                />
+            </>
+          )}
         />
       </>
       )}
