@@ -232,6 +232,16 @@ export const useAddTeamAttendance = () => {
     });
 }
 
+export const useGetTeamAttendance = (judgeId: string, teamId: string): UseQueryResult<TeamMemberAttendance[], Error> => {
+    return useQuery({
+        queryKey: ['judgingSystem', 'teamAttendance', judgeId, teamId],
+        queryFn: async () => {
+            const attendance = await JudgeAPI.getTeamAttendance(judgeId, teamId);
+            return attendance;
+        }
+    });
+}
+
 export const useUpdateTeamAttendance = () => {
     return useMutation({
         mutationKey: ['judgingSystem', 'updateTeamAttendance'],

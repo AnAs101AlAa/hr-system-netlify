@@ -28,6 +28,7 @@
     "redux-persist": "^6.0.0",
     "tailwindcss": "^4.1.13",
     "tccd-ui": "^0.0.56",
+    "xlsx": "^0.18.5",
     "zod": "^4.1.5"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
-import { useEventQuestions, useSubmitTeamEvaluation, useGetTeamEvaluation, useUpdateTeamEvaluation, useGetTeam, useAddTeamAttendance } from "@/shared/queries/judgingSystem/judgeQueries";
+import { useEventQuestions, useSubmitTeamEvaluation, useGetTeamEvaluation, useUpdateTeamEvaluation, useGetTeam, useAddTeamAttendance, useGetTeamAttendance } from "@/shared/queries/judgingSystem/judgeQueries";
 import { useEvent } from "@/shared/queries/events/eventQueries";
 import toast from "react-hot-toast";
 import type { EvaluationSubmission, TeamMemberAttendance } from "@/shared/types/judgingSystem";
@@ -14,11 +14,14 @@ export default function UseTeamEvaluationUtils() {
     const { data: event, isLoading: isEventLoading, isError: isEventError } = useEvent(eventId!);
     const { data: teamData, isLoading: isTeamLoading, isError: isTeamError } = useGetTeam(teamId!);
     const { data: teamEvaluation, isLoading: isEvaluationLoading, isError: isEvaluationError } = useGetTeamEvaluation(teamId!);
+    const { data: teamAttendanceData, isLoading: isAttendanceLoading, isError: isAttendanceError } = useGetTeamAttendance(eventId!, teamId!);
 
+    console.log("teamAttendanceData", teamAttendanceData);
+    
     const submitTeamEvaluationMutation = useSubmitTeamEvaluation();
     const updateTeamEvaluationMutation = useUpdateTeamEvaluation();
     const addTeamAttendanceMutation = useAddTeamAttendance();
-
+    
     const [assessmentScores, setAssessmentScores] = useState<{ [questionId: string]: number }>({});
     const [extraNotes, setExtraNotes] = useState<string>("");
     const [teamAttendance, setTeamAttendance] = useState<TeamMemberAttendance[]>([]);
