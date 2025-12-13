@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
-import { useEventQuestions, useSubmitTeamEvaluation, useGetTeamEvaluation, useUpdateTeamEvaluation, useGetTeam, useAddTeamAttendance } from "@/shared/queries/judgingSystem/judgeQueries";
+import { useEventQuestions, useSubmitTeamEvaluation, useGetTeamEvaluation, useUpdateTeamEvaluation, useGetTeam, useAddTeamAttendance, useGetTeamAttendance, useUpdateTeamAttendance } from "@/shared/queries/judgingSystem/judgeQueries";
 import { useEvent } from "@/shared/queries/events/eventQueries";
 import toast from "react-hot-toast";
 import type { EvaluationSubmission, TeamMemberAttendance } from "@/shared/types/judgingSystem";
@@ -14,17 +14,18 @@ export default function UseTeamEvaluationUtils() {
     const { data: event, isLoading: isEventLoading, isError: isEventError } = useEvent(eventId!);
     const { data: teamData, isLoading: isTeamLoading, isError: isTeamError } = useGetTeam(teamId!);
     const { data: teamEvaluation, isLoading: isEvaluationLoading, isError: isEvaluationError } = useGetTeamEvaluation(teamId!);
-
+    const { data: teamAttendanceData, isLoading: isAttendanceLoading } = useGetTeamAttendance(teamId!);
+    
     const submitTeamEvaluationMutation = useSubmitTeamEvaluation();
     const updateTeamEvaluationMutation = useUpdateTeamEvaluation();
     const addTeamAttendanceMutation = useAddTeamAttendance();
+    const updateTeamAttendanceMutation = useUpdateTeamAttendance();
 
     const [assessmentScores, setAssessmentScores] = useState<{ [questionId: string]: number }>({});
     const [extraNotes, setExtraNotes] = useState<string>("");
-    const [teamAttendance, setTeamAttendance] = useState<TeamMemberAttendance[]>([]);
+    const [teamAttendance, setTeamAttendance] = useState<TeamMemberAttendance[]>(teamAttendanceData || []);
     const [formErrors, setFormErrors] = useState<{name: string, questions: { [questionId: string]: string }} | null>(null);
 
-    console.log("teamEvaluation", teamEvaluation);
     useEffect(() => {
         if(teamEvaluation) {
             const initialScores: { [questionId: string]: number } = {};
@@ -99,17 +100,24 @@ export default function UseTeamEvaluationUtils() {
                 }
             });
         } else {
-            updateTeamEvaluationMutation.mutate(payload, {
-                onSuccess: () => {
-                    toast.success("Evaluation updated successfully!");
-                    setTimeout(() => {
-                        navigate(-1);
-                    }, 1500);
-                },
+            await updateTeamEvaluationMutation.mutateAsync(payload, {
                 onError: () => {
                     toast.error("Failed to update evaluation. Please try again.");
                 }
             });
+
+            teamAttendance.forEach(async (attendance) => {
+                await updateTeamAttendanceMutation.mutateAsync(attendance, {
+                    onError: () => {
+                        toast.error("Failed to update attendance. Please try again.");
+                    }
+                });
+            });
+
+            toast.success("Evaluation updated successfully!");
+            setTimeout(() => {
+                navigate(-1);
+            }, 1500);
         }
     }
 
@@ -129,7 +137,7 @@ export default function UseTeamEvaluationUtils() {
         teamAttendance,
         setExtraNotes,
         teamData,
-        isFetchingData: isQuestionsLoading || isEventLoading || isTeamLoading || isEvaluationLoading,
+        isFetchingData: isQuestionsLoading || isEventLoading || isTeamLoading || isEvaluationLoading || isAttendanceLoading ,
         isFetchingError: isQuestionsError || isEventError || isTeamError || isEvaluationError,
         event,
         assessmentScores,
