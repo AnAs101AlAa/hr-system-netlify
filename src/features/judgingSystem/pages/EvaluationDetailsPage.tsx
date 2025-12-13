@@ -1,3 +1,5 @@
+"use client";
+
 import { useParams } from "react-router-dom";
 import WithNavbar from "@/shared/components/hoc/WithNavbar";
 import {
@@ -5,7 +7,13 @@ import {
   useGetTeam,
 } from "@/shared/queries/judgingSystem/judgeQueries";
 import { LoadingPage, ErrorScreen } from "tccd-ui";
-import { FaChevronLeft } from "react-icons/fa";
+import {
+  FaChevronLeft,
+  FaUsers,
+  FaChartBar,
+  FaTrophy,
+  FaClipboardList,
+} from "react-icons/fa";
 
 export default function EvaluationDetailsPage() {
   const { teamId } = useParams<{ teamId: string }>();
@@ -33,152 +41,219 @@ export default function EvaluationDetailsPage() {
     );
   }
 
+  const averageScore =
+    evaluations.length > 0
+      ? (
+          evaluations.reduce(
+            (sum, evaluation) => sum + (evaluation.totalScore || 0),
+            0
+          ) / evaluations.length
+        ).toFixed(2)
+      : "0.00";
+
+  const highestScore =
+    evaluations.length > 0
+      ? Math.max(...evaluations.map((evaluation) => evaluation.totalScore || 0))
+      : 0;
+
+  const lowestScore =
+    evaluations.length > 0
+      ? Math.min(...evaluations.map((evaluation) => evaluation.totalScore || 0))
+      : 0;
+
+  const highestEval = evaluations.find(
+    (evaluation) => evaluation.totalScore === highestScore
+  );
+  const lowestEval = evaluations.find(
+    (evaluation) => evaluation.totalScore === lowestScore
+  );
+
   return (
     <WithNavbar>
-      <div className="xl:w-[45%] lg:w-[58%] md:w-[70%] sm:w-[80%] w-[94%] py-4 px-2 mx-auto rounded-lg shadow-md mt-4 border-t-10 border-primary space-y-3 relative">
-        <FaChevronLeft
-          className="absolute top-6 left-4 text-contrast text-lg cursor-pointer size-5"
+      <div className="xl:w-[45%] lg:w-[58%] md:w-[70%] sm:w-[80%] w-[94%] py-6 px-4 mx-auto rounded-xl shadow-lg mt-6 border-t-[6px] border-primary bg-white space-y-6 relative">
+        <button
           onClick={() => window.history.back()}
-        />
-        <h1 className="text-[24px] md:text-[26px] lg:text-[28px] font-bold text-primary mb-2 md:mb-3 text-center">
-          Team Evaluation Board
-        </h1>
-        <p className="text-[16px] md:text-[17px] lg:text-[18px] text-inactive-tab-text font-semibold mb-1.5">
-          Team Information
-        </p>
-        <div className="shadow-md rounded-lg p-3 border border-gray-300 bg-white">
-          <div className="w-full flex justify-between mb-3 gap-x-4">
-            <p className="text-[16px] md:text-[18px] lg:text-[20px] text-contrast font-medium">
-              <div className="font-semibold text-inactive-tab-text text-[13px] md:text-[14px] lg:text-[15px]">
+          className="absolute top-6 left-4 flex items-center gap-2 text-contrast hover:text-primary transition-all duration-200 group cursor-pointer"
+          aria-label="Go back"
+        >
+          <FaChevronLeft className="size-5 group-hover:-translate-x-1 transition-transform duration-200" />
+          <span className="text-sm font-medium hidden sm:inline">Back</span>
+        </button>
+
+        <div className="text-center pt-2 pb-2">
+          <h1 className="text-[26px] md:text-[30px] lg:text-[34px] font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-2">
+            Team Evaluation Board
+          </h1>
+          <p className="text-sm text-inactive-tab-text/80">
+            Comprehensive evaluation overview and statistics
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 pt-2">
+          <FaUsers className="size-5 text-primary" />
+          <p className="text-[17px] md:text-[18px] lg:text-[19px] text-inactive-tab-text font-semibold">
+            Team Information
+          </p>
+        </div>
+
+        <div className="shadow-lg rounded-xl p-4 border border-gray-200 bg-white hover:shadow-xl transition-shadow duration-300">
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="space-y-1.5">
+              <div className="font-semibold text-inactive-tab-text text-[12px] md:text-[13px] lg:text-[14px] uppercase tracking-wide">
                 Name
               </div>
-              {teamData.name}
-            </p>
-            <p className="text-[16px] md:text-[18px] lg:text-[20px] text-contrast font-medium w-[49%]">
-              <div className="font-semibold text-inactive-tab-text text-[13px] md:text-[14px] lg:text-[15px]">
+              <p className="text-[17px] md:text-[19px] lg:text-[21px] text-contrast font-medium">
+                {teamData.name}
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <div className="font-semibold text-inactive-tab-text text-[12px] md:text-[13px] lg:text-[14px] uppercase tracking-wide">
                 Course
               </div>
-              {teamData.course}
-            </p>
+              <p className="text-[17px] md:text-[19px] lg:text-[21px] text-contrast font-medium">
+                {teamData.course}
+              </p>
+            </div>
           </div>
-          <hr className="w-full border-gray-300 my-2" />
-          <div className="w-full flex justify-between mb-3 gap-x-4">
-            <p className="text-[16px] md:text-[18px] lg:text-[20px] text-contrast font-medium">
-              <div className="font-semibold text-inactive-tab-text text-[13px] md:text-[14px] lg:text-[15px]">
+
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-3" />
+
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <div className="font-semibold text-inactive-tab-text text-[12px] md:text-[13px] lg:text-[14px] uppercase tracking-wide">
                 Code
               </div>
-              {teamData.code}
-            </p>
-            <p className="text-[16px] md:text-[18px] lg:text-[20px] text-contrast font-medium w-[49%]">
-              <div className="font-semibold text-inactive-tab-text text-[13px] md:text-[14px] lg:text-[15px]">
-                Score
+              <p className="text-[17px] md:text-[19px] lg:text-[21px] text-contrast font-medium">
+                {teamData.code}
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <div className="font-semibold text-inactive-tab-text text-[12px] md:text-[13px] lg:text-[14px] uppercase tracking-wide">
+                Department
               </div>
-              {teamData.department}
-            </p>
+              <p className="text-[17px] md:text-[19px] lg:text-[21px] text-contrast font-medium">
+                {teamData.department}
+              </p>
+            </div>
           </div>
         </div>
-        <p className="text-[16px] md:text-[17px] lg:text-[18px] text-inactive-tab-text font-semibold mb-1.5">
-          Team Members
-        </p>
-        <div className=" flex-wrap flex shadow-md gap-x-1 rounded-lg p-3 border border-gray-300 bg-white">
+
+        <div className="flex items-center gap-2 pt-2">
+          <FaUsers className="size-5 text-secondary" />
+          <p className="text-[17px] md:text-[18px] lg:text-[19px] text-inactive-tab-text font-semibold">
+            Team Members
+          </p>
+        </div>
+
+        <div className="flex-wrap flex shadow-lg gap-2 rounded-xl p-4 border border-gray-200 bg-white hover:shadow-xl transition-shadow duration-300">
           {teamData.teamMembers.map((member) => (
-            <p
+            <span
               key={member.id}
-              className="text-[14px] md:text-[15px] lg:text-[16px] text-contrast bg-muted-primary/30 px-3 border-primary border rounded-md"
+              className="text-[14px] md:text-[15px] lg:text-[16px] text-contrast bg-muted-primary/30 px-4 py-1.5 border-primary border rounded-lg hover:bg-muted-primary/40 transition-colors duration-200 font-medium"
             >
               {member.name}
-            </p>
+            </span>
           ))}
         </div>
-        <p className="text-[16px] md:text-[17px] lg:text-[18px] text-inactive-tab-text font-semibold mt-4 mb-1.5">
-          Evaluation Statistics
-        </p>
-        <div className="shadow-md gap-x-1 rounded-lg p-3 border border-gray-300 bg-white">
-          <div className="w-full flex justify-between mb-3 gap-x-4">
-            <p className="text-[20px] md:text-[22px] lg:text-[24px] text-contrast font-medium">
-              <div className="font-semibold text-inactive-tab-text text-[13px] md:text-[14px] lg:text-[15px]">
+
+        <div className="flex items-center gap-2 pt-3">
+          <FaChartBar className="size-5 text-secondary" />
+          <p className="text-[17px] md:text-[18px] lg:text-[19px] text-inactive-tab-text font-semibold">
+            Evaluation Statistics
+          </p>
+        </div>
+
+        <div className="shadow-lg rounded-xl p-4 border border-gray-200 bg-white hover:shadow-xl transition-shadow duration-300">
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+            <div className="space-y-2">
+              <div className="font-semibold text-inactive-tab-text text-[12px] md:text-[13px] lg:text-[14px] uppercase tracking-wide">
                 Total evaluations
               </div>
-              {evaluations.length}
-            </p>
-            <p className="text-[20px] md:text-[22px] lg:text-[24px] text-contrast font-medium w-[49%]">
-              <div className="font-semibold text-inactive-tab-text text-[13px] md:text-[14px] lg:text-[15px]">
+              <p className="text-[28px] md:text-[32px] lg:text-[36px] text-contrast font-bold">
+                {evaluations.length}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <div className="font-semibold text-inactive-tab-text text-[12px] md:text-[13px] lg:text-[14px] uppercase tracking-wide">
                 Average Score
               </div>
-              {(
-                evaluations.reduce(
-                  (sum, evaluation) => sum + (evaluation.totalScore || 0),
-                  0
-                ) / evaluations.length
-              ).toFixed(2)}
-            </p>
+              <p className="text-[28px] md:text-[32px] lg:text-[36px] text-primary font-bold">
+                {averageScore}
+              </p>
+            </div>
           </div>
-          <hr className="w-full border-gray-300 my-2" />
-          <div className="w-full flex justify-between mb-3 gap-x-4">
-            <p className=" text-inactive-tab-text text-[13px] md:text-[14px] lg:text-[15px]">
-              Highest Score
-              <div className="text-[20px] md:text-[22px] lg:text-[24px] text-contrast font-medium">
-                {Math.max(
-                  ...evaluations.map((evaluation) => evaluation.totalScore || 0)
-                )}
+
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-4" />
+
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 space-y-2 hover:shadow-md transition-shadow duration-200">
+              <div className="flex items-center gap-2">
+                <FaTrophy className="size-4 text-green-600" />
+                <p className="text-green-700 text-[12px] md:text-[13px] lg:text-[14px] font-semibold uppercase tracking-wide">
+                  Highest Score
+                </p>
               </div>
-              By:{" "}
-              {
-                evaluations.find(
-                  (evaluation) =>
-                    evaluation.totalScore ===
-                    Math.max(
-                      ...evaluations.map(
-                        (evaluation) => evaluation.totalScore || 0
-                      )
-                    )
-                )?.judgeName
-              }
-            </p>
-            <p className="text-inactive-tab-text text-[13px] md:text-[14px] lg:text-[15px] w-[49%]">
-              Lowest Score
-              <div className="text-[20px] md:text-[22px] lg:text-[24px] text-contrast font-medium">
-                {Math.min(
-                  ...evaluations.map((evaluation) => evaluation.totalScore || 0)
-                )}
-              </div>
-              By:{" "}
-              {
-                evaluations.find(
-                  (evaluation) =>
-                    evaluation.totalScore ===
-                    Math.min(
-                      ...evaluations.map(
-                        (evaluation) => evaluation.totalScore || 0
-                      )
-                    )
-                )?.judgeName
-              }
-            </p>
+              <p className="text-[24px] md:text-[28px] lg:text-[32px] text-green-900 font-bold">
+                {highestScore}
+              </p>
+              <p className="text-[12px] md:text-[13px] text-green-700">
+                By: {highestEval?.judgeName}
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 space-y-2 hover:shadow-md transition-shadow duration-200">
+              <p className="text-amber-700 text-[12px] md:text-[13px] lg:text-[14px] font-semibold uppercase tracking-wide">
+                Lowest Score
+              </p>
+              <p className="text-[24px] md:text-[28px] lg:text-[32px] text-amber-900 font-bold">
+                {lowestScore}
+              </p>
+              <p className="text-[12px] md:text-[13px] text-amber-700">
+                By: {lowestEval?.judgeName}
+              </p>
+            </div>
           </div>
         </div>
-        <p className="text-[16px] md:text-[17px] lg:text-[18px] text-inactive-tab-text font-semibold mb-1.5">
-          Evaluations
-        </p>
-        {evaluations.length === 0 ? (
-          <p className="text-[14px] md:text-[15px] lg:text-[16px] text-contrast">
-            No evaluations have been submitted for this team yet.
+
+        <div className="flex items-center gap-2 pt-3">
+          <FaClipboardList className="size-5 text-inactive-tab-text" />
+          <p className="text-[17px] md:text-[18px] lg:text-[19px] text-inactive-tab-text font-semibold">
+            Individual Evaluations
           </p>
+        </div>
+
+        {evaluations.length === 0 ? (
+          <div className="p-8 text-center rounded-xl border border-gray-200 bg-gray-50">
+            <FaClipboardList className="size-12 mx-auto mb-4 text-inactive-tab-text/40" />
+            <p className="text-[14px] md:text-[15px] lg:text-[16px] text-contrast">
+              No evaluations have been submitted for this team yet.
+            </p>
+          </div>
         ) : (
           <div className="space-y-4">
             {evaluations.map((evaluation, index) => (
               <div
                 key={index}
-                className="p-3 border border-gray-300 rounded-lg bg-white shadow-sm"
+                className="p-4 border-l-4 border-l-secondary border border-gray-200 rounded-xl bg-white shadow-md hover:shadow-lg transition-all duration-300"
               >
-                <div className="flex justify-between">
-                  <p className="text-[17px] md:text-[18px] lg:text-[19px] font-semibold text-secondary flex gap-1">
-                    {evaluation.judgeName}
-                  </p>
-                  <p className="text-[19px] md:text-[21px] lg:text-[23px] font-semibold text-contrast mb-3 flex gap-1">
-                    {evaluation.totalScore}
-                  </p>
+                <div className="flex justify-between items-start pb-4 mb-4 border-b border-gray-200">
+                  <div className="space-y-1">
+                    <p className="text-[18px] md:text-[20px] lg:text-[22px] font-semibold text-secondary">
+                      {evaluation.judgeName}
+                    </p>
+                    <p className="text-[11px] md:text-[12px] text-inactive-tab-text uppercase tracking-wide">
+                      Evaluator
+                    </p>
+                  </div>
+                  <div className="text-right space-y-1">
+                    <p className="text-[26px] md:text-[30px] lg:text-[34px] font-bold text-contrast">
+                      {evaluation.totalScore}
+                    </p>
+                    <p className="text-[11px] md:text-[12px] text-inactive-tab-text uppercase tracking-wide">
+                      Total Score
+                    </p>
+                  </div>
                 </div>
+
                 <div className="space-y-3">
                   {evaluation.evaluationItemScores
                     .sort((a, b) =>
@@ -187,18 +262,28 @@ export default function EvaluationDetailsPage() {
                     .map((item, itemIndex) => (
                       <div
                         key={item.evaluationItemId}
-                        className="pb-2 border-b-2 last:border-b-0 border-gray-300"
+                        className="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 border border-gray-200/50"
                       >
-                        <p className="text-[14px] md:text-[15px] lg:text-[16px] text-contrast flex gap-1">
-                          <p className="text-secondary font-semibold">
-                            Q{itemIndex + 1}.
-                          </p>
-                          {item.evaluationItemName}
-                        </p>
-                        <p className="text-[16px] md:text-[17px] lg:text-[18px]">
-                          Score:{" "}
-                          <strong className="text-primary">{item.score}</strong>
-                        </p>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 space-y-1">
+                            <p className="text-[14px] md:text-[15px] lg:text-[16px] text-contrast flex items-start gap-2 leading-relaxed">
+                              <span className="inline-flex items-center justify-center min-w-[2.5rem] px-2 py-0.5 bg-secondary text-white text-xs font-semibold rounded-md shrink-0">
+                                Q{itemIndex + 1}
+                              </span>
+                              <span className="text-pretty">
+                                {item.evaluationItemName}
+                              </span>
+                            </p>
+                          </div>
+                          <div className="shrink-0 text-right space-y-0.5">
+                            <p className="text-[10px] md:text-[11px] text-inactive-tab-text uppercase tracking-wide">
+                              Score
+                            </p>
+                            <p className="text-[18px] md:text-[20px] lg:text-[22px] font-bold text-primary">
+                              {item.score}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     ))}
                 </div>
