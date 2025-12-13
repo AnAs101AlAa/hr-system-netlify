@@ -160,8 +160,8 @@ export async function addTeamAttendance(teamData: TeamMemberAttendance[]): Promi
     await systemApi.post(`${JUDGING_API_URL}/ResearchDayAttendance/bulk`, { teamData });
 }
 
-export async function getTeamAttendance(judgeId: string, teamId: string): Promise<TeamMemberAttendance[]> {
-    const response = await systemApi.get(`${JUDGING_API_URL}/ResearchDayAttendance/judges/${judgeId}/teams/${teamId}`);
+export async function getTeamAttendance(teamId: string): Promise<TeamMemberAttendance[]> {
+    const response = await systemApi.get(`${JUDGING_API_URL}/ResearchDayAttendance/judges/teams/${teamId}`);
     return response.data.data;
 }
 

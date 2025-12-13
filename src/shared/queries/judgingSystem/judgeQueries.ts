@@ -232,13 +232,14 @@ export const useAddTeamAttendance = () => {
     });
 }
 
-export const useGetTeamAttendance = (judgeId: string, teamId: string): UseQueryResult<TeamMemberAttendance[], Error> => {
+export const useGetTeamAttendance = (teamId: string): UseQueryResult<TeamMemberAttendance[], Error> => {
     return useQuery({
-        queryKey: ['judgingSystem', 'teamAttendance', judgeId, teamId],
+        queryKey: ['judgingSystem', 'teamAttendance', teamId],
         queryFn: async () => {
-            const attendance = await JudgeAPI.getTeamAttendance(judgeId, teamId);
+            const attendance = await JudgeAPI.getTeamAttendance(teamId);
             return attendance;
-        }
+        },
+        retry: 1
     });
 }
 
