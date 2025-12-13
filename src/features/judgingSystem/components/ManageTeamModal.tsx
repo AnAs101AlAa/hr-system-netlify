@@ -4,14 +4,68 @@ import { HiOutlineTrash } from "react-icons/hi2";
 import useManageTeamModalUtils from "../utils/ManageTeamFormUtils";
 import DEPARTMENT_LIST from "@/constants/departments";
 import { FaPlus } from "react-icons/fa6";
+import { HiOutlineUpload } from "react-icons/hi";
 
 export default function ManageTeamModal({isOpen, onClose, mode, teamData, eventId}: {isOpen: boolean; onClose: () => void; mode: number; teamData?: Team; eventId: string}) {
-    const { teamDataState, handleAddMember, handleDeleteMember, handleChangeMemberName, handleChangeTeamData, formErrors, submitTeam, isLoading } = useManageTeamModalUtils(eventId, mode, teamData);
+    const { 
+        teamDataState, 
+        handleAddMember, 
+        handleDeleteMember, 
+        handleChangeMemberName, 
+        handleChangeTeamData, 
+        formErrors, 
+        submitTeam, 
+        isLoading,
+        handleFileUpload,
+        isProcessingFile,
+        uploadError
+    } = useManageTeamModalUtils(eventId, mode, teamData);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={mode === 1 ? "Create New Team" : "Edit Team"}>
             <p className="text-contrast text-[13px] md:text-[14px] lg:text-[15px] mb-2 -mt-3">Fill in the details below to create a new team for this event.</p>
             <hr className="mb-4 border-gray-300" />
+            
+            {/* Bulk Upload Section - Only show in create mode */}
+            {mode === 1 && (
+                <>
+                    <div className="space-y-3 md:mb-6 mb-4">
+                        <p className="text-[16px] md:text-[17px] lg:text-[18px] font-semibold text-contrast">Bulk Upload</p>
+                        <p className="text-contrast text-[13px] md:text-[14px] lg:text-[15px] -mt-1">Upload an Excel file to create multiple teams at once.</p>
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="file"
+                                    id="file-upload"
+                                    accept=".xlsx,.xls,.csv,.ods"
+                                    onChange={handleFileUpload}
+                                    disabled={isProcessingFile}
+                                    className="hidden"
+                                />
+                                <label
+                                    htmlFor="file-upload"
+                                    className={`flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${isProcessingFile ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    <HiOutlineUpload className="size-5 text-primary" />
+                                    <span className="text-[14px] md:text-[15px] text-contrast">
+                                        {isProcessingFile ? 'Processing...' : 'Choose File (Excel/CSV)'}
+                                    </span>
+                                </label>
+                            </div>
+                            {uploadError && (
+                                <p className="text-red-500 text-sm">{uploadError}</p>
+                            )}
+                            <p className="text-gray-500 text-xs">Accepts: Excel (.xlsx, .xls), CSV (.csv), or OpenDocument (.ods) files</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3 my-4">
+                        <hr className="flex-1 border-gray-300" />
+                        <span className="text-gray-500 text-sm">OR</span>
+                        <hr className="flex-1 border-gray-300" />
+                    </div>
+                </>
+            )}
+
             <div className="space-y-3 md:mb-8 mb-6">
                 <p className="text-[16px] md:text-[17px] lg:text-[18px] font-semibold text-contrast">Team Information</p>
                 <div className="space-y-0.5">
