@@ -25,7 +25,7 @@ export default function UseTeamEvaluationUtils() {
     const [extraNotes, setExtraNotes] = useState<string>("");
     const [teamAttendance, setTeamAttendance] = useState<TeamMemberAttendance[]>(teamAttendanceData || []);
     const [formErrors, setFormErrors] = useState<{name: string, questions: { [questionId: string]: string }} | null>(null);
-
+        
     useEffect(() => {
         if(teamEvaluation) {
             const initialScores: { [questionId: string]: number } = {};
@@ -34,15 +34,12 @@ export default function UseTeamEvaluationUtils() {
             });
             setAssessmentScores(initialScores);
             setExtraNotes(teamEvaluation.note || "");
+            setTeamAttendance(teamAttendanceData || []);
         }
-        if(teamData && teamData.teamMembers) {
-            const attendanceStatus: TeamMemberAttendance[] = [];
-            teamData.teamMembers.forEach(member => {
-                attendanceStatus.push({ teamMemberId: member.id, attended: false });
-            });
-            setTeamAttendance(attendanceStatus);
+        if(teamAttendanceData) {
+             setTeamAttendance(teamAttendanceData || []);
         }
-    }, [teamEvaluation, teamData]);
+    }, [teamEvaluation, teamAttendanceData]);
 
     const handleChangeAssessmentScore = (questionId: string, score: number) => {
         setAssessmentScores(prevScores => ({
@@ -130,6 +127,8 @@ export default function UseTeamEvaluationUtils() {
             return prevAttendance.map(att => att.teamMemberId === memberId ? { ...att, attended } : att);
         });
     }
+
+    console.log("Team Attendance State:", teamAttendance);
 
     return {
         questions,
