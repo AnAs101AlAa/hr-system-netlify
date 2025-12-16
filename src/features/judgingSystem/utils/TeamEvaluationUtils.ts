@@ -124,7 +124,14 @@ export default function UseTeamEvaluationUtils() {
 
     const handleChangeTeamAttendance = (memberId: string, attended: boolean) => {
         setTeamAttendance((prevAttendance) => {
-            return prevAttendance.map(att => att.teamMemberId === memberId ? { ...att, attended } : att);
+            const existingRecordIndex = prevAttendance.findIndex(att => att.teamMemberId === memberId);
+            if (existingRecordIndex !== -1) {
+                const updatedAttendance = [...prevAttendance];
+                updatedAttendance[existingRecordIndex] = { ...updatedAttendance[existingRecordIndex], attended };
+                return updatedAttendance;
+            } else {
+                return [...prevAttendance, { teamMemberId: memberId, attended }];
+            }
         });
     }
 
