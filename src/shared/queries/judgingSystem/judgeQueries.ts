@@ -251,3 +251,13 @@ export const useUpdateTeamAttendance = () => {
         },
     });
 }
+
+export const useGetTeamAttendancesByJudge = () => {
+    return useMutation({
+        mutationKey: ['judgingSystem', 'teamAttendancesByJudge'],
+        mutationFn: async (payload: { judgeId: string; teamId: string }) => {
+            const attendance = await JudgeAPI.getTeamAttendancesByJudge(payload.judgeId, payload.teamId);
+            return attendance;
+        },
+    });
+}
