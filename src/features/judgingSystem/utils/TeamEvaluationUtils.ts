@@ -135,8 +135,6 @@ export default function UseTeamEvaluationUtils() {
         });
     }
 
-    console.log("Team Attendance State:", teamAttendance);
-
     return {
         questions,
         extraNotes,

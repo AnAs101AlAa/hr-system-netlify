@@ -99,7 +99,7 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
 
                 // Map department label to value
                 const departmentValue = departmentMap.get(departmentLabel.toLowerCase());
-                
+                                
                 if (!departmentValue) {
                     invalidDepartments.push(`${teamName} (${departmentLabel})`);
                     continue;

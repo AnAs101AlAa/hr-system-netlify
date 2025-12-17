@@ -3,8 +3,6 @@ import UseTeamEvaluationUtils from "../utils/TeamEvaluationUtils";
 
 export default function TeamEvaluationPage() {
     const { questions, isFetchingData, teamData, event, isFetchingError, assessmentScores, handleNavigateBack, handleChangeAssessmentScore, handleSubmitEvaluation, handleChangeTeamAttendance, teamAttendance, isSubmittingEvaluation, formErrors, extraNotes, setExtraNotes } = UseTeamEvaluationUtils();
-
-    console.log("Team Attendance:", teamAttendance);
     
     if(isFetchingData) {
         return <LoadingPage />;

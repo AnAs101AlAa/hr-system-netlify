@@ -7,6 +7,7 @@ export interface Team {
     scores?: number[];
     totalScore?: number;
     teamMembers: TeamMember[];
+    isEvaluated?: string;
 }
 
 export interface TeamMember {
