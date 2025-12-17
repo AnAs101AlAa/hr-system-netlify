@@ -1,5 +1,5 @@
 import { DropdownMenu, Button } from "tccd-ui";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useResearchTeams } from "@/shared/queries/judgingSystem/judgeQueries";
 import type { Team } from "@/shared/types/judgingSystem";
@@ -10,7 +10,7 @@ import { FaFilter } from "react-icons/fa6";
 import FilterModal from "./FiltersModal";
 import Table from "@/shared/components/table/Table";
 import CardView from "@/shared/components/table/CardView";
-import { useDeleteTeam } from "@/shared/queries/judgingSystem/judgeQueries";
+import { useDeleteTeam, useGetJudgeEvaluations } from "@/shared/queries/judgingSystem/judgeQueries";
 import { toast } from "react-hot-toast";
 import { getErrorMessage } from "@/shared/utils/errorHandler";
 import { useSelector } from "react-redux";
@@ -20,7 +20,8 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
   const eventId = useParams().eventId || "";
   const navigate = useNavigate();
   const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
-  
+  const isJudge = userRoles.includes("Judge") && userRoles.length === 1;
+
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
   const [debouncedTeamName, setDebouncedTeamName] = useState<string>("");
@@ -28,6 +29,7 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
   const [debouncedDepartmentKey, setDebouncedDepartmentKey] = useState<string>("");
   const [debouncedCourseKey, setDebouncedCourseKey] = useState<string>("");
   const deleteTeamMutation = useDeleteTeam();
+
 
     const searchParams: FilterSearchParams = {
         nameKey: debouncedTeamName,
@@ -61,7 +63,21 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
     }, [debouncedTeamName, debouncedTeamCode]);
 
     const [sortOption, setSortOption] = useState<string>("");
-    const { data: teams, isLoading, isError } = useResearchTeams(eventId, currentPage, 20, sortOption, debouncedTeamName, debouncedTeamCode, debouncedCourseKey, debouncedDepartmentKey, userRoles.includes("Judge") && userRoles.length === 1 ? "judge" : "admin");
+    const { data: teams, isLoading, isError } = useResearchTeams(eventId, currentPage, 20, sortOption, debouncedTeamName, debouncedTeamCode, debouncedCourseKey, debouncedDepartmentKey, isJudge ? "judge" : "admin");
+    const {data: judgeEvaluations} = useGetJudgeEvaluations(teams ? teams.teams.map((team: Team) => team.id) : [], isJudge);
+
+    const teamFullData = useMemo(() => {
+      if (!teams) return [];
+      if (!judgeEvaluations) return teams.teams;
+      return teams.teams.map((team: Team) => {
+        const evaluation = judgeEvaluations.find((evalItem) => evalItem.teamId === team.id);
+                
+        return {
+          ...team,
+          isEvaluated: evaluation?.isEvaluated ? "Evaluated" : "Not evaluated",
+        };
+      });
+    }, [teams, judgeEvaluations]);
 
     return (
       <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
@@ -124,17 +140,17 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
         ) : (
         <>
           <Table
-            items={teams?.teams || []}
+            items={teamFullData || []}
             columns={[
-              { key: "name", label: "Team Name", width: "w-1/3" },
-              { key: "code", label: "Team Code", width: "w-1/4" },
-              { key: "department", label: "Department", width: "w-1/4" },
-              { key: "course", label: "Course", width: "w-1/6" },
-              { key: "totalScore", label: "Total Score", width: "w-1/6"}
-            ]}
+              { key: "name" as keyof Team, label: "Team Name", width: "w-1/3" },
+              { key: "code" as keyof Team, label: "Team Code", width: "w-1/4" },
+              { key: "department" as keyof Team, label: "Department", width: "w-1/4" },
+              { key: "course" as keyof Team, label: "Course", width: "w-1/6" },
+              !isJudge ? { key: "totalScore" as keyof Team, label: "Total Score", width: "w-1/6"} : {key: "isEvaluated" as keyof Team, label: "Evaluation Status", width: "w-1/6" }
+            ].filter(Boolean) as { key: keyof Team; label: string; width: string }[]}
             renderActions={(item, triggerDelete) => 
               <>
-                  {(userRoles.includes("Judge") && userRoles.length === 1) ? (
+                  {isJudge ? (
                     <Button
                       type="primary"
                       buttonText="Start Assessment "
@@ -175,7 +191,7 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
             titleKey="name"
             renderButtons={(item, triggerDelete) =>
               <>
-                {(userRoles.includes("Judge") && userRoles.length === 1) ? (
+                {isJudge ? (
                   <Button
                     type="primary"
                     buttonText="Start Assessment "
