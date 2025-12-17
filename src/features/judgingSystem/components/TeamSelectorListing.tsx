@@ -4,25 +4,43 @@ import { useParams } from "react-router-dom";
 import { useResearchTeams, useGetAssignedTeamsForJudge, useAssignTeamsToJudge, useRemoveTeamFromJudge } from "@/shared/queries/judgingSystem/judgeQueries";
 import { TEAM_SORTING_OPTIONS } from "@/constants/judgingSystemConstants";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { SearchField } from "tccd-ui";
 import type { Team } from "@/shared/types/judgingSystem";
 import toast from "react-hot-toast";
 import Table from "@/shared/components/table/Table";
 import CardView from "@/shared/components/table/CardView";
+import { FaFilter } from "react-icons/fa";
+import type { FilterSearchParams } from "../types";
+import FilterModal from "./FiltersModal";
 
 const TeamSelectorListing = () => {
     const { eventId, judgeId } = useParams<{ eventId: string; judgeId: string }>();
 
     const [currentPage, setCurrentPage] = useState<number>(1);
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
     const [debouncedTeamName, setDebouncedTeamName] = useState<string>("");
+    const [debouncedTeamCode, setDebouncedTeamCode] = useState<string>("");
+    const [debouncedDepartmentKey, setDebouncedDepartmentKey] = useState<string>("");
+    const [debouncedCourseKey, setDebouncedCourseKey] = useState<string>("");
+
     const [sortOption, setSortOption] = useState<string>("");
     const [availableTeams, setAvailableTeams] = useState<{teams: Team[]; total: number}>({teams: [], total: 0});
     const [assignedTeams, setAssignedTeams] = useState<Team[]>([]);
 
-    const { data: teams, isLoading: isTeamsLoading, isError: isTeamsError } = useResearchTeams(eventId!, currentPage, 1000, sortOption, debouncedTeamName, "", "", "", "admin");
+    const { data: teams, isLoading: isTeamsLoading, isError: isTeamsError } = useResearchTeams(eventId!, currentPage, 15, sortOption, debouncedTeamName, debouncedTeamCode, debouncedDepartmentKey, debouncedCourseKey, "admin");
     const { data: assignedTeamsData, isLoading: isAssignedTeamsLoading, isError: isAssignedTeamsError } = useGetAssignedTeamsForJudge(judgeId!);
     const assignTeamsToJudgeMutation = useAssignTeamsToJudge();
     const removeTeamFromJudgeMutation = useRemoveTeamFromJudge();
+
+    const searchParams: FilterSearchParams = {
+        nameKey: debouncedTeamName,
+        setNameKey: setDebouncedTeamName,
+        codeKey: debouncedTeamCode,
+        setCodeKey: setDebouncedTeamCode,
+        departmentKey: debouncedDepartmentKey,
+        setDepartmentKey: setDebouncedDepartmentKey,
+        courseKey: debouncedCourseKey,
+        setCourseKey: setDebouncedCourseKey,
+    };
 
     const renderDataSections = (items: Team[], mode: number) => {
       return (
@@ -126,6 +144,7 @@ const TeamSelectorListing = () => {
 
     return (
       <div className="space-y-4">
+        <FilterModal isOpen={isFilterModalOpen} onClose={() => setIsFilterModalOpen(false)} searchParams={searchParams} />
         <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
           <div className="p-4 border-b border-dashboard-border space-y-2">
             <div className="flex items-center justify-between mb-4">
@@ -178,17 +197,20 @@ const TeamSelectorListing = () => {
             <hr className="border-gray-200" />
               <p className="text-[14px] md:text-[15px] lg:text-[16px] font-semibold text-contrast">Filters</p>
               <div className="flex gap-2 md:flex-row flex-col justify-between">
-                  <div className="md:min-w-76">
-                      <SearchField placeholder="Search by team name" value={debouncedTeamName} onChange={(value) => setDebouncedTeamName(value)} />
-                  <div/>
+                  <div className="md:min-w-76 flex flex-row-reverse justify-between items-center gap-2 cursor-pointer border rounded-full px-3.5 py-1.5 hover:bg-gray-100 transition-colors" onClick={() => setIsFilterModalOpen(true)}>
+                    <FaFilter className="size-3 text-secondary mt-0.5" />
+                    <p className="text-[12px] md:text-[13px] lg:text-[14px] font-semibold text-center">
+                        Open Filters
+                    </p>
+                    <div/>
                   </div>
                   <div className="flex-grow md:max-w-72">
-                  <DropdownMenu
+                    <DropdownMenu
                       options={TEAM_SORTING_OPTIONS}
                       value={sortOption}
                       onChange={(val) => setSortOption(val)}
                       placeholder="Sort By"
-                  />
+                    />
                   </div>
               </div>
           </div>
