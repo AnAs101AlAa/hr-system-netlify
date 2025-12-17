@@ -357,7 +357,7 @@ export default function EvaluationDetailsPage() {
                 </div>
 
                 <div className="space-y-3">
-                  {evaluation.judgeId && attendanceData[evaluation.judgeId].length > 0 ? (
+                  {evaluation.judgeId && attendanceData[evaluation.judgeId] && attendanceData[evaluation.judgeId].length > 0 ? (
                     <>
                     {attendanceData[evaluation.judgeId].map((member: TeamMemberAttendance) => (
                       <div key={member.teamMemberId} className="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 border border-gray-200/50">
