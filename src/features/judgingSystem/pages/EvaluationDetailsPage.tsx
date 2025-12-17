@@ -1,10 +1,9 @@
-"use client";
-
 import { useParams } from "react-router-dom";
 import WithNavbar from "@/shared/components/hoc/WithNavbar";
 import {
   useGetAllTeamEvaluations,
   useGetTeam,
+  useGetTeamAttendancesByJudge
 } from "@/shared/queries/judgingSystem/judgeQueries";
 import { LoadingPage, ErrorScreen } from "tccd-ui";
 import {
@@ -13,10 +12,15 @@ import {
   FaChartBar,
   FaTrophy,
   FaClipboardList,
+  FaUserCheck
 } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import type { TeamMemberAttendance } from "@/shared/types/judgingSystem";
 
 export default function EvaluationDetailsPage() {
   const { teamId } = useParams<{ teamId: string }>();
+  const [attendanceData, setAttendanceData] = useState<Record<string, TeamMemberAttendance[]>>({});
+  
   const {
     data: evaluations,
     isLoading: isEvaluationsLoading,
@@ -27,6 +31,34 @@ export default function EvaluationDetailsPage() {
     isLoading: isTeamLoading,
     isError: isTeamError,
   } = useGetTeam(teamId!);
+
+  const attendanceByJudgeMutation = useGetTeamAttendancesByJudge();
+
+  useEffect(() => {
+    const fetchAttendances = async () => {
+      if (!evaluations || !teamId) return;
+      
+      const attendanceMap: Record<string, TeamMemberAttendance[]> = {};
+      
+      for (const evaluation of evaluations) {
+        if (evaluation.judgeId) {
+          try {
+            const attendance = await attendanceByJudgeMutation.mutateAsync({
+              judgeId: evaluation.judgeId,
+              teamId: teamId,
+            });
+            attendanceMap[evaluation.judgeId] = attendance;
+          } catch {
+            attendanceMap[evaluation.judgeId] = [];
+          }
+        }
+      }
+      
+      setAttendanceData(attendanceMap);
+    };
+
+    fetchAttendances();
+  }, [evaluations, teamId]);
 
   if (isEvaluationsLoading || isTeamLoading) {
     return <LoadingPage />;
@@ -286,6 +318,71 @@ export default function EvaluationDetailsPage() {
                         </div>
                       </div>
                     ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-center gap-2 pt-3">
+          <FaUserCheck className="size-5 text-inactive-tab-text" />
+          <p className="text-[17px] md:text-[18px] lg:text-[19px] text-inactive-tab-text font-semibold">
+            Individual Attendances
+          </p>
+        </div>
+
+        {evaluations.length === 0 ? (
+          <div className="p-8 text-center rounded-xl border border-gray-200 bg-gray-50">
+            <FaClipboardList className="size-12 mx-auto mb-4 text-inactive-tab-text/40" />
+            <p className="text-[14px] md:text-[15px] lg:text-[16px] text-contrast">
+              No evaluations have been submitted for this team yet.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {evaluations.map((evaluation, index) => (
+              <div
+                key={index}
+                className="p-4 border-l-4 border-l-secondary border border-gray-200 rounded-xl bg-white shadow-md hover:shadow-lg transition-all duration-300"
+              >
+                <div className="flex justify-between items-start pb-4 mb-4 border-b border-gray-200">
+                  <div className="space-y-1">
+                    <p className="text-[18px] md:text-[20px] lg:text-[22px] font-semibold text-secondary">
+                      {evaluation.judgeName}
+                    </p>
+                    <p className="text-[11px] md:text-[12px] text-inactive-tab-text uppercase tracking-wide">
+                      Evaluator
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {evaluation.judgeId && attendanceData[evaluation.judgeId].length > 0 ? (
+                    <>
+                    {attendanceData[evaluation.judgeId].map((member: TeamMemberAttendance) => (
+                      <div key={member.teamMemberId} className="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 border border-gray-200/50">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 space-y-1">
+                            <p className="text-[14px] md:text-[15px] lg:text-[16px] text-contrast flex items-start gap-2 leading-relaxed">
+                              <span className="text-pretty">
+                                {teamData.teamMembers.find(tm => tm.id === member.teamMemberId)?.name || "Unknown Member"}
+                              </span>
+                            </p>
+                          </div>
+                          <div className="shrink-0 text-right space-y-0.5">
+                            <p className={`text-[14px] md:text-[15px] lg:text-[16px] font-bold ${member.attended ? "text-green-600" : "text-red-600"}`}>
+                              {member.attended ? "Present" : "Absent"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    </>
+                  ) : (
+                  <div className="text-[14px] md:text-[15px] lg:text-[16px] text-contrast">
+                    No attendance data available.
+                  </div>
+                  )}
                 </div>
               </div>
             ))}

@@ -171,3 +171,11 @@ export async function getTeamAttendance(teamId: string): Promise<TeamMemberAtten
 export async function updateTeamAttendance(teamMemberData: TeamMemberAttendance): Promise<void> {
     await systemApi.put(`${JUDGING_API_URL}/ResearchDayAttendance`, teamMemberData);
 }
+
+export async function getTeamAttendancesByJudge(judgeId: string, teamId: string): Promise<TeamMemberAttendance[]> {
+    const response = await systemApi.get(`${JUDGING_API_URL}/Admin/research-attendance/judges/${judgeId}/teams/${teamId}`);
+    return response.data.data.attendance.map((attendance: any) => ({
+        attended: attendance.attended,
+        teamMemberId: attendance.teamMember.id,
+    }));
+}
