@@ -1,9 +1,9 @@
 import { Button, SearchField } from "tccd-ui";
-// import { TEAM_SORTING_OPTIONS } from "@/constants/judgingSystemConstants";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { useGetJudgesForEvent } from "@/shared/queries/judgingSystem/judgeQueries";
+import { useGetJudgesForEvent, useExportEvaluationsToExcel } from "@/shared/queries/judgingSystem/judgeQueries";
 import { useState } from "react";
 import { TbListDetails } from "react-icons/tb";
+import { HiOutlineDocumentDownload } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import CardView from "@/shared/components/table/CardView";
@@ -15,6 +15,36 @@ const JudgesList = () => {
     const [currentPage, setCurrentPage] =  useState(1);
     const [judgeName, setJudgeName] = useState("");
     const { data: judges, isLoading, isError } = useGetJudgesForEvent(currentPage, 10, judgeName);
+    const { mutate: exportEvaluations, isPending: isExporting } = useExportEvaluationsToExcel();
+
+    const handleExport = () => {
+      if (!eventId) return;
+      
+      exportEvaluations(eventId, {
+        onSuccess: (data) => {
+          // Create a blob from the response data
+          const blob = new Blob([data], { 
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+          });
+          
+          // Create a download link and trigger download
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `evaluations-${eventId}-${new Date().toISOString().split('T')[0]}.xlsx`;
+          document.body.appendChild(link);
+          link.click();
+          
+          // Cleanup
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        },
+        onError: (error) => {
+          console.error('Export failed:', error);
+          // You can add a toast notification here if available
+        }
+      });
+    };
 
     return (
       <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
@@ -50,6 +80,14 @@ const JudgesList = () => {
               <div className="md:min-w-76">
                 <SearchField placeholder="Search by name" value={judgeName} onChange={(value) => setJudgeName(value)} />
               </div>
+              <Button 
+                buttonText="Export Evaluations" 
+                buttonIcon={<HiOutlineDocumentDownload className="size-4" />}
+                type="secondary" 
+                onClick={handleExport}
+                disabled={isExporting}
+                width="auto"
+              />
           </div>
         </div>
         {isLoading ? (

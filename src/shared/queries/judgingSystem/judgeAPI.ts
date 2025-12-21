@@ -179,3 +179,10 @@ export async function getTeamAttendancesByJudge(judgeId: string, teamId: string)
         teamMemberId: attendance.teamMember.id,
     }));
 }
+
+export async function exportEvaluationsToExcel(eventId: string): Promise<Blob> {
+    const response = await systemApi.get(`${JUDGING_API_URL}/Evaluation/event/${eventId}/export`, {
+        responseType: "blob",
+    });
+    return response.data;
+}

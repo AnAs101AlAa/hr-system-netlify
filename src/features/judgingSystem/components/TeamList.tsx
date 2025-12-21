@@ -226,7 +226,7 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
               { key: "code", label: "Team Code" },
               { key: "department", label: "Department" },
               { key: "course", label: "Course" },
-              { key: "totalScore", label: "Total Score" }
+              !isJudge ? { key: "totalScore", label: "Total Score" } : { key: "isEvaluated", label: "Evaluation Status" },
             ]}
             modalTitle="Delete Team"
             modalSubTitle="Are you sure you want to delete this team? This action cannot be undone."

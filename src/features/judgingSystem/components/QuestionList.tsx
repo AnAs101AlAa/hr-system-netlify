@@ -181,7 +181,7 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                     </span>
                   </div>
                   {editQuestionState?.id === question.id ? (
-                    <div className="pr-48">
+                    <div className="pr-48 space-y-4">
                       <TextDisplayEdit
                         label=""
                         placeholder="Enter evaluation criteria description..."
@@ -193,6 +193,17 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                           })
                         }
                       />
+                      <TextDisplayEdit
+                        label=""
+                        placeholder="Enter detailed description for this question..."
+                        value={editQuestionState.description}
+                        onChange={(val) =>
+                          setEditQuestionState((prev) => {
+                            if (!prev) return null;
+                            return { ...prev, description: val };
+                          })
+                        }
+                      />
                       {editQuestionErrors && (
                         <p className="text-red-600 text-sm mt-2 font-medium bg-red-50 border border-red-200 rounded-md px-3 py-2">
                           {editQuestionErrors}
@@ -200,9 +211,14 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                       )}
                     </div>
                   ) : (
-                    <p className="mt-2 text-base text-contrast leading-relaxed pr-48">
-                      {question.name}
-                    </p>
+                    <div className="space-y-2">
+                      <p className="mt-2 text-lg text-contrast leading-relaxed pr-48 font-medium">
+                        {question.name}
+                      </p>
+                      <p className="text-sm text-inactive-tab-text pr-48">
+                        {question.description}
+                      </p>
+                    </div>
                   )}
                 </div>
               ))}
@@ -268,6 +284,17 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                     setNewQuestionState((prev) => {
                       if (!prev) return null;
                       return { ...prev, name: val };
+                    })
+                  }
+                />
+                <TextDisplayEdit
+                  label="Detailed Description"
+                  placeholder="Enter detailed description for this question..."
+                  value={newQuestionState.description}
+                  onChange={(val) =>
+                    setNewQuestionState((prev) => {
+                      if (!prev) return null;
+                      return { ...prev, description: val };
                     })
                   }
                 />

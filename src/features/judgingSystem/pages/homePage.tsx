@@ -38,7 +38,7 @@ export default function JudgingSystemHomePage() {
                     </div>
                     <div onClick={() => setActiveTab("questions")} className={`flex-1 hover:bg-muted-primary/30 ${activeTab === "questions" ? "bg-muted-primary/15" : "bg-white"} transition-colors duration-200 ease-in-out shadow-lg flex items-center justify-center p-2 cursor-pointer`}>
                         <div className="text-dashboard-card-text font-bold text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] leading-[10px] md:leading-[14px] font-inter text-center">
-                            Question
+                            Criterion
                         </div>
                     </div>
                     {!isJudge && <div onClick={() => setActiveTab("judges")} className={`flex-1 hover:bg-muted-primary/30 ${activeTab === "judges" ? "bg-muted-primary/15" : "bg-white"} transition-colors duration-200 ease-in-out shadow-lg flex items-center justify-center p-2 cursor-pointer`}>

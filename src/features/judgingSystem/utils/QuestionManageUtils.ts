@@ -48,6 +48,7 @@ export default function useManageQuestionUtils({eventId}: {eventId: string | und
             name: "",
             itemNumber: questionsState.length + 1,
             eventId: eventId,
+            description: "",
         });
     }
 
@@ -56,6 +57,9 @@ export default function useManageQuestionUtils({eventId}: {eventId: string | und
         let errors : { name?: string; itemNumber?: string } = {};
         if(!newQuestionState.name || newQuestionState.name.trim() === "") {
             errors = { ...errors, name: "Question text cannot be empty." };
+        }
+        if(!newQuestionState.description || newQuestionState.description.trim() === "") {
+            errors = { ...errors, name: "Question description cannot be empty." };
         }
         if(newQuestionState.itemNumber <= 0 || isNaN(newQuestionState.itemNumber)) {
             errors = { ...errors, itemNumber: "question number must be a positive number." };
