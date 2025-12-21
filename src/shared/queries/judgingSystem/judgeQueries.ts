@@ -281,3 +281,13 @@ export const useGetTeamAttendancesByJudge = () => {
         },
     });
 }
+
+export const useExportEvaluationsToExcel = () => {
+    return useMutation({
+        mutationKey: ['judgingSystem', 'exportEvaluationsToExcel'],
+        mutationFn: async (eventId: string) => {
+            const excelBlob = await JudgeAPI.exportEvaluationsToExcel(eventId);
+            return excelBlob;
+        },
+    });
+}

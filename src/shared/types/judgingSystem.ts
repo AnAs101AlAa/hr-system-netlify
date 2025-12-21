@@ -23,6 +23,7 @@ export interface TeamMemberAttendance {
 export interface JudgeQuestion {
     id: string;
     name: string;
+    description: string;
     itemNumber: number;
     eventId?: string;
 }
