@@ -175,13 +175,13 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                       <HiOutlineTrash className="text-red-500 hover:text-red-700 size-5" />
                     </button>
                   </div>
-                  <div className="flex items-center gap-2 mb-3 pr-48">
+                  <div className="flex items-center gap-2 mb-3">
                     <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-primary/10 text-primary font-semibold text-sm border border-primary/20">
                       Question {question.itemNumber}
                     </span>
                   </div>
                   {editQuestionState?.id === question.id ? (
-                    <div className="pr-48 space-y-4">
+                    <div className="space-y-4">
                       <TextDisplayEdit
                         label=""
                         placeholder="Enter evaluation criteria description..."
@@ -212,10 +212,10 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <p className="mt-2 text-lg text-contrast leading-relaxed pr-48 font-medium">
+                      <p className="mt-2 text-lg text-contrast leading-relaxed font-medium">
                         {question.name}
                       </p>
-                      <p className="text-sm text-inactive-tab-text pr-48">
+                      <p className="text-sm text-inactive-tab-text">
                         {question.description}
                       </p>
                     </div>

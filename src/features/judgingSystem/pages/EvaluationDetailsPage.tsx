@@ -16,6 +16,7 @@ import {
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import type { TeamMemberAttendance } from "@/shared/types/judgingSystem";
+import DEPARTMENT_LIST from "@/constants/departments";
 
 export default function EvaluationDetailsPage() {
   const { teamId } = useParams<{ teamId: string }>();
@@ -26,6 +27,7 @@ export default function EvaluationDetailsPage() {
     isLoading: isEvaluationsLoading,
     isError: isEvaluationsError,
   } = useGetAllTeamEvaluations(teamId!);
+  
   const {
     data: teamData,
     isLoading: isTeamLoading,
@@ -102,7 +104,7 @@ export default function EvaluationDetailsPage() {
 
   return (
     <WithNavbar>
-      <div className="xl:w-[45%] lg:w-[58%] md:w-[70%] sm:w-[80%] w-[94%] py-6 px-4 mx-auto rounded-xl shadow-lg mt-6 border-t-[6px] border-primary bg-white space-y-6 relative">
+      <div className="xl:w-[56%] lg:w-[68%] md:w-[76%] sm:w-[84%] w-[96%] py-6 px-4 mx-auto rounded-xl shadow-lg mt-6 border-t-[6px] border-primary bg-white space-y-6 relative">
         <button
           onClick={() => window.history.back()}
           className="absolute top-6 left-4 flex items-center gap-2 text-contrast hover:text-primary transition-all duration-200 group cursor-pointer"
@@ -164,7 +166,7 @@ export default function EvaluationDetailsPage() {
                 Department
               </div>
               <p className="text-[17px] md:text-[19px] lg:text-[21px] text-contrast font-medium">
-                {teamData.department}
+                {DEPARTMENT_LIST.find(dept => dept.value === teamData.department)?.label || teamData.department}
               </p>
             </div>
           </div>
@@ -306,6 +308,7 @@ export default function EvaluationDetailsPage() {
                                 {item.evaluationItemName}
                               </span>
                             </p>
+                            <p className="text-contrast md:text-[15px] text-[14px] mt-1">{item.evaluationItemDescription}</p>
                           </div>
                           <div className="shrink-0 text-right space-y-0.5">
                             <p className="text-[10px] md:text-[11px] text-inactive-tab-text uppercase tracking-wide">

@@ -187,7 +187,7 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
           />
 
           <CardView
-            items={teams?.teams || []}
+            items={teamFullData || []}
             titleKey="name"
             renderButtons={(item, triggerDelete) =>
               <>
