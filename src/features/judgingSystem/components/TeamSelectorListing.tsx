@@ -66,7 +66,7 @@ const TeamSelectorListing = () => {
           />
 
           <CardView
-            items={teams?.teams || []}
+            items={items || []}
             titleKey="name"
             renderButtons={(item) =>
               <Button

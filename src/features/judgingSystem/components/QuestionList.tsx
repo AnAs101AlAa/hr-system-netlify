@@ -10,6 +10,7 @@ import { HiOutlineTrash } from "react-icons/hi2";
 import { MdOutlineEdit } from "react-icons/md";
 import { Button, TextDisplayEdit } from "tccd-ui";
 import useManageQuestionUtils from "../utils/QuestionManageUtils";
+import { HTMLText } from "@/shared/components/HTMLText";
 
 export default function QuestionList({ event }: { event: Event | undefined }) {
   const {
@@ -216,7 +217,7 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                         {question.name}
                       </p>
                       <p className="text-sm text-inactive-tab-text">
-                        {question.description}
+                        <HTMLText content={question.description} className="text-sm text-inactive-tab-text" />
                       </p>
                     </div>
                   )}

@@ -3,9 +3,10 @@ import parse, { domToReact, Element } from "html-react-parser";
 
 type RenderHtmlProps = {
   content: string;
+  className?: string;
 };
 
-export function HTMLText({ content }: RenderHtmlProps) {
+export function HTMLText({ content, className }: RenderHtmlProps) {
   if (!content) return null;
 
   const decodeHtmlEntities = (str: string) => {
@@ -30,7 +31,7 @@ export function HTMLText({ content }: RenderHtmlProps) {
             href={props.href}
             target={props.target || "_blank"}
             rel={props.rel || "noopener noreferrer"}
-            className="underline text-secondary font-semibold"
+            className={` ${className || "underline text-secondary font-semibold"}`}
           >
             {domToReact(domNode.children as import("html-react-parser").DOMNode[])}
           </a>
