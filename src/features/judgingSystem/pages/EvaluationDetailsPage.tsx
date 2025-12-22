@@ -322,6 +322,14 @@ export default function EvaluationDetailsPage() {
                       </div>
                     ))}
                 </div>
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <h3 className="text-[16px] md:text-[18px] lg:text-[20px] font-semibold text-contrast mb-2">
+                    Additional Comments
+                  </h3>
+                  <p className="text-contrast md:text-[15px] text-[14px]">
+                    {evaluation.note || "No additional comments provided."}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
