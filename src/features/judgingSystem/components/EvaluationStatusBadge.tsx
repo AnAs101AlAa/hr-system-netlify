@@ -4,19 +4,20 @@ interface StatusBadgeProps {
 
 const EvaluationStatusBadge = ({ status }: StatusBadgeProps) => {
   const getStatusStyles = () => {
+    if(!status) return "text-gray-600";
     switch (status.toLowerCase()) {
       case "evaluated":
-        return "bg-green-500 text-white border-green-500";
+        return "text-green-500 ";
       default:
-        return "bg-gray-300 text-gray-600 border-gray-300";
+        return "text-primary";
     }
   };
 
   return (
     <span
-      className={`px-3 py-1 rounded-xl text-xs font-bold capitalize border ${getStatusStyles()} shadow-sm`}
+      className={`text-md font-bold capitalize ${getStatusStyles()}`}
     >
-      {status}
+      {status || "N/A"}
     </span>
   );
 };
