@@ -15,6 +15,7 @@ import { toast } from "react-hot-toast";
 import { getErrorMessage } from "@/shared/utils/errorHandler";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import EvaluationStatusBadge from "./EvaluationStatusBadge";
 
 const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => {
   const eventId = useParams().eventId || "";
@@ -146,7 +147,7 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
               { key: "code" as keyof Team, label: "Team Code", width: "w-1/4" },
               { key: "department" as keyof Team, label: "Department", width: "w-1/4" },
               { key: "course" as keyof Team, label: "Course", width: "w-1/6" },
-              !isJudge ? { key: "totalScore" as keyof Team, label: "Total Score", width: "w-1/6"} : {key: "isEvaluated" as keyof Team, label: "Evaluation Status", width: "w-1/6" }
+              !isJudge ? { key: "totalScore" as keyof Team, label: "Total Score", width: "w-1/6"} : {key: "isEvaluated" as keyof Team, label: "Evaluation Status", width: "w-1/6", formatter: (value: any) => <EvaluationStatusBadge status={value} />},
             ].filter(Boolean) as { key: keyof Team; label: string; width: string }[]}
             renderActions={(item, triggerDelete) => 
               <>
@@ -226,7 +227,7 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
               { key: "code", label: "Team Code" },
               { key: "department", label: "Department" },
               { key: "course", label: "Course" },
-              !isJudge ? { key: "totalScore", label: "Total Score" } : { key: "isEvaluated", label: "Evaluation Status" },
+              !isJudge ? { key: "totalScore", label: "Total Score" } : { key: "isEvaluated", label: "Evaluation Status", formatter: (value: any) => <EvaluationStatusBadge status={value} /> },
             ]}
             modalTitle="Delete Team"
             modalSubTitle="Are you sure you want to delete this team? This action cannot be undone."
