@@ -41,6 +41,7 @@ export interface EvaluationItem {
     evaluationItemId: string;
     score: number;
     evaluationItemName?: string;
+    evaluationItemDescription?: string;
 }
 
 export interface Judge {

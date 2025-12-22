@@ -40,27 +40,32 @@ export default function TeamEvaluationPage() {
                         <div key={index} className="mb-4 last:mb-0 border border-gray-200 p-2 rounded-lg">
                             <div className="flex gap-1 lg:text-[16px] md:text-[15px] text-[14px]">
                                 <p className="font-semibold text-primary">{question.itemNumber}.</p>
-                                <p className="text-contrast">{question.name}</p>
+                                <p className="text-contrast font-medium">{question.name}</p>
                             </div>
+                            <p className="text-contrast md:text-[15px] text-[14px] mt-1">{question.description}</p>
                             <div className="flex gap-2 mt-2 items-center">
                                 <p className="text-contrast lg:text-[17px] md:text-[16px] text-[15px]">Score:</p>
                                 <div className="flex gap-1 items-center">
                                     <input 
                                         placeholder="0" 
-                                        type="number" 
-                                        style={{ 
-                                            width: `${Math.max((assessmentScores[question.id]?.toString().length || 1) * 11 + 14, 30)}px`,
-                                            MozAppearance: "textfield", 
-                                            height: "27px" 
-                                        }} 
-                                        className="shadow-md bg-white rounded-lg text-center focus:border-primary border-gray-300 border transition-colors duration-200 outline-none text-contrast" 
+                                        type="text"
+                                        className="shadow-md bg-white rounded-lg text-center focus:border-primary border-gray-300 border transition-colors duration-200 outline-none text-contrast w-16 h-[27px] px-2" 
                                         value={assessmentScores[question.id] === -1 ? "" : assessmentScores[question.id]} 
-                                        onChange={(e) => handleChangeAssessmentScore(question.id, Number(e.target.value))} 
+                                        onChange={(e) => {
+                                            const val = e.target.value;                                            
+                                            if (val === "") {
+                                                handleChangeAssessmentScore(question.id, -1);
+                                                return;
+                                            }
+                                            if (/^[0-9]*\.?[0-9]*$/.test(val)) {
+                                                handleChangeAssessmentScore(question.id, val as any); 
+                                            }
+                                        }}
                                     />
                                     <p className="text-primary font-semibold text-[17px] md:text-[18px]">/ 10.0</p>
                                 </div>
                             </div>
-                            {formErrors?.questions[question.id] && (<div className="text-primary -mt-1 lg:text-[15px] md:text-[14px] text-[13px]">{formErrors.questions[question.id]}</div>)}
+                            {formErrors?.questions[question.id] && (<div className="text-primary mt-2 lg:text-[15px] md:text-[14px] text-[13px]">{formErrors.questions[question.id]}</div>)}
                         </div>
                     ))}
                     <TextAreaField id="additionalComments" label="Additional Comments (Optional)" placeholder="Provide any additional comments regarding the team's performance..." value={extraNotes} onChange={(e) => setExtraNotes(e.target.value)} />

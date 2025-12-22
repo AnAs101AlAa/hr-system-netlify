@@ -78,6 +78,12 @@ export default function UseTeamEvaluationUtils() {
             note: extraNotes,
         }
 
+        // Ensure all team members are included in attendance list
+        const completeAttendance = teamData?.teamMembers.map(member => {
+            const existingAttendance = teamAttendance.find(att => att.teamMemberId === member.id);
+            return existingAttendance || { teamMemberId: member.id, attended: false };
+        }) || [];
+
         if(!teamEvaluation) {
             await submitTeamEvaluationMutation.mutateAsync(payload, {
                 onError: () => {
@@ -85,7 +91,7 @@ export default function UseTeamEvaluationUtils() {
                 }
             });
 
-            await addTeamAttendanceMutation.mutateAsync(teamAttendance, {
+            await addTeamAttendanceMutation.mutateAsync(completeAttendance, {
                 onSuccess: () => {
                     toast.success("Evaluation submitted successfully!");
                     setTimeout(() => {
@@ -103,7 +109,7 @@ export default function UseTeamEvaluationUtils() {
                 }
             });
 
-            teamAttendance.forEach(async (attendance) => {
+            completeAttendance.forEach(async (attendance) => {
                 await updateTeamAttendanceMutation.mutateAsync(attendance, {
                     onError: () => {
                         toast.error("Failed to update attendance. Please try again.");
