@@ -1,5 +1,6 @@
 import { LoadingPage, ErrorScreen, Button, TextAreaField, Checkbox } from "tccd-ui";
 import UseTeamEvaluationUtils from "../utils/TeamEvaluationUtils";
+import { HTMLText } from "@/shared/components/HTMLText";
 
 export default function TeamEvaluationPage() {
     const { questions, isFetchingData, teamData, event, isFetchingError, assessmentScores, handleNavigateBack, handleChangeAssessmentScore, handleSubmitEvaluation, handleChangeTeamAttendance, teamAttendance, isSubmittingEvaluation, formErrors, extraNotes, setExtraNotes } = UseTeamEvaluationUtils();
@@ -42,7 +43,7 @@ export default function TeamEvaluationPage() {
                                 <p className="font-semibold text-primary">{question.itemNumber}.</p>
                                 <p className="text-contrast font-medium">{question.name}</p>
                             </div>
-                            <p className="text-contrast md:text-[15px] text-[14px] mt-1">{question.description}</p>
+                            <p className="text-contrast md:text-[15px] text-[14px] mt-1"><HTMLText content={question.description} /></p>
                             <div className="flex gap-2 mt-2 items-center">
                                 <p className="text-contrast lg:text-[17px] md:text-[16px] text-[15px]">Score:</p>
                                 <div className="flex gap-1 items-center">
