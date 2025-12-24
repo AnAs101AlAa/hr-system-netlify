@@ -36,6 +36,7 @@ export async function getEventTeams(eventId: string, page: number, count: number
         const params: Record<string, any> = {
             PageNumber: page,
             PageSize: count,
+            eventId: eventId,
         };
 
         const response = await systemApi.get(`${JUDGING_API_URL}/Judge/teams`, { params });
@@ -143,8 +144,8 @@ export async function deleteJudge(judgeId: string): Promise<void> {
     await systemApi.delete(`${JUDGING_API_URL}/Judge/${judgeId}`);
 }
 
-export async function getAssignedTeamsForJudge(judgeId: string): Promise<Team[]> {
-    const response = await systemApi.get(`${JUDGING_API_URL}/Admin/judges/${judgeId}/teams`);
+export async function getAssignedTeamsForJudge(judgeId: string, eventId: string): Promise<Team[]> {
+    const response = await systemApi.get(`${JUDGING_API_URL}/Admin/judges/${judgeId}/teams`, { params: { eventId } });
     return response.data.data.assignedTeams;
 }
 

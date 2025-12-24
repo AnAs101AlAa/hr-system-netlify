@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useResearchTeams, useGetAssignedTeamsForJudge, useAssignTeamsToJudge, useRemoveTeamFromJudge } from "@/shared/queries/judgingSystem/judgeQueries";
 import { TEAM_SORTING_OPTIONS } from "@/constants/judgingSystemConstants";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import type { Team } from "@/shared/types/judgingSystem";
 import toast from "react-hot-toast";
 import Table from "@/shared/components/table/Table";
@@ -15,7 +14,6 @@ import FilterModal from "./FiltersModal";
 const TeamSelectorListing = () => {
     const { eventId, judgeId } = useParams<{ eventId: string; judgeId: string }>();
 
-    const [currentPage, setCurrentPage] = useState<number>(1);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
     const [debouncedTeamName, setDebouncedTeamName] = useState<string>("");
     const [debouncedTeamCode, setDebouncedTeamCode] = useState<string>("");
@@ -26,8 +24,8 @@ const TeamSelectorListing = () => {
     const [availableTeams, setAvailableTeams] = useState<{teams: Team[]; total: number}>({teams: [], total: 0});
     const [assignedTeams, setAssignedTeams] = useState<Team[]>([]);
 
-    const { data: teams, isLoading: isTeamsLoading, isError: isTeamsError } = useResearchTeams(eventId!, currentPage, 15, sortOption, debouncedTeamName, debouncedTeamCode, debouncedDepartmentKey, debouncedCourseKey, "admin");
-    const { data: assignedTeamsData, isLoading: isAssignedTeamsLoading, isError: isAssignedTeamsError } = useGetAssignedTeamsForJudge(judgeId!);
+    const { data: teams, isLoading: isTeamsLoading, isError: isTeamsError } = useResearchTeams(eventId!, 1, 9999, sortOption, debouncedTeamName, debouncedTeamCode, debouncedDepartmentKey, debouncedCourseKey, "admin");
+    const { data: assignedTeamsData, isLoading: isAssignedTeamsLoading, isError: isAssignedTeamsError } = useGetAssignedTeamsForJudge(judgeId!, eventId!);
     const assignTeamsToJudgeMutation = useAssignTeamsToJudge();
     const removeTeamFromJudgeMutation = useRemoveTeamFromJudge();
 
@@ -135,6 +133,7 @@ const TeamSelectorListing = () => {
             setAssignedTeams(assignedTeamsData);
             const assignedTeamIds = new Set(assignedTeamsData.map(team => team.id));
             const filteredTeams = teams.teams.filter(team => !assignedTeamIds.has(team.id));
+            // Set total to actual available teams count (after filtering)
             setAvailableTeams({ teams: filteredTeams, total: filteredTeams.length });
         }
     }, [teams, assignedTeamsData]);
@@ -172,27 +171,6 @@ const TeamSelectorListing = () => {
               <p className="text-md md:text-lg lg:text-xl font-bold text-[#72747A]">
                 Available Teams {availableTeams ? `(${availableTeams.total})` : ""}
               </p>
-              <div className="flex gap-2 items-center justify-center">
-                <FaChevronLeft
-                  className={`cursor-pointer size-4 ${currentPage === 1 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
-                  onClick={() => {
-                    if (currentPage > 1) {
-                      setCurrentPage(currentPage - 1);
-                    }
-                  }}
-                />
-                <span className="text-[14px] md:text-[15px] lg:text-[16px] font-medium text-contrast">
-                  Page {currentPage}
-                </span>
-                <FaChevronRight
-                  className={`cursor-pointer size-4 ${teams && teams.teams.length < 20 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
-                  onClick={() => {
-                    if (teams && teams.teams.length === 20) {
-                      setCurrentPage(currentPage + 1);
-                    }
-                  }}
-                />
-              </div>
             </div>
             <hr className="border-gray-200" />
               <p className="text-[14px] md:text-[15px] lg:text-[16px] font-semibold text-contrast">Filters</p>
