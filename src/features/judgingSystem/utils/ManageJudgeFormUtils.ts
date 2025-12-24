@@ -36,7 +36,7 @@ export default function useManageJudgeModalUtils () {
                 }, 1000);
             },
             onError: () => {
-                toast.error("Failed to create team, please try again later.")
+                toast.error("Failed to create judge, please try again later.")
             }
         });
     }
