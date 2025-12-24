@@ -5,8 +5,8 @@ import { useGetAssignedTeamsForJudge } from "@/shared/queries/judgingSystem/judg
 import TeamSelectorListing from "../components/TeamSelectorListing";
 
 export default function AssignedTeamsPage() {
-    const { judgeId } = useParams();
-    const { data: assignmentData, isLoading, isError } = useGetAssignedTeamsForJudge(judgeId!);
+    const { judgeId, eventId } = useParams();
+    const { data: assignmentData, isLoading, isError } = useGetAssignedTeamsForJudge(judgeId!, eventId!);
 
     if(isLoading) {
         return <LoadingPage />;
