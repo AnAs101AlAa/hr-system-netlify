@@ -66,7 +66,7 @@ const JudgesList = () => {
                 Page {currentPage}
               </span>
               <FaChevronRight
-                className={`cursor-pointer size-4 ${judges && judges.length < 20 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
+                className={`cursor-pointer size-4 ${judges && judges.length < 10 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
                 onClick={() => {
                   if (judges && judges.length === 10) {
                     setCurrentPage(currentPage + 1);

@@ -124,10 +124,10 @@ export async function getAllTeamEvaluations(teamId: string): Promise<EvaluationS
     return response.data.data;
 }
 
-export async function getJudgesForEvent(page: number, count: number, nameKey: string): Promise<Judge[]> {
+export async function getJudgesForEvent(pagNumber: number, pageSize: number, nameKey: string): Promise<Judge[]> {
     const params: Record<string, any> = {
-        page,
-        count,
+        PageNumber: pagNumber,
+        PageSize: pageSize,
     };
 
     if (nameKey) params.Name = nameKey;
