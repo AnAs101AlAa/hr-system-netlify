@@ -206,11 +206,11 @@ export const useGetJudgesForEvent = (page: number, count: number, nameKey: strin
     });
 }
 
-export const useGetAssignedTeamsForJudge = (judgeId: string): UseQueryResult<Team[], Error> => {
+export const useGetAssignedTeamsForJudge = (judgeId: string, eventId: string): UseQueryResult<Team[], Error> => {
     return useQuery({
-        queryKey: ['judgingSystem', 'assignedTeams', judgeId],
+        queryKey: ['judgingSystem', 'assignedTeams', judgeId, eventId],
         queryFn: async () => {
-            const teams = await JudgeAPI.getAssignedTeamsForJudge(judgeId);
+            const teams = await JudgeAPI.getAssignedTeamsForJudge(judgeId, eventId);
             return teams;
         }
     });
