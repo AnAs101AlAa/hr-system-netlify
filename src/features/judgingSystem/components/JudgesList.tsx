@@ -109,7 +109,10 @@ const JudgesList = () => {
             ]}
             emptyMessage="No judges found."
             renderActions={(item) => (
-              <Button buttonText="Manage Assignments" type="secondary" onClick={() => navigate(`/judging-system/assigned-teams/${item.id}/${eventId}`)} width="auto" />
+              <>
+                <Button buttonText="View Evaluations" type="tertiary" onClick={() => navigate(`/judging-system/evaluations/${item.id}/${eventId}`)} width="auto" />
+                <Button buttonText="Manage Assignments" type="secondary" onClick={() => navigate(`/judging-system/assigned-teams/${item.id}/${eventId}`)} width="auto" />
+              </>
             )}
           />
           <CardView
@@ -123,7 +126,10 @@ const JudgesList = () => {
             confirmationAction={() => {}}
             isSubmitting={false}
             renderButtons={(item) => (
+              <>  
+              <Button buttonText="View Evaluations" type="tertiary" onClick={() => navigate(`/judging-system/evaluations/${item.id}/${eventId}`)} width="auto" />
               <Button buttonIcon={<TbListDetails className="size-4" />} type="secondary" onClick={() => navigate(`/judging-system/assigned-teams/${item.id}/${eventId}`)} width="auto" />
+              </>
             )}
           />
           {/* Mobile Card View */}

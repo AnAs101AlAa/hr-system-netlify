@@ -1,4 +1,4 @@
-import { DashboardPage, LoginPage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage, FormBuilder, FormEditor, TeamEvaluationPage, JudgingSystemHomePage, EventSelectionPage, EvaluationDetailsPage, AssignedTeamsPage } from "@/features";
+import { DashboardPage, LoginPage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage, AdminJudgePage, FormBuilder, FormEditor, TeamEvaluationPage, JudgingSystemHomePage, EventSelectionPage, EvaluationDetailsPage, AssignedTeamsPage } from "@/features";
 
 const routes: { path: string; Component: React.FC; protected?: boolean; roles?: string[] }[] = [
   { path: "/", Component: DashboardPage, protected: true, roles: ["HR", "Head", "HighBoard", "Admin", "Vest"]},
@@ -16,6 +16,7 @@ const routes: { path: string; Component: React.FC; protected?: boolean; roles?: 
   { path: "/judging-system/events", Component: EventSelectionPage, protected: true, roles: ["Admin", "Judge"] },
   { path: "/judging-system/team/:teamId", Component: EvaluationDetailsPage, protected: true, roles: ["Admin"] },
   { path: "/judging-system/assigned-teams/:judgeId/:eventId", Component: AssignedTeamsPage, protected: true, roles: ["Admin"] },
+  { path: "/judging-system/evaluations/:judgeId/:eventId", Component: AdminJudgePage, protected: true, roles: ["Admin"] }
 ];
 
 export default routes;

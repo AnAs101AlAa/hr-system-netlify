@@ -291,3 +291,13 @@ export const useExportEvaluationsToExcel = () => {
         },
     });
 }
+
+export const useGetJudgeEvaluationProgress = (judgeId: string, eventId: string): UseQueryResult<{ teamId: string; teamName: string; isScored: boolean }[], Error> => {
+    return useQuery({
+        queryKey: ['judgingSystem', 'judgeEvaluationProgress', judgeId, eventId],
+        queryFn: async () => {
+            const progress = await JudgeAPI.getJudgeEvaluationProgress(judgeId, eventId);
+            return progress;
+        }
+    });
+}

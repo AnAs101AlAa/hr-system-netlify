@@ -187,3 +187,8 @@ export async function exportEvaluationsToExcel(eventId: string): Promise<Blob> {
     });
     return response.data;
 }
+
+export async function getJudgeEvaluationProgress(judgeId: string, eventId: string): Promise<{ teamId: string; teamName: string; isScored: boolean }[]> {
+    const response = await systemApi.get(`${JUDGING_API_URL}/Admin/research-attendance/judges/${judgeId}/events/${eventId}/teams/status`);
+    return response.data.data;
+}

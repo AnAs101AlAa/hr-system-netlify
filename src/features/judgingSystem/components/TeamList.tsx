@@ -17,11 +17,11 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import EvaluationStatusBadge from "./EvaluationStatusBadge";
 
-const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => {
+const TeamList = ({setModalOpen, manualMode} : {setModalOpen: (teamData: Team) => void, manualMode?: boolean}) => {
   const eventId = useParams().eventId || "";
   const navigate = useNavigate();
   const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
-  const isJudge = userRoles.includes("Judge") && userRoles.length === 1;
+  const isJudge = userRoles.includes("Judge") && userRoles.length === 1 || manualMode === true;
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
