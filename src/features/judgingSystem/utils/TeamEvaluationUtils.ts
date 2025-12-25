@@ -141,6 +141,25 @@ export default function UseTeamEvaluationUtils() {
         });
     }
 
+    const handleToggleAllAttendance = () => {
+        if (!teamData?.teamMembers) return;
+        
+        // Check if all members are currently marked as attended
+        const allAttended = teamData.teamMembers.every(member => 
+            teamAttendance.find(att => att.teamMemberId === member.id)?.attended
+        );
+        
+        // If all are attended, deselect all; otherwise, select all
+        const newAttendanceState = !allAttended;
+        
+        setTeamAttendance(
+            teamData.teamMembers.map(member => ({
+                teamMemberId: member.id,
+                attended: newAttendanceState
+            }))
+        );
+    }
+
     return {
         questions,
         extraNotes,
@@ -155,6 +174,7 @@ export default function UseTeamEvaluationUtils() {
         handleChangeAssessmentScore,
         handleSubmitEvaluation,
         handleChangeTeamAttendance,
+        handleToggleAllAttendance,
         isSubmittingEvaluation: submitTeamEvaluationMutation.isPending || updateTeamEvaluationMutation.isPending,
         formErrors,
     }

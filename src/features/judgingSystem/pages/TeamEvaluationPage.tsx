@@ -3,7 +3,7 @@ import UseTeamEvaluationUtils from "../utils/TeamEvaluationUtils";
 import { HTMLText } from "@/shared/components/HTMLText";
 
 export default function TeamEvaluationPage() {
-    const { questions, isFetchingData, teamData, event, isFetchingError, assessmentScores, handleNavigateBack, handleChangeAssessmentScore, handleSubmitEvaluation, handleChangeTeamAttendance, teamAttendance, isSubmittingEvaluation, formErrors, extraNotes, setExtraNotes } = UseTeamEvaluationUtils();
+    const { questions, isFetchingData, teamData, event, isFetchingError, assessmentScores, handleNavigateBack, handleChangeAssessmentScore, handleSubmitEvaluation, handleChangeTeamAttendance, handleToggleAllAttendance, teamAttendance, isSubmittingEvaluation, formErrors, extraNotes, setExtraNotes } = UseTeamEvaluationUtils();
     
     if(isFetchingData) {
         return <LoadingPage />;
@@ -28,7 +28,15 @@ export default function TeamEvaluationPage() {
                 <hr className="border-contrast/30" />
 
                 <div className="space-y-3 flex-col flex">
-                    <div className="text-[18px] md:text-[19px] lg:text-[20px] font-semibold">a) Team Attendance</div>
+                    <div className="flex justify-between items-center">
+                        <div className="text-[18px] md:text-[19px] lg:text-[20px] font-semibold">a) Team Attendance</div>
+                        <Button 
+                            type="tertiary" 
+                            buttonText={teamData.teamMembers?.every(member => teamAttendance.find(att => att.teamMemberId === member.id)?.attended) ? "Deselect All" : "Select All"} 
+                            onClick={handleToggleAllAttendance}
+                            width="fit"
+                        />
+                    </div>
                     {teamData.teamMembers && teamData.teamMembers.length > 0 && teamData.teamMembers.map((member, index) => (
                         <Checkbox key={index} label={member.name} checked={!!teamAttendance.find(att => att.teamMemberId === member.id)?.attended} onChange={() => handleChangeTeamAttendance(member.id, !teamAttendance.find(att => att.teamMemberId === member.id)?.attended)} />
                     ))}
