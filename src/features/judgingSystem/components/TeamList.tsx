@@ -153,8 +153,8 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
               <>
                   {isJudge ? (
                     <Button
-                      type="primary"
-                      buttonText="Start Assessment "
+                      type={`${item.isEvaluated === "Evaluated" ? "secondary" : "primary"}`}
+                      buttonText={item.isEvaluated === "Evaluated" ? "Edit Assessment" : "Start Assessment"}
                       onClick={() => { navigate(`/judging-system/assess-team/${eventId}/${item.id}`); }}
                       width="fit"
                     />
@@ -195,7 +195,7 @@ const TeamList = ({setModalOpen} : {setModalOpen: (teamData: Team) => void}) => 
                 {isJudge ? (
                   <Button
                     type="primary"
-                    buttonText="Start Assessment "
+                    buttonText={item.isEvaluated === "Evaluated" ? "Edit Assessment" : "Start Assessment"}
                     onClick={() => { navigate(`/judging-system/assess-team/${eventId}/${item.id}`); }}
                     width="fit"
                   />
