@@ -133,7 +133,6 @@ const TeamSelectorListing = () => {
             setAssignedTeams(assignedTeamsData);
             const assignedTeamIds = new Set(assignedTeamsData.map(team => team.id));
             const filteredTeams = teams.teams.filter(team => !assignedTeamIds.has(team.id));
-            // Set total to actual available teams count (after filtering)
             setAvailableTeams({ teams: filteredTeams, total: filteredTeams.length });
         }
     }, [teams, assignedTeamsData]);

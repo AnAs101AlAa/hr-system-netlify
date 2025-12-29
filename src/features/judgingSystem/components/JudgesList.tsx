@@ -1,5 +1,6 @@
 import { Button, SearchField } from "tccd-ui";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaChartLine  } from "react-icons/fa";
+import { FaListCheck } from "react-icons/fa6";
 import { useGetJudgesForEvent, useExportEvaluationsToExcel } from "@/shared/queries/judgingSystem/judgeQueries";
 import { useState } from "react";
 import { TbListDetails } from "react-icons/tb";
@@ -22,12 +23,10 @@ const JudgesList = () => {
       
       exportEvaluations(eventId, {
         onSuccess: (data) => {
-          // Create a blob from the response data
           const blob = new Blob([data], { 
             type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
           });
           
-          // Create a download link and trigger download
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
@@ -35,13 +34,11 @@ const JudgesList = () => {
           document.body.appendChild(link);
           link.click();
           
-          // Cleanup
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
         },
         onError: (error) => {
           console.error('Export failed:', error);
-          // You can add a toast notification here if available
         }
       });
     };
@@ -80,14 +77,23 @@ const JudgesList = () => {
               <div className="md:min-w-76">
                 <SearchField placeholder="Search by name" value={judgeName} onChange={(value) => setJudgeName(value)} />
               </div>
-              <Button 
-                buttonText="Export Evaluations" 
-                buttonIcon={<HiOutlineDocumentDownload className="size-4" />}
-                type="secondary" 
-                onClick={handleExport}
-                disabled={isExporting}
-                width="auto"
-              />
+              <div className="flex gap-2 md:flex-row flex-col">
+                <Button 
+                  buttonText="Evaluation Analysis" 
+                  buttonIcon={<FaChartLine className="size-4" />}
+                  type="secondary" 
+                  onClick={() => navigate(`/judging-system/evaluation-analysis/${eventId}`)}
+                  width="auto"
+                />
+                <Button 
+                  buttonText="Export Evaluations" 
+                  buttonIcon={<HiOutlineDocumentDownload className="size-4" />}
+                  type="primary" 
+                  onClick={handleExport}
+                  disabled={isExporting}
+                  width="auto"
+                />
+              </div>
           </div>
         </div>
         {isLoading ? (
@@ -127,7 +133,7 @@ const JudgesList = () => {
             isSubmitting={false}
             renderButtons={(item) => (
               <>  
-              <Button buttonText="View Evaluations" type="tertiary" onClick={() => navigate(`/judging-system/evaluations/${item.id}/${eventId}`)} width="auto" />
+              <Button buttonIcon={<FaListCheck className="size-4" />} type="tertiary" onClick={() => navigate(`/judging-system/evaluations/${item.id}/${eventId}`)} width="auto" />
               <Button buttonIcon={<TbListDetails className="size-4" />} type="secondary" onClick={() => navigate(`/judging-system/assigned-teams/${item.id}/${eventId}`)} width="auto" />
               </>
             )}
