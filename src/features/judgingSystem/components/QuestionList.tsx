@@ -41,7 +41,7 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
         onClose={() => setDeleteModalOpen("")}
         handleDelete={() => handleDeleteQuestion(deleteModalOpen)}
       />
-      <div className="bg-white w-full rounded-lg shadow-sm border border-slate-200/50 overflow-hidden">
+      <div className="bg-white dark:bg-surface-glass-bg w-full rounded-lg shadow-sm border border-slate-200/50 dark:border-surface-glass-border/10 overflow-hidden">
         {isLoadingQuestions ? (
           <div className="flex flex-col items-center justify-center p-12 gap-3">
             <AiOutlineLoading3Quarters className="size-8 text-inactive-tab-text animate-spin" />
