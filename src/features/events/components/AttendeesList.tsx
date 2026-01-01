@@ -13,10 +13,12 @@ interface AttendeesListProps {
 }
 
 const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
-  const [displayedAttendees, setDisplayedAttendees] = useState<Attendee[]>(attendees);
+  const [displayedAttendees, setDisplayedAttendees] =
+    useState<Attendee[]>(attendees);
   const [searchKey, setSearchKey] = useState<string>("");
-  const [attendeeTimeline, setAttendeeTimeline] = useState<Attendee | null>(null);
-
+  const [attendeeTimeline, setAttendeeTimeline] = useState<Attendee | null>(
+    null
+  );
 
   useEffect(() => {
     if (searchKey.trim() === "") {
@@ -31,10 +33,15 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
   }, [searchKey, attendees]);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
-      {attendeeTimeline !== null && (<AttendeeTimelineModal onCLose={() => setAttendeeTimeline(null)} Attendee={attendeeTimeline}/>)}
+    <div className="bg-white dark:bg-surface-glass-bg rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
+      {attendeeTimeline !== null && (
+        <AttendeeTimelineModal
+          onCLose={() => setAttendeeTimeline(null)}
+          Attendee={attendeeTimeline}
+        />
+      )}
       <div className="p-4 border-b border-dashboard-border flex md:flex-row flex-col gap-2 md:gap-4 items-center">
-        <h3 className="text-lg font-bold text-[#727477]">
+        <h3 className="text-lg font-bold text-text-muted-foreground">
           Attendees {attendees?.length ? `(${attendees.length})` : ""}
         </h3>
         <SearchField
@@ -47,45 +54,51 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
       <Table
         items={displayedAttendees}
         columns={[
-          { 
-            key: "name", 
-            label: "Name", 
-            formatter: (value) => value || "N/A"
+          {
+            key: "name",
+            label: "Name",
+            formatter: (value) => value || "N/A",
           },
-          { 
-            key: "phoneNumber", 
-            label: "Phone", 
+          {
+            key: "phoneNumber",
+            label: "Phone",
             width: "w-32 min-w-32",
-            formatter: (value) => format(value, "phone")
+            formatter: (value) => format(value, "phone"),
           },
-          { 
-            key: "committee", 
-            label: "Team", 
-            formatter: (value) => value || "N/A"
+          {
+            key: "committee",
+            label: "Team",
+            formatter: (value) => value || "N/A",
           },
-          { 
-            key: "status", 
+          {
+            key: "status",
             label: "Status",
-            formatter: (value) => <StatusBadge status={value} />
+            formatter: (value) => <StatusBadge status={value} />,
           },
-          { 
-            key: "attendanceRecords", 
+          {
+            key: "attendanceRecords",
             label: "Arrival",
             width: "w-40 min-w-40",
             formatter: (value: Attendee["attendanceRecords"]) => {
-              if (value.length > 0 && String(value[0].checkInTime) !== "0001-01-01T00:00:00+00:00") {
+              if (
+                value.length > 0 &&
+                String(value[0].checkInTime) !== "0001-01-01T00:00:00+00:00"
+              ) {
                 return format(new Date(value[0].checkInTime), "full");
               }
               return "N/A";
-            }
+            },
           },
-          { 
-            key: "attendanceRecords", 
+          {
+            key: "attendanceRecords",
             label: "Leaving",
             width: "w-40 min-w-40",
             formatter: (value: Attendee["attendanceRecords"]) => {
               if (value.length > 0 && value[value.length - 1].checkOutTime) {
-                return format(new Date(value[value.length - 1].checkOutTime!), "full");
+                return format(
+                  new Date(value[value.length - 1].checkOutTime!),
+                  "full"
+                );
               }
               if (eventEndTime) {
                 return new Date() < new Date(eventEndTime)
@@ -93,25 +106,25 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
                   : format(new Date(eventEndTime), "full");
               }
               return "N/A";
-            }
+            },
           },
-          { 
-            key: "attendanceRecords", 
+          {
+            key: "attendanceRecords",
             label: "Late Arrival Reason",
             formatter: (value: Attendee["attendanceRecords"]) => (
               <p className="break-words leading-relaxed">
                 {value[0]?.lateArrivalExcuse || "N/A"}
               </p>
-            )
+            ),
           },
-          { 
-            key: "attendanceRecords", 
+          {
+            key: "attendanceRecords",
             label: "Early Leaving Reason",
             formatter: (value: Attendee["attendanceRecords"]) => (
               <p className="break-words leading-relaxed">
                 {value[value.length - 1]?.earlyLeaveExcuse || "N/A"}
               </p>
-            )
+            ),
           },
         ]}
         emptyMessage="No attendees found"
@@ -130,19 +143,39 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
         items={displayedAttendees}
         titleKey="name"
         renderedFields={[
-          { key: "phoneNumber", label: "Phone", formatter: (value) => format(value, "phone") },
+          {
+            key: "phoneNumber",
+            label: "Phone",
+            formatter: (value) => format(value, "phone"),
+          },
           { key: "committee", label: "Team" },
-          { key: "status", label: "Status", formatter: (value) => <StatusBadge status={value} /> },
-          { key: "attendanceRecords", label: "Arrival", formatter: (value: Attendee["attendanceRecords"]) => {
-              if (value.length > 0 && String(value[0].checkInTime) !== "0001-01-01T00:00:00+00:00") {
+          {
+            key: "status",
+            label: "Status",
+            formatter: (value) => <StatusBadge status={value} />,
+          },
+          {
+            key: "attendanceRecords",
+            label: "Arrival",
+            formatter: (value: Attendee["attendanceRecords"]) => {
+              if (
+                value.length > 0 &&
+                String(value[0].checkInTime) !== "0001-01-01T00:00:00+00:00"
+              ) {
                 return format(new Date(value[0].checkInTime), "full");
               }
               return "N/A";
-            }
+            },
           },
-          { key: "attendanceRecords", label: "Leaving", formatter: (value: Attendee["attendanceRecords"]) => {
+          {
+            key: "attendanceRecords",
+            label: "Leaving",
+            formatter: (value: Attendee["attendanceRecords"]) => {
               if (value.length > 0 && value[value.length - 1].checkOutTime) {
-                return format(new Date(value[value.length - 1].checkOutTime!), "full");
+                return format(
+                  new Date(value[value.length - 1].checkOutTime!),
+                  "full"
+                );
               }
               if (eventEndTime) {
                 return new Date() < new Date(eventEndTime)
@@ -150,18 +183,26 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
                   : format(new Date(eventEndTime), "full");
               }
               return "N/A";
-            }
+            },
           },
-          { key: "attendanceRecords", label: "Late Arrival Reason", formatter: (value: Attendee["attendanceRecords"]) => (
-            <p className="break-words leading-relaxed">
-              {value[0]?.lateArrivalExcuse || "N/A"}
-            </p>
-          )},
-          { key: "attendanceRecords", label: "Early Leaving Reason", formatter: (value: Attendee["attendanceRecords"]) => (
-            <p className="break-words leading-relaxed">
-              {value[value.length - 1]?.earlyLeaveExcuse || "N/A"}
-            </p>
-          )},
+          {
+            key: "attendanceRecords",
+            label: "Late Arrival Reason",
+            formatter: (value: Attendee["attendanceRecords"]) => (
+              <p className="break-words leading-relaxed">
+                {value[0]?.lateArrivalExcuse || "N/A"}
+              </p>
+            ),
+          },
+          {
+            key: "attendanceRecords",
+            label: "Early Leaving Reason",
+            formatter: (value: Attendee["attendanceRecords"]) => (
+              <p className="break-words leading-relaxed">
+                {value[value.length - 1]?.earlyLeaveExcuse || "N/A"}
+              </p>
+            ),
+          },
         ]}
         emptyMessage="No attendees found"
         renderButtons={(attendee) => (
