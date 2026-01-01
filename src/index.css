@@ -70,7 +70,7 @@
   --color-label: #9ca3af;
   --color-error: #ef4444;
   --color-background-contrast: #1f2937;
-  --color-background-primary: #111827; 
+  --color-background-primary: #111827;
 
   --color-page-gradient-start: #111827;
   --color-page-gradient-middle: #1f2937;
@@ -87,7 +87,7 @@
 :root {
   --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --color-black: #121212; 
+  --color-black: #121212;
   --font-tag: 10px;
   --font-tag-large: 1rem;
 }
@@ -108,6 +108,13 @@
 
 body {
   font-family: "Inter", sans-serif;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms;
 }
 
 input[type="password"]::-ms-reveal,
