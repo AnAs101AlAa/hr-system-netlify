@@ -54,7 +54,7 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
             <p className="text-red-600 font-semibold text-lg">
               Failed to load questions
             </p>
-            <p className="text-inactive-tab-text text-sm">
+            <p className="text-text-muted-foreground text-sm">
               Please try again later.
             </p>
           </div>
@@ -64,13 +64,13 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
               newQuestionState ? "pb-8" : ""
             }`}
           >
-            <div className="size-16 rounded-full bg-slate-100 flex items-center justify-center mb-2">
-              <FaPlus className="size-6 text-slate-400" />
+            <div className="size-16 rounded-full bg-muted-primary/10 flex items-center justify-center mb-2">
+              <FaPlus className="size-6 text-text-muted-foreground" />
             </div>
-            <p className="text-inactive-tab-text font-medium text-center text-balance">
+            <p className="text-text-muted-foreground font-medium text-center text-balance">
               No evaluation has been created for this event yet.
             </p>
-            <p className="text-inactive-tab-text/70 text-sm text-center max-w-md text-balance">
+            <p className="text-text-muted-foreground/70 text-sm text-center max-w-md text-balance">
               Get started by adding your first evaluation question below.
             </p>
             <Button
@@ -82,11 +82,11 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
           </div>
         ) : (
           <div className="relative">
-            <div className="bg-gradient-to-r from-slate-50 to-white px-6 py-8 border-b border-slate-200">
-              <h2 className="text-center font-bold text-2xl md:text-3xl text-contrast text-balance">
+            <div className="bg-gradient-to-r from-muted-primary/5 to-surface-glass-bg px-6 py-8 border-b border-surface-glass-border/10">
+              <h2 className="text-center font-bold text-2xl md:text-3xl text-text-title text-balance">
                 {event?.title}'s Evaluation Paper
               </h2>
-              <p className="text-center text-inactive-tab-text text-sm mt-2">
+              <p className="text-center text-text-muted-foreground text-sm mt-2">
                 Manage and organize evaluation criteria
               </p>
             </div>
@@ -101,24 +101,24 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
             >
               <FaPlus className="text-white size-4 group-hover:scale-110 transition-transform duration-200" />
             </button>
-            <div className="divide-y divide-slate-200">
+            <div className="divide-y divide-surface-glass-border/10">
               {questionsState.map((question: JudgeQuestion, index) => (
                 <div
                   key={index}
-                  className="px-6 py-5 relative hover:bg-slate-50/50 transition-colors duration-200 group"
+                  className="px-6 py-5 relative hover:bg-muted-primary/5 transition-colors duration-200 group"
                 >
-                  <div className="absolute top-5 right-6 flex items-center gap-1.5 bg-white/80 backdrop-blur-sm rounded-lg p-1.5 shadow-sm border border-slate-200 opacity-90 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-5 right-6 flex items-center gap-1.5 bg-surface-glass-bg/80 backdrop-blur-sm rounded-lg p-1.5 shadow-sm border border-surface-glass-border/20 opacity-90 group-hover:opacity-100 transition-opacity">
                     {question.itemNumber !== 1 && (
                       <button
                         onClick={() => {
                           if (isLoadingUpdate) return;
                           handleMoveQuestion(question.id, "up");
                         }}
-                        className="p-1.5 rounded hover:bg-slate-100 focus:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-contrast/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-1.5 rounded hover:bg-muted-primary/10 focus:bg-muted-primary/10 focus:outline-none focus:ring-2 focus:ring-text-body-main/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={isLoadingUpdate}
                         aria-label="Move question up"
                       >
-                        <IoCaretUp className="text-contrast/90 hover:text-contrast size-5" />
+                        <IoCaretUp className="text-text-body-main/90 hover:text-text-body-main size-5" />
                       </button>
                     )}
                     {question.itemNumber !== questionsState.length && (
@@ -127,14 +127,14 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                           if (isLoadingUpdate) return;
                           handleMoveQuestion(question.id, "down");
                         }}
-                        className="p-1.5 rounded hover:bg-slate-100 focus:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-contrast/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-1.5 rounded hover:bg-muted-primary/10 focus:bg-muted-primary/10 focus:outline-none focus:ring-2 focus:ring-text-body-main/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={isLoadingUpdate}
                         aria-label="Move question down"
                       >
-                        <IoCaretDown className="text-contrast/90 hover:text-contrast size-5" />
+                        <IoCaretDown className="text-text-body-main/90 hover:text-text-body-main size-5" />
                       </button>
                     )}
-                    <div className="w-px h-5 bg-slate-300 mx-0.5" />
+                    <div className="w-px h-5 bg-surface-glass-border/20 mx-0.5" />
                     {editQuestionState?.id !== question.id ? (
                       <button
                         onClick={() => {
@@ -213,11 +213,14 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <p className="mt-2 text-lg text-contrast leading-relaxed font-medium">
+                      <p className="mt-2 text-lg text-text-body-main leading-relaxed font-medium">
                         {question.name}
                       </p>
-                      <p className="text-sm text-inactive-tab-text">
-                        <HTMLText content={question.description} className="text-sm text-inactive-tab-text" />
+                      <p className="text-sm text-text-muted-foreground">
+                        <HTMLText
+                          content={question.description}
+                          className="text-sm text-text-muted-foreground"
+                        />
                       </p>
                     </div>
                   )}
@@ -225,7 +228,7 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
               ))}
             </div>
             {!newQuestionState && (
-              <div className="px-6 py-6 bg-slate-50 border-t border-slate-200 flex justify-center md:hidden">
+              <div className="px-6 py-6 bg-muted-primary/5 border-t border-surface-glass-border/10 flex justify-center md:hidden">
                 <Button
                   buttonText="Add New Question"
                   type="primary"
@@ -241,11 +244,11 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
         )}
         {newQuestionState && (
           <div className="border-t-2 border-primary/20 bg-primary/5 px-6 py-6">
-            <div className="bg-white rounded-lg shadow-sm border border-primary/20 p-6">
+            <div className="bg-surface-glass-bg rounded-lg shadow-sm border border-primary/20 p-6">
               <div className="flex items-center gap-3 justify-center mb-6">
                 <label
                   htmlFor="question-number"
-                  className="font-semibold text-lg text-contrast"
+                  className="font-semibold text-lg text-text-body-main"
                 >
                   New Question #
                 </label>
@@ -262,7 +265,7 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                     )}px`,
                     MozAppearance: "textfield",
                   }}
-                  className="px-3 py-2 shadow-sm bg-white rounded-lg text-center focus:border-primary focus:ring-2 focus:ring-primary/20 border-slate-300 border transition-all duration-200 outline-none text-contrast font-semibold"
+                  className="px-3 py-2 shadow-sm bg-surface-glass-bg rounded-lg text-center focus:border-primary focus:ring-2 focus:ring-primary/20 border-surface-glass-border/20 border transition-all duration-200 outline-none text-text-body-main font-semibold"
                   value={
                     newQuestionState.itemNumber === -1
                       ? ""
@@ -310,7 +313,7 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                   </p>
                 )}
               </div>
-              <div className="flex gap-3 justify-center items-center mt-6 pt-4 border-t border-slate-200">
+              <div className="flex gap-3 justify-center items-center mt-6 pt-4 border-t border-surface-glass-border/10">
                 <Button
                   disabled={isLoadingUpdate}
                   buttonText="Cancel"

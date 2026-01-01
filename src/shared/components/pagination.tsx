@@ -44,7 +44,7 @@ const Pagination = ({
             className={`w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px] lg:w-[24px] lg:h-[24px] flex items-center justify-center rounded cursor-pointer transition-all duration-200 hover:scale-110 ${
               isFirstPage
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-100"
+                : "hover:bg-muted-primary/10"
             }`}
             onClick={!isFirstPage ? onPrevious : undefined}
             disabled={isFirstPage}
@@ -52,19 +52,21 @@ const Pagination = ({
             <MdArrowBackIos
               className={`text-sm sm:text-base md:text-lg lg:text-xl ${
                 isFirstPage
-                  ? "text-pagination-disabled"
-                  : "text-pagination-active"
+                  ? "text-text-muted-foreground/50"
+                  : "text-text-body-main"
               }`}
             />
           </button>
 
-          <span className="font-inter font-bold text-[14px] sm:text-[15px] md:text-[16px] lg:text-[18px] leading-[16px] sm:leading-[18px] md:leading-[20px] lg:leading-[22px] text-pagination-text">
+          <span className="font-inter font-bold text-[14px] sm:text-[15px] md:text-[16px] lg:text-[18px] leading-[16px] sm:leading-[18px] md:leading-[20px] lg:leading-[22px] text-text-body-main">
             Page {currentPage} of {totalPages}
           </span>
 
           <button
             className={`w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] md:w-[20px] md:h-[20px] lg:w-[24px] lg:h-[24px] flex items-center justify-center rounded cursor-pointer transition-all duration-200 hover:scale-110 ${
-              isLastPage ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100"
+              isLastPage
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-muted-primary/10"
             }`}
             onClick={!isLastPage ? onNext : undefined}
             disabled={isLastPage}
@@ -72,13 +74,13 @@ const Pagination = ({
             <MdArrowForwardIos
               className={`text-sm sm:text-base md:text-lg lg:text-xl ${
                 isLastPage
-                  ? "text-pagination-disabled"
-                  : "text-pagination-active"
+                  ? "text-text-muted-foreground/50"
+                  : "text-text-body-main"
               }`}
             />
           </button>
         </div>
-        <hr className="border-t-2 border-gray-200 -mt-2" />
+        <hr className="border-t-2 border-surface-glass-border/10 -mt-2" />
       </div>
     </div>
   );
