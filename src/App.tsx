@@ -5,27 +5,29 @@ import MemberRoute from "@/shared/routing/ProtectedRoutes";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Toaster containerClassName="text-[14px] md:text-[15px] lg:text-[16px]" />
-      <Routes>
-        {routes.map(
-          ({ path, Component, protected: isProtected, roles }, index) =>
-            isProtected ? (
-              <Route
-                key={index}
-                path={path}
-                element={
-                  <MemberRoute allowedRoles={roles}>
-                    <Component />
-                  </MemberRoute>
-                }
-              />
-            ) : (
-              <Route key={index} path={path} element={<Component />} />
-            )
-        )}
-      </Routes>
-    </BrowserRouter>
+    <div className="dark">
+      <BrowserRouter>
+        <Toaster containerClassName="text-[14px] md:text-[15px] lg:text-[16px]" />
+        <Routes>
+          {routes.map(
+            ({ path, Component, protected: isProtected, roles }, index) =>
+              isProtected ? (
+                <Route
+                  key={index}
+                  path={path}
+                  element={
+                    <MemberRoute allowedRoles={roles}>
+                      <Component />
+                    </MemberRoute>
+                  }
+                />
+              ) : (
+                <Route key={index} path={path} element={<Component />} />
+              )
+          )}
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
 
