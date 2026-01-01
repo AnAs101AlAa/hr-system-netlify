@@ -97,9 +97,11 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
       >
         <div className="p-4">
           {/* Event Info */}
-          <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-            <h4 className="font-semibold text-blue-900">{event.title}</h4>
-            <p className="text-sm text-blue-700">
+          <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <h4 className="font-semibold text-blue-900 dark:text-blue-100">
+              {event.title}
+            </h4>
+            <p className="text-sm text-blue-700 dark:text-blue-300">
               {new Date(event.startDate).toLocaleString("en-US", {
                 month: "short",
                 day: "numeric",
@@ -111,7 +113,7 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
           </div>
 
           {/* Scanner Container */}
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+          <div className="bg-white dark:bg-surface-glass-bg rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-surface-glass-border/10">
             <ScannerContainer
               isScanning={isScanning}
               error={error}
@@ -130,7 +132,7 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
             />
 
             {/* Action Buttons */}
-            <div className="p-4 bg-gray-50 border-t border-gray-200">
+            <div className="p-4 bg-gray-50 dark:bg-surface-glass-bg/50 border-t border-gray-200 dark:border-surface-glass-border/10">
               <ScannerActions
                 attendanceConfirmed={attendanceConfirmed}
                 memberData={memberData}
@@ -154,7 +156,7 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
           <div className="mt-4 flex justify-end gap-2">
             <button
               onClick={handleReturnToEvent}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
             >
               Cancel
             </button>

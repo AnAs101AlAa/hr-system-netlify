@@ -47,8 +47,8 @@ const MemberDetailsCard = ({ memberData }: MemberDetailsCardProps) => {
           <span
             className={`text-xs font-medium px-2 py-1 rounded-full ${
               memberData.status === "late"
-                ? "bg-red-100 text-red-700"
-                : "bg-green-100 text-green-700"
+                ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
             }`}
           >
             {memberData.status === "late" ? "Late" : "On Time"}
