@@ -1,15 +1,60 @@
 import { SearchField, DropdownMenu, DatePicker, ErrorScreen } from "tccd-ui";
 import { useState, useEffect } from "react";
-import FormTable from "./FormTable";
-import FormCardView from "./FormCardView";
+import { useNavigate } from "react-router-dom";
 import { FORM_SORTING_OPTIONS, FORM_TYPES } from "@/constants/formConstants";
 import { useForms } from "@/shared/queries/forms/formQueries";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import Table from "@/shared/components/table/Table";
+import CardView from "@/shared/components/table/CardView";
+import { Button } from "tccd-ui";
+import { toast } from "react-hot-toast";
+import { useSelector } from "react-redux";
+import type { form } from "@/shared/types/form";
+import { useModifyFormStatus } from "@/shared/queries/forms/formQueries";
+import { getErrorMessage } from "@/shared/utils";
+import FormDeleteModal from "./FormDeleteModal";
+import { IoTrashSharp } from "react-icons/io5";
+import { FaRegCopy } from "react-icons/fa6";
+import { FaEdit, FaLock, FaUnlock } from "react-icons/fa";
 
 const FormList = () => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchKey, setSearchKey] = useState<string>("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchKey);
+  const [displayedForms, setDisplayedForms] = useState<form[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState("");
+  const modifyFormStatusMutation = useModifyFormStatus();
+  const userRoles = useSelector((state: any) => state.auth?.user.roles);
+
+  const handleModifyStatus = (formId: string, isClosed: boolean) => {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        modifyFormStatusMutation.mutate(
+          { formId, isClosed },
+          {
+            onSuccess: () => {
+              setShowDeleteModal("");
+              setDisplayedForms((prevForms) =>
+                prevForms.map((form) =>
+                  form.id === formId ? { ...form, isClosed } : form
+                )
+              );
+              resolve(true);
+            },
+            onError: (error: unknown) => {
+              reject(error);
+            },
+          }
+        );
+      }),
+      {
+        loading: isClosed ? "Closing form..." : "Opening form...",
+        success: isClosed ? "Form closed" : "Form opened",
+        error: (err) => `Error: ${getErrorMessage(err) || "Failed to modify form status"}`,
+      }
+    );
+  };
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearchTerm(searchKey), 300);
@@ -36,6 +81,10 @@ const FormList = () => {
     sortOption
   );
 
+  useEffect(() => {
+    setDisplayedForms(Forms || []);
+  }, [Forms]);
+
   if (isError) {
     return (
       <ErrorScreen
@@ -47,6 +96,7 @@ const FormList = () => {
 
   return (
     <div className="bg-white dark:bg-surface-glass-bg rounded-lg shadow-sm border border-dashboard-card-border dark:border-surface-glass-border/10 overflow-hidden">
+      <FormDeleteModal showModal={showDeleteModal} setShowModal={setShowDeleteModal} />
       <div className="p-4 border-b border-dashboard-border dark:border-surface-glass-border/10 space-y-2">
         <div className="flex items-center justify-between mb-4">
           <p className="text-md md:text-lg lg:text-xl font-bold text-[#72747A] dark:text-text-title">
@@ -156,10 +206,114 @@ const FormList = () => {
       ) : (
         <>
           {/* Desktop Table View */}
-          <FormTable forms={Forms || []} />
-
+          <Table
+            items={displayedForms || []}
+            columns={[
+              { key: "title", label: "Title", width: "w-auto" },
+              { key: "createdAt", label: "Created At", width: "w-auto", formatter: (value) => value ? new Date(value).toLocaleDateString() : "N/A" },
+              { key: "updatedAt", label: "Updated At", width: "w-auto", formatter: (value) => value ? new Date(value).toLocaleDateString() : "N/A" },
+            ]}
+            emptyMessage="No forms found."
+            renderActions={(item) => (
+              <>
+                  <Button
+                      type="tertiary"
+                      onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/form/${item.id}`); toast.success("Form link copied to clipboard") }}
+                      buttonText="Copy Link"
+                      width="small"
+                    />
+                    <Button
+                      type="secondary"
+                      onClick={() => navigate(`/form-builder/${item.id}`)}
+                      buttonText="Edit"
+                      width="fit"
+                    />
+                    {item.isClosed ? (
+                      <div className="w-20">
+                        <Button
+                          type="primary"
+                          onClick={() => handleModifyStatus(item.id, false)}
+                          buttonText="Unlock"
+                          disabled={modifyFormStatusMutation.isPending && modifyFormStatusMutation.variables?.formId === item.id}
+                          width="full"/>
+                      </div>
+                      ) : (
+                      <div className="w-20">
+                        <Button
+                          type="primary"
+                          onClick={() => handleModifyStatus(item.id, true)}
+                          buttonText="Lock"
+                          disabled={modifyFormStatusMutation.isPending && modifyFormStatusMutation.variables?.formId === item.id}
+                          width="full"/>
+                      </div>
+                    )}
+                    {userRoles.includes("Admin") && userRoles.length === 1  && (
+                      <Button
+                        type="danger"
+                        onClick={() => setShowDeleteModal(item.id)}
+                        buttonText="Delete"
+                        width="fit"
+                      />
+                    )}
+              </>
+            )}
+          />
+          <CardView
+            items={displayedForms || []}
+            titleKey="title"
+            renderedFields={[
+              {key: "createdAt", label: "Created At", formatter: (value) => value ? new Date(value).toLocaleDateString() : "N/A" },
+              {key: "updatedAt", label: "Updated At", formatter: (value) => value ? new Date(value).toLocaleDateString() : "N/A" },
+            ]}
+            modalTitle="Confirm Action"
+            modalSubTitle="Are you sure you want to perform this action?"
+            confirmationAction={() => {}}
+            isSubmitting={false}
+            renderButtons={(item) => (
+              <>
+                  <Button
+                      buttonIcon={<FaRegCopy className="size-4" />}
+                      type="tertiary"
+                      onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/form/${item.id}`); toast.success("Form link copied to clipboard") }}
+                      width="auto"
+                    />
+                    <Button
+                      buttonIcon={<FaEdit className="size-4" />}
+                      type="secondary"
+                      onClick={() => navigate(`/form-builder/${item.id}`)}
+                      width="auto"
+                    />
+                    {item.isClosed ? (
+                      <div className="w-20">
+                        <Button
+                          buttonIcon={<FaUnlock className="size-4" />}
+                          type="primary"
+                          onClick={() => handleModifyStatus(item.id, false)}
+                          disabled={modifyFormStatusMutation.isPending && modifyFormStatusMutation.variables?.formId === item.id}
+                          width="full"/>
+                      </div>
+                      ) : (
+                      <div className="w-20">
+                        <Button
+                          buttonIcon={<FaLock className="size-4" />}
+                          type="primary"
+                          onClick={() => handleModifyStatus(item.id, true)}
+                          disabled={modifyFormStatusMutation.isPending && modifyFormStatusMutation.variables?.formId === item.id}
+                          width="full"/>
+                      </div>
+                    )}
+                    {userRoles.includes("Admin") && userRoles.length === 1  && (
+                      <Button
+                        buttonIcon={<IoTrashSharp className="size-4" />}
+                        type="danger"
+                        onClick={() => setShowDeleteModal(item.id)}
+                        width="auto"
+                      />
+                    )}
+              </>
+            )}
+          />
           {/* Mobile Card View */}
-          <FormCardView forms={Forms || []} />
         </>
       )}
     </div>

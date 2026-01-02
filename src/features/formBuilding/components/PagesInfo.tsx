@@ -190,11 +190,11 @@ const PagesInfo = forwardRef(
           onClick={() => setAllowModifiers(!allowModifiers)}
         >
           {allowModifiers ? (
-            <IoLockOpen className="size-3.5 md:size-4" />
+            <IoLockOpen className="size-3.5 md:size-4 text-text" />
           ) : (
-            <IoLockClosed className="size-3.5 md:size-4" />
+            <IoLockClosed className="size-3.5 md:size-4 text-text" />
           )}
-          <p className="lg:text-[15px] md:text-[14px] text-[13px]">
+          <p className="lg:text-[15px] md:text-[14px] text-[13px] text-text">
             {allowModifiers ? "Disable Modifiers" : "Enable Modifiers"}
           </p>
         </div>
@@ -210,13 +210,13 @@ const PagesInfo = forwardRef(
             formDataState.pages.map((page, index) => (
               <div
                 key={index}
-                className="p-3 md:p-4 border border-gray-300 dark:border-surface-glass-border/20 rounded-md space-y-3 relative border-t-primary border-t-8 md:border-t-10 bg-white dark:bg-background/20"
+                className="p-3 md:p-4 border border-gray-300 dark:border-surface-glass-border/20 dark:border-t-primary rounded-md space-y-3 relative border-t-primary border-t-8 md:border-t-10 bg-white dark:bg-background/20"
               >
                 <div className="absolute right-4 top-4 flex gap-2 items-center">
                   <Activity mode={index > 0 ? "visible" : "hidden"}>
                     <div className="bg-secondary rounded-full p-1">
                       <IoCaretUp
-                        className="text-background cursor-pointer size-3.5 md:size-4"
+                        className="text-text cursor-pointer size-3.5 md:size-4"
                         onClick={() => handleMovePage(index, "up")}
                       />
                     </div>
@@ -224,7 +224,7 @@ const PagesInfo = forwardRef(
                   {index < (formDataState.pages?.length || 0) - 1 && (
                     <div className="bg-secondary rounded-full p-1">
                       <IoCaretDown
-                        className="text-background cursor-pointer size-3.5 md:size-4"
+                        className="text-text cursor-pointer size-3.5 md:size-4"
                         onClick={() => handleMovePage(index, "down")}
                       />
                     </div>
@@ -254,7 +254,7 @@ const PagesInfo = forwardRef(
                   </div>
                   <div className="bg-primary rounded-full p-1">
                     <IoTrashSharp
-                      className="text-background cursor-pointer size-3.5 md:size-4"
+                      className="text-text cursor-pointer size-3.5 md:size-4"
                       onClick={() => handleDeletePage(index)}
                     />
                   </div>
@@ -276,7 +276,7 @@ const PagesInfo = forwardRef(
                       )}px`,
                       MozAppearance: "textfield",
                     }}
-                    className="shadow-md bg-white dark:bg-background-secondary rounded-lg text-center focus:border-primary border-gray-300 dark:border-surface-glass-border/20 border transition-colors duration-200 outline-none text-contrast dark:text-text-body-main"
+                    className="shadow-md bg-background dark:bg-background-secondary rounded-lg text-center focus:border-primary border-gray-300 dark:border-surface-glass-border/20 border transition-colors duration-200 outline-none text-contrast dark:text-text-body-main"
                     value={page.nextPage === -1 ? "" : page.nextPage + 1}
                     onChange={(e) =>
                       handleAdjustNextPages(index, Number(e.target.value) - 1)
@@ -373,7 +373,7 @@ const PagesInfo = forwardRef(
                                         ) : (
                                           <div className="bg-secondary py-0.5 md:py-1 rounded-full px-3">
                                             <p
-                                              className="text-background text-[12px] md:text-[14px] cursor-pointer"
+                                              className="text-text text-[12px] md:text-[14px] cursor-pointer"
                                               onClick={() =>
                                                 setSelectedQuestions((prev) => [
                                                   ...prev,
@@ -388,7 +388,7 @@ const PagesInfo = forwardRef(
                                       ) : null}
                                       <div className="bg-primary rounded-full p-1">
                                         <IoTrashSharp
-                                          className="text-background cursor-pointer size-3.5 md:size-4"
+                                          className="text-text cursor-pointer size-3.5 md:size-4"
                                           onClick={() =>
                                             handleRemoveQuestion(index, qIndex)
                                           }

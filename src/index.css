@@ -31,7 +31,7 @@
   --color-error: #fb2c36;
   --color-background-contrast: #e5e7eb;
   --color-background-primary: #faebea;
-
+  --color-background-tertiary: #272727;
   --color-page-gradient-start: #f3f4f6;
   --color-page-gradient-middle: #ffffff;
   --color-page-gradient-end: #e5e7eb;
@@ -71,15 +71,15 @@
   --color-error: #ef4444;
   --color-background-contrast: #1f2937;
   --color-background-primary: #111827;
-
+  --color-background-tertiary: #212830;
   --color-page-gradient-start: #111827;
   --color-page-gradient-middle: #1f2937;
   --color-page-gradient-end: #0f172a;
   --color-text-body-main: #f9fafb;
-  --color-text-muted-foreground: #9ca3af;
+  --color-text-muted-foreground: #d7d9dd;
   --color-text-title: #f3f4f6;
   --color-text-subtitle: #d1d5db;
-  --color-text-caption: #9ca3af;
+  --color-text-caption: #c5c6c7;
   --color-surface-glass-bg: #1f2937;
   --color-surface-glass-border: #ffffff;
 }
