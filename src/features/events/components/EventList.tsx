@@ -57,7 +57,7 @@ const EventList = ({
     20,
     selectedEventType,
     debouncedSearchTerm,
-    fetchedEventStatuses
+    fetchedEventStatuses,
   );
   const events = data?.items ?? [];
 
@@ -70,26 +70,18 @@ const EventList = ({
           </p>
           <div className="flex gap-2 items-center justify-center">
             <FaChevronLeft
-              className={`cursor-pointer size-4 ${
-                currentPage === 1
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "text-contrast hover:text-primary"
-              }`}
+              className={`cursor-pointer size-4 ${currentPage === 1 ? "text-gray-300 dark:text-gray-600 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
               onClick={() => {
                 if (currentPage > 1) {
                   setCurrentPage(currentPage - 1);
                 }
               }}
             />
-            <span className="text-[14px] md:text-[15px] lg:text-[16px] font-medium text-contrast">
+            <span className="text-[14px] md:text-[15px] lg:text-[16px] font-medium text-contrast dark:text-text-title">
               Page {currentPage}
             </span>
             <FaChevronRight
-              className={`cursor-pointer size-4 ${
-                events && events.length < 20
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "text-contrast hover:text-primary"
-              }`}
+              className={`cursor-pointer size-4 ${events && events.length < 20 ? "text-gray-300 dark:text-gray-600 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
               onClick={() => {
                 if (events && events.length === 20) {
                   setCurrentPage(currentPage + 1);
