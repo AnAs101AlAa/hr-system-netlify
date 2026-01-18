@@ -36,7 +36,7 @@ export default function FormAccessList({
 
   const handleAccessManagement = (
     memberId: string,
-    mode: "grant" | "revoke"
+    mode: "grant" | "revoke",
   ) => {
     if (mode === "grant") {
       toast.promise(
@@ -51,7 +51,7 @@ export default function FormAccessList({
             `Error granting access: ${
               err instanceof Error ? err.message : String(err)
             }`,
-        }
+        },
       );
     } else {
       toast.promise(
@@ -66,7 +66,7 @@ export default function FormAccessList({
             `Error revoking access: ${
               err instanceof Error ? err.message : String(err)
             }`,
-        }
+        },
       );
     }
   };
@@ -74,7 +74,9 @@ export default function FormAccessList({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Form Access List">
       <div>
-        <p className="mb-4">Manage who can view or modify this form</p>
+        <p className="mb-4 dark:text-text-body-main">
+          Manage who can view or modify this form
+        </p>
         <SearchField
           placeholder="Search users..."
           onChange={(value) => setNameKey(value)}
@@ -128,14 +130,14 @@ export default function FormAccessList({
                           }
                           type={
                             accessList?.find(
-                              (user: MemberData) => user.id === member.id
+                              (user: MemberData) => user.id === member.id,
                             )
                               ? "secondary"
                               : "primary"
                           }
                           buttonText={
                             accessList?.find(
-                              (user: MemberData) => user.id === member.id
+                              (user: MemberData) => user.id === member.id,
                             )
                               ? "Remove Access"
                               : "Grant Access"
@@ -144,10 +146,10 @@ export default function FormAccessList({
                             handleAccessManagement(
                               member.id,
                               accessList?.find(
-                                (user: MemberData) => user.id === member.id
+                                (user: MemberData) => user.id === member.id,
                               )
                                 ? "revoke"
-                                : "grant"
+                                : "grant",
                             )
                           }
                         />

@@ -37,7 +37,7 @@ interface PagesInfoProps {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     toChange: string,
     index?: number,
-    field?: string
+    field?: string,
   ) => void;
   isFetchSuccessful: boolean;
 }
@@ -51,7 +51,7 @@ const PagesInfo = forwardRef(
       setQuestionCount,
       isFetchSuccessful,
     }: PagesInfoProps,
-    ref
+    ref,
   ) => {
     const [allowModifiers, setAllowModifiers] = useState<boolean>(true);
     const isInitialized = React.useRef(false);
@@ -87,7 +87,7 @@ const PagesInfo = forwardRef(
     } = useFormEditorHandlers(
       formDataState,
       setFormDataState,
-      setQuestionCount
+      setQuestionCount,
     );
 
     useEffect(() => {
@@ -96,9 +96,9 @@ const PagesInfo = forwardRef(
           formDataState.pages
             ? formDataState.pages.reduce(
                 (acc, _, idx) => ({ ...acc, [idx]: true }),
-                {}
+                {},
               )
-            : {}
+            : {},
         );
       }
     }, [formDataState.pages]);
@@ -116,7 +116,7 @@ const PagesInfo = forwardRef(
         (page.toBranch ?? []).map((branch) => ({
           formBranch: { ...branch, sourcePage: pageIndex },
           ref: React.createRef<FormBranchHandle>(),
-        }))
+        })),
       );
 
       if (newBranches.length > 0) {
@@ -136,7 +136,7 @@ const PagesInfo = forwardRef(
           if (!prev?.pages) return prev;
 
           const copied = prev.pages.flatMap((p) =>
-            p.questions.filter((q) => selectedQuestions.includes(q.id || ""))
+            p.questions.filter((q) => selectedQuestions.includes(q.id || "")),
           );
 
           setClipboard(copied);
@@ -147,7 +147,7 @@ const PagesInfo = forwardRef(
 
           const updatedPages = prev.pages.map((page) => {
             const filteredQuestions = page.questions.filter(
-              (q) => !selectedQuestions.includes(q.id || "")
+              (q) => !selectedQuestions.includes(q.id || ""),
             );
             return { ...page, questions: filteredQuestions };
           });
@@ -169,9 +169,7 @@ const PagesInfo = forwardRef(
         }
 
         toast.success(
-          `${key === "c" ? "Copied" : "Cut"} ${
-            selectedQuestions.length
-          } question(s) to clipboard`
+          `${key === "c" ? "Copied" : "Cut"} ${selectedQuestions.length} question(s) to clipboard`,
         );
       };
 
@@ -190,11 +188,11 @@ const PagesInfo = forwardRef(
           onClick={() => setAllowModifiers(!allowModifiers)}
         >
           {allowModifiers ? (
-            <IoLockOpen className="size-3.5 md:size-4 text-text" />
+            <IoLockOpen className="size-3.5 md:size-4" />
           ) : (
-            <IoLockClosed className="size-3.5 md:size-4 text-text" />
+            <IoLockClosed className="size-3.5 md:size-4" />
           )}
-          <p className="lg:text-[15px] md:text-[14px] text-[13px] text-text">
+          <p className="lg:text-[15px] md:text-[14px] text-[13px]">
             {allowModifiers ? "Disable Modifiers" : "Enable Modifiers"}
           </p>
         </div>
@@ -210,13 +208,13 @@ const PagesInfo = forwardRef(
             formDataState.pages.map((page, index) => (
               <div
                 key={index}
-                className="p-3 md:p-4 border border-gray-300 dark:border-surface-glass-border/20 dark:border-t-primary rounded-md space-y-3 relative border-t-primary border-t-8 md:border-t-10 bg-white dark:bg-background/20"
+                className="p-3 md:p-4 border border-gray-300 dark:border-gray-600 rounded-md space-y-3 relative border-t-primary border-t-8 md:border-t-10"
               >
                 <div className="absolute right-4 top-4 flex gap-2 items-center">
                   <Activity mode={index > 0 ? "visible" : "hidden"}>
                     <div className="bg-secondary rounded-full p-1">
                       <IoCaretUp
-                        className="text-text cursor-pointer size-3.5 md:size-4"
+                        className="text-background cursor-pointer size-3.5 md:size-4"
                         onClick={() => handleMovePage(index, "up")}
                       />
                     </div>
@@ -224,7 +222,7 @@ const PagesInfo = forwardRef(
                   {index < (formDataState.pages?.length || 0) - 1 && (
                     <div className="bg-secondary rounded-full p-1">
                       <IoCaretDown
-                        className="text-text cursor-pointer size-3.5 md:size-4"
+                        className="text-background cursor-pointer size-3.5 md:size-4"
                         onClick={() => handleMovePage(index, "down")}
                       />
                     </div>
@@ -254,7 +252,7 @@ const PagesInfo = forwardRef(
                   </div>
                   <div className="bg-primary rounded-full p-1">
                     <IoTrashSharp
-                      className="text-text cursor-pointer size-3.5 md:size-4"
+                      className="text-background cursor-pointer size-3.5 md:size-4"
                       onClick={() => handleDeletePage(index)}
                     />
                   </div>
@@ -270,13 +268,10 @@ const PagesInfo = forwardRef(
                     placeholder="0"
                     type="number"
                     style={{
-                      width: `${Math.max(
-                        13 * (page.nextPage + 1).toString().length + 14,
-                        27
-                      )}px`,
+                      width: `${Math.max(13 * (page.nextPage + 1).toString().length + 14, 27)}px`,
                       MozAppearance: "textfield",
                     }}
-                    className="shadow-md bg-background dark:bg-background-secondary rounded-lg text-center focus:border-primary border-gray-300 dark:border-surface-glass-border/20 border transition-colors duration-200 outline-none text-contrast dark:text-text-body-main"
+                    className="shadow-md bg-white dark:bg-surface-glass-bg rounded-lg text-center focus:border-primary border-gray-300 dark:border-gray-600 border transition-colors duration-200 outline-none text-contrast dark:text-text-title"
                     value={page.nextPage === -1 ? "" : page.nextPage + 1}
                     onChange={(e) =>
                       handleAdjustNextPages(index, Number(e.target.value) - 1)
@@ -284,7 +279,7 @@ const PagesInfo = forwardRef(
                   />
                 </p>
                 <Activity mode={showHidePages[index] ? "visible" : "hidden"}>
-                  <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text dark:text-text-muted-foreground">
+                  <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text dark:text-text-title">
                     Primary information
                   </p>
                   <InputField
@@ -319,7 +314,7 @@ const PagesInfo = forwardRef(
                     </p>
                   )}
 
-                  <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text dark:text-text-muted-foreground mt-4">
+                  <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text dark:text-text-title mt-4">
                     Questions
                   </p>
                   <Droppable droppableId={`page-${index}`} key={index}>
@@ -342,20 +337,16 @@ const PagesInfo = forwardRef(
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className={`${
-                                    allowModifiers
-                                      ? "p-1.5 md:p-3 border-gray-200 dark:border-surface-glass-border/20"
-                                      : "border-transparent"
-                                  } border rounded-md bg-gray-100 dark:bg-surface-glass-bg/30 space-y-3 flex flex-wrap lg:gap-[2%] relative ease-in-out transition-all duration-200`}
+                                  className={`${allowModifiers ? "p-1.5 md:p-3 border-gray-200 dark:border-gray-600" : "border-transparent"} border rounded-md bg-gray-100 dark:bg-gray-800 space-y-3 flex flex-wrap lg:gap-[2%] relative ease-in-out transition-all duration-200`}
                                 >
                                   <div
                                     key={qIndex}
-                                    className="p-3 border border-gray-200 dark:border-surface-glass-border/10 rounded-md bg-white dark:bg-surface-glass-bg space-y-3 flex flex-wrap lg:gap-[2%] relative w-full"
+                                    className="p-3 border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-surface-glass-bg space-y-3 flex flex-wrap lg:gap-[2%] relative w-full"
                                   >
                                     <div className="absolute right-4 top-4 flex gap-2 items-center">
                                       {allowModifiers ? (
                                         selectedQuestions.includes(
-                                          question.id || ""
+                                          question.id || "",
                                         ) ? (
                                           <div className="bg-secondary rounded-full p-1">
                                             <TiTick
@@ -364,8 +355,8 @@ const PagesInfo = forwardRef(
                                                 setSelectedQuestions((prev) =>
                                                   prev.filter(
                                                     (id) =>
-                                                      id !== question.id || ""
-                                                  )
+                                                      id !== question.id || "",
+                                                  ),
                                                 )
                                               }
                                             />
@@ -373,7 +364,7 @@ const PagesInfo = forwardRef(
                                         ) : (
                                           <div className="bg-secondary py-0.5 md:py-1 rounded-full px-3">
                                             <p
-                                              className="text-text text-[12px] md:text-[14px] cursor-pointer"
+                                              className="text-background text-[12px] md:text-[14px] cursor-pointer"
                                               onClick={() =>
                                                 setSelectedQuestions((prev) => [
                                                   ...prev,
@@ -388,14 +379,14 @@ const PagesInfo = forwardRef(
                                       ) : null}
                                       <div className="bg-primary rounded-full p-1">
                                         <IoTrashSharp
-                                          className="text-text cursor-pointer size-3.5 md:size-4"
+                                          className="text-background cursor-pointer size-3.5 md:size-4"
                                           onClick={() =>
                                             handleRemoveQuestion(index, qIndex)
                                           }
                                         />
                                       </div>
                                     </div>
-                                    <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text dark:text-text-muted-foreground">
+                                    <p className="text-[14px] md:text-[16px] lg:text-[18px] font-semibold text-inactive-tab-text dark:text-text-title">
                                       Question {question.questionNumber} (
                                       {qIndex + 1} in page)
                                     </p>
@@ -409,7 +400,7 @@ const PagesInfo = forwardRef(
                                           qIndex,
                                           index,
                                           "questionText",
-                                          e.target.value
+                                          e.target.value,
                                         )
                                       }
                                       error={
@@ -427,7 +418,7 @@ const PagesInfo = forwardRef(
                                           qIndex,
                                           index,
                                           "description",
-                                          e.target.value
+                                          e.target.value,
                                         )
                                       }
                                     />
@@ -443,7 +434,7 @@ const PagesInfo = forwardRef(
                                             qIndex,
                                             index,
                                             "questionType",
-                                            selected
+                                            selected,
                                           )
                                         }
                                         label="Question Type"
@@ -465,7 +456,7 @@ const PagesInfo = forwardRef(
                                             qIndex,
                                             index,
                                             "isMandatory",
-                                            selected === "true"
+                                            selected === "true",
                                           )
                                         }
                                         label="Is Required"
@@ -495,7 +486,7 @@ const PagesInfo = forwardRef(
                                                 qIndex,
                                                 index,
                                                 "isTextArea",
-                                                selected === "true"
+                                                selected === "true",
                                               )
                                             }
                                             label="Answer Format"
@@ -518,7 +509,7 @@ const PagesInfo = forwardRef(
                                                 "maxLength",
                                                 e.target.value !== ""
                                                   ? parseInt(e.target.value)
-                                                  : null
+                                                  : null,
                                               )
                                             }
                                           />
@@ -539,7 +530,7 @@ const PagesInfo = forwardRef(
                                                   key={cIndex}
                                                   className="flex items-center justify-between w-full gap-2 my-3"
                                                 >
-                                                  <p className="text-[14px] md:text-[15px] lg:text-[16px]">
+                                                  <p className="text-[14px] md:text-[15px] lg:text-[16px] dark:text-text-body-main">
                                                     {cIndex +
                                                       1 +
                                                       ". " +
@@ -555,7 +546,7 @@ const PagesInfo = forwardRef(
                                                             qIndex,
                                                             index,
                                                             cIndex,
-                                                            "up"
+                                                            "up",
                                                           )
                                                         }
                                                       />
@@ -572,7 +563,7 @@ const PagesInfo = forwardRef(
                                                             qIndex,
                                                             index,
                                                             cIndex,
-                                                            "down"
+                                                            "down",
                                                           )
                                                         }
                                                       />
@@ -583,13 +574,13 @@ const PagesInfo = forwardRef(
                                                         handleRemoveChoice(
                                                           qIndex,
                                                           index,
-                                                          cIndex
+                                                          cIndex,
                                                         )
                                                       }
                                                     />
                                                   </div>
                                                 </div>
-                                              )
+                                              ),
                                             )}
                                           </div>
                                         ) : (
@@ -606,7 +597,7 @@ const PagesInfo = forwardRef(
                                               placeholder="Enter choice text"
                                               onChange={(e) =>
                                                 setChoiceTextBuffer(
-                                                  e.target.value
+                                                  e.target.value,
                                                 )
                                               }
                                             />
@@ -637,7 +628,7 @@ const PagesInfo = forwardRef(
                                               qIndex,
                                               index,
                                               "isMultiSelect",
-                                              selected === "true"
+                                              selected === "true",
                                             )
                                           }
                                           label="Allow Multiple Answers"
@@ -663,7 +654,7 @@ const PagesInfo = forwardRef(
                                                 "maxFileSizeMB",
                                                 e.target.value !== ""
                                                   ? parseInt(e.target.value)
-                                                  : null
+                                                  : null,
                                               )
                                             }
                                           />
@@ -684,7 +675,7 @@ const PagesInfo = forwardRef(
                                                 qIndex,
                                                 index,
                                                 "allowMultiple",
-                                                selected === "true"
+                                                selected === "true",
                                               )
                                             }
                                             label="Allow Multiple Files"
@@ -697,7 +688,7 @@ const PagesInfo = forwardRef(
                                             value={
                                               question.allowedFileTypes
                                                 ? question.allowedFileTypes.join(
-                                                    ", "
+                                                    ", ",
                                                   )
                                                 : ""
                                             }
@@ -711,7 +702,7 @@ const PagesInfo = forwardRef(
                                                   ? e.target.value
                                                       .split(/\s*,\s*/)
                                                       .filter(Boolean)
-                                                  : []
+                                                  : [],
                                               )
                                             }
                                           />
@@ -750,7 +741,7 @@ const PagesInfo = forwardRef(
                   <Activity
                     mode={
                       branchSections.filter(
-                        (branch) => branch.formBranch.sourcePage === index
+                        (branch) => branch.formBranch.sourcePage === index,
                       ).length > 0
                         ? "visible"
                         : "hidden"
@@ -758,7 +749,7 @@ const PagesInfo = forwardRef(
                   >
                     {branchSections
                       .filter(
-                        (branch) => branch.formBranch.sourcePage === index
+                        (branch) => branch.formBranch.sourcePage === index,
                       )
                       .map((branch) => (
                         <div className="space-y-2" key={branch.formBranch.id}>
@@ -854,7 +845,7 @@ const PagesInfo = forwardRef(
         />
       </div>
     );
-  }
+  },
 );
 
 export default PagesInfo;

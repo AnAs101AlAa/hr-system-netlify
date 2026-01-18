@@ -30,7 +30,7 @@ export default function FormBuilder() {
     "",
     debouncedSearchTerm,
     "",
-    ""
+    "",
   );
 
   return (
@@ -45,7 +45,7 @@ export default function FormBuilder() {
           <div className="p-4">
             {modalOpen === 1 ? (
               <>
-                <p className="mb-6 lg:text-[18px] md:text-[15px] text-[14px] font-semibold text-center">
+                <p className="mb-6 lg:text-[18px] md:text-[15px] text-[14px] font-semibold text-center dark:text-text-title">
                   Please choose a template for the new form
                 </p>
                 <div className="md:flex-row flex-col flex justify-center gap-3">
@@ -53,7 +53,7 @@ export default function FormBuilder() {
                     className="w-full md:w-[49%] rounded-2xl shadow-md p-3 md:p-4 hover:-translate-y-2 hover:bg-gray-100 dark:bg-surface-glass-bg dark:hover:bg-surface-glass-bg/80 cursor-pointer transition ease-in-out duration-300"
                     onClick={() => (window.location.href = "/form-builder/new")}
                   >
-                    <VscEmptyWindow className="lg:size-18 md:size-16 size-14 mx-auto mb-5 md:mb-10 mt-2 md:mt-4" />
+                    <VscEmptyWindow className="lg:size-18 md:size-16 size-14 mx-auto mb-5 md:mb-10 mt-2 md:mt-4 dark:text-text-title" />
                     <p className="text-center mb-1 font-semibold lg:text-[20px] md:text-[18px] text-[16px] dark:text-text-title">
                       Blank Form
                     </p>
@@ -65,7 +65,7 @@ export default function FormBuilder() {
                     className="w-full md:w-[49%] rounded-2xl shadow-md p-3 md:p-4 hover:-translate-y-2 hover:bg-gray-100 dark:bg-surface-glass-bg dark:hover:bg-surface-glass-bg/80 cursor-pointer transition ease-in-out duration-300"
                     onClick={() => setModalOpen(2)}
                   >
-                    <ImInsertTemplate className="lg:size-18 md:size-16 size-14 mx-auto mb-5 md:mb-10 mt-2 md:mt-4" />
+                    <ImInsertTemplate className="lg:size-18 md:size-16 size-14 mx-auto mb-5 md:mb-10 mt-2 md:mt-4 dark:text-text-title" />
                     <p className="text-center mb-1 font-semibold lg:text-[20px] md:text-[18px] text-[16px] dark:text-text-title">
                       Predefined Template
                     </p>
@@ -77,7 +77,7 @@ export default function FormBuilder() {
               </>
             ) : (
               <>
-                <p className="mb-6 lg:text-[18px] md:text-[15px] text-[14px] font-semibold text-center">
+                <p className="mb-6 lg:text-[18px] md:text-[15px] text-[14px] font-semibold text-center dark:text-text-title">
                   Please select the form you wish to use as your template
                 </p>
                 <div className="w-full rounded-lg shadow-lg md:p-4 p-2">
@@ -176,7 +176,7 @@ export default function FormBuilder() {
           </div>
         </Modal>
       )}
-      <div className="min-h-screen bg-background dark:bg-background-primary p-4">
+      <div className="min-h-screen bg-background dark:bg-background-primary p-4 text-text-body-main">
         <div className="w-[96%] md:w-[94%] lg:w-[84%] xl:w-[73%] mx-auto">
           <h1 className="lg:text-[24px] md:text-[22px] text-[20px] font-bold dark:text-text-title">
             Form Builder

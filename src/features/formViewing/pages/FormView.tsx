@@ -53,7 +53,7 @@ export default function FormView() {
       isClosed: false,
       createdAt: "",
       updatedAt: "",
-    }
+    },
   );
   const isFormInitialized = useRef<boolean>(false);
 
@@ -74,7 +74,7 @@ export default function FormView() {
               page.title === "null" &&
               page.nextPage == -1 &&
               page.description === "nullDescKey"
-            )
+            ),
         ) || [],
     };
     setFormData(formCleaned);
@@ -109,7 +109,7 @@ export default function FormView() {
       if (ref) {
         const collected = ref.collect();
         const existingIndex = answerArray.findIndex(
-          (a: Answer) => a.qid === collected.qid
+          (a: Answer) => a.qid === collected.qid,
         );
         if (existingIndex >= 0) {
           answerArray[existingIndex] = collected;
@@ -127,7 +127,7 @@ export default function FormView() {
       const branches = formData.pages[currentPage].toBranch;
       if (branches && branches.length > 0) {
         const currentAnswer = answerArray.find((a) =>
-          branches.some((b) => b.questionNumber === a.qid)
+          branches.some((b) => b.questionNumber === a.qid),
         );
         const selectedBranch: formBranch = branches.filter((b) => {
           return (
@@ -136,7 +136,7 @@ export default function FormView() {
         })[0];
 
         const currentQuestion = formData.pages[currentPage].questions.filter(
-          (q) => q.questionNumber === currentAnswer?.qid
+          (q) => q.questionNumber === currentAnswer?.qid,
         )[0];
         const answersToAssert = currentAnswer
           ? branchAssertionFormatter(selectedBranch.assertOn)
@@ -150,7 +150,7 @@ export default function FormView() {
             ? (currentAnswer.answer as string[])
             : [];
           const hasMatch = answerValues.some((value) =>
-            answersToAssert.includes(value)
+            answersToAssert.includes(value),
           );
           if (hasMatch) {
             setCurrentPage(selectedBranch.targetPage);
@@ -215,7 +215,7 @@ export default function FormView() {
         loading: "Submitting...",
         error: () =>
           "An error has occurred while submitting your response, Please try again.",
-      }
+      },
     );
   };
 
@@ -239,7 +239,7 @@ export default function FormView() {
   }
 
   return (
-    <div className="min-h-screen pb-4 md:pb-10 md:pt-4 bg-gradient-to-b from-white via-white to-[#f8f6f1] dark:from-background-primary dark:via-background-primary dark:to-background-primary">
+    <div className="min-h-screen pb-4 md:pb-10 md:pt-4 bg-gradient-to-b from-white via-white to-[#f8f6f1] dark:from-background-primary dark:via-background-primary dark:to-background-primary text-text-body-main">
       {isFetching && <FormLoadingComponent />}
       {isError && (
         <ErrorScreen
@@ -314,7 +314,7 @@ export default function FormView() {
                       question={question}
                     />
                   </div>
-                )
+                ),
               )}
             </div>
           )}

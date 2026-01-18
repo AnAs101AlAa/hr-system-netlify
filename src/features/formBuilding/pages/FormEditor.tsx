@@ -49,7 +49,7 @@ export default function FormEditor() {
     isError,
     error,
     isSuccess,
-  } = useForm(formId !== "new" ? formId ?? "" : templateId ?? "", true);
+  } = useForm(formId !== "new" ? (formId ?? "") : (templateId ?? ""), true);
 
   const createFormMutation = useCreateForm();
   const updateFormMutation = useUpdateForm(formId ?? "");
@@ -80,7 +80,7 @@ export default function FormEditor() {
                 page.title === "null" &&
                 page.nextPage == -1 &&
                 page.description === "nullDescKey"
-              )
+              ),
           ) || [],
       };
       setFormDataState(formCleaned);
@@ -91,7 +91,7 @@ export default function FormEditor() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     toChange: string,
     index?: number,
-    field?: string
+    field?: string,
   ) => {
     const value = e.target.value;
     if (toChange === "pages" && typeof index === "number") {
@@ -145,7 +145,7 @@ export default function FormEditor() {
                   getErrorMessage(error) || "Failed to update form";
                 reject(errorMessage);
               },
-            }
+            },
           );
         }),
         {
@@ -154,10 +154,10 @@ export default function FormEditor() {
             typeof err === "string"
               ? err
               : isEditMode
-              ? "Failed to update form"
-              : "Failed to create form",
+                ? "Failed to update form"
+                : "Failed to create form",
           success: "Form updated successfully",
-        }
+        },
       );
       return;
     } else {
@@ -188,10 +188,10 @@ export default function FormEditor() {
             typeof err === "string"
               ? err
               : isEditMode
-              ? "Failed to update form"
-              : "Failed to create form",
+                ? "Failed to update form"
+                : "Failed to create form",
           success: "Form created successfully",
-        }
+        },
       );
     }
   };
@@ -231,7 +231,7 @@ export default function FormEditor() {
           onClose={() => setIsAccessListOpen(false)}
         />
       )}
-      <div className="min-h-screen bg-background dark:bg-background-primary p-3 md:p-4">
+      <div className="min-h-screen bg-background dark:bg-background-primary p-3 md:p-4 text-text-body-main">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center">
             <h1 className="lg:text-[24px] text-[22px] font-bold dark:text-text-title">
