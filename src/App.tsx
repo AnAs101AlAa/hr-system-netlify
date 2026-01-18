@@ -5,9 +5,13 @@ import MemberRoute from "@/shared/routing/ProtectedRoutes";
 import { useEffect, useState } from "react";
 
 function App() {
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem("darkMode");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
 
   useEffect(() => {
+    localStorage.setItem("darkMode", JSON.stringify(isDark));
     if (isDark) {
       document.documentElement.classList.add("dark");
     } else {
@@ -34,12 +38,12 @@ function App() {
                 />
               ) : (
                 <Route key={index} path={path} element={<Component />} />
-              )
+              ),
           )}
         </Routes>
         <button
           onClick={() => setIsDark(!isDark)}
-          className="fixed bottom-5 right-5 z-50 p-3 rounded-full shadow-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 transition-colors"
+          className="fixed top-4 right-4 md:bottom-5 md:top-auto md:right-5 z-50 p-2 md:p-3 rounded-full shadow-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 transition-colors"
           aria-label="Toggle Dark Mode"
         >
           {isDark ? "🌙" : "☀️"}
