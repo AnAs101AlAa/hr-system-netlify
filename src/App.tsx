@@ -22,7 +22,28 @@ function App() {
   return (
     <div>
       <BrowserRouter>
-        <Toaster containerClassName="text-[14px] md:text-[15px] lg:text-[16px]" />
+        <Toaster
+          containerClassName="text-[14px] md:text-[15px] lg:text-[16px]"
+          toastOptions={{
+            style: {
+              background: isDark ? "#1f2937" : "#fff",
+              color: isDark ? "#f9fafb" : "#1f2937",
+              border: isDark ? "1px solid #374151" : "1px solid #e5e7eb",
+            },
+            success: {
+              iconTheme: {
+                primary: "#22c55e",
+                secondary: isDark ? "#1f2937" : "#fff",
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: "#ef4444",
+                secondary: isDark ? "#1f2937" : "#fff",
+              },
+            },
+          }}
+        />
         <Routes>
           {routes.map(
             ({ path, Component, protected: isProtected, roles }, index) =>
