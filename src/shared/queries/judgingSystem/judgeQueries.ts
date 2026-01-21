@@ -301,3 +301,12 @@ export const useGetJudgeEvaluationProgress = (judgeId: string, eventId: string):
         }
     });
 }
+
+export const useGetAssignedJudgesForTeam = ()  => {
+    return useMutation({
+        mutationFn: async (teamId: string) => {
+            const judges = await JudgeAPI.getJudgesAssignedToTeam(teamId);
+            return judges;
+        }
+    });
+}

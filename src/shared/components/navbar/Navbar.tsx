@@ -10,12 +10,15 @@ const Navbar = () => {
 
   return (
     <header className="w-full flex justify-center px-3 py-3">
-      <LogoutModal showLogoutModal={showLogoutModal} setShowLogoutModal={setShowLogoutModal} />
+      <LogoutModal
+        showLogoutModal={showLogoutModal}
+        setShowLogoutModal={setShowLogoutModal}
+      />
       <nav
         className="
           relative w-full max-w-xl
-          rounded-full border border-black/10
-          bg-white/80
+          rounded-full border border-surface-glass-border/20
+          bg-surface-glass-bg/80
           backdrop-blur supports-[backdrop-filter]:backdrop-blur-md
           shadow-[0_6px_22px_rgba(0,0,0,0.05)]
           px-1.5 py-1 flex items-center gap-4
@@ -37,8 +40,8 @@ const Navbar = () => {
                 outline-none ring-0 focus-visible:ring-2 focus-visible:ring-primary/35
                 ${
                   active
-                    ? "bg-active-tab-bg text-active-tab-text shadow-inner"
-                    : "text-inactive-tab-text hover:bg-zinc-100/80 hover:text-primary"
+                    ? "bg-muted-primary/10 text-primary shadow-inner"
+                    : "text-text-muted-foreground hover:bg-muted-primary/5 hover:text-primary"
                 }
                 ${index === 1 ? "mr-10" : index === 2 ? "ml-10" : ""}
               `}
@@ -53,7 +56,7 @@ const Navbar = () => {
             group flex-1 text-center rounded-full px-2.5 py-1.5
             transition-all duration-150 cursor-pointer
             outline-none ring-0 focus-visible:ring-2 focus-visible:ring-primary/35
-            text-inactive-tab-text hover:bg-zinc-100/80 hover:text-primary
+            text-text-muted-foreground hover:bg-muted-primary/5 hover:text-primary
           "
           onClick={() => setShowLogoutModal(true)}
         >
@@ -68,8 +71,8 @@ const Navbar = () => {
               className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-2.5 w-14 rounded-full bg-black/10 blur-md"
             />
             {/* badge */}
-            <div className="rounded-full p-1.5 bg-white border border-black/10 shadow-[0_8px_20px_rgba(0,0,0,0.08)]">
-              <div className="rounded-full p-1 bg-gradient-to-b from-white to-[#f7f7f7]">
+            <div className="rounded-full p-1.5 bg-surface-glass-bg border border-surface-glass-border/20 shadow-[0_8px_20px_rgba(0,0,0,0.08)]">
+              <div className="rounded-full p-1 bg-gradient-to-b from-surface-glass-bg to-muted-primary/5">
                 <img
                   src={logo}
                   alt="TCCD"

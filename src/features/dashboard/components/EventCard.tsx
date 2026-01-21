@@ -40,15 +40,15 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
   }, []);
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-5 flex flex-col h-full relative justify-between gap-4">
+    <div className="bg-white dark:bg-surface-glass-bg rounded-xl shadow-md p-5 flex flex-col h-full relative justify-between gap-4">
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <h3 className="font-bold text-gray-800 text-[20px] md:text-[22px] lg:text-[24px]">
+          <h3 className="font-bold text-gray-800 dark:text-text-title text-[20px] md:text-[22px] lg:text-[24px]">
             {title}
           </h3>
         </div>
 
-        <div className="flex flex-col text-sm text-gray-500 gap-1 text-[13px] md:text-[14px] lg:text-[15px]">
+        <div className="flex flex-col text-sm text-gray-500 dark:text-text-muted-foreground gap-1 text-[13px] md:text-[14px] lg:text-[15px]">
           <span className="flex gap-1 items-center">
             <FaCalendarAlt className="text-primary text-md mr-1" />
             <span className="font-semibold">Start Date:</span>{" "}
@@ -87,7 +87,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
           />
         )}
 
-      {/* Right side - Action buttons */}
+        {/* Right side - Action buttons */}
         {!isUpcomingEvent && (
           <Button
             buttonText={isPhoneScreen ? undefined : "Details"}
@@ -98,7 +98,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
           />
         )}
 
-        {(!isUpcomingEvent && !isPastEvent) && (
+        {!isUpcomingEvent && !isPastEvent && (
           <Button
             buttonText={isPhoneScreen ? undefined : "Scan QR"}
             buttonIcon={isPhoneScreen ? <BsQrCode size={16} /> : undefined}
@@ -108,8 +108,8 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
           />
         )}
         {/* fallback */}
-        {(isUpcomingEvent && !isPastEvent) && (
-          <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-xs">
+        {isUpcomingEvent && !isPastEvent && (
+          <span className="bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-300 px-3 py-1 rounded-md text-xs">
             see you soon
           </span>
         )}

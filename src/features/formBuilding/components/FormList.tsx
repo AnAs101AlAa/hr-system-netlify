@@ -12,51 +12,67 @@ const FormList = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchKey);
 
   useEffect(() => {
-      const t = setTimeout(() => setDebouncedSearchTerm(searchKey), 300);
-      return () => clearTimeout(t);
+    const t = setTimeout(() => setDebouncedSearchTerm(searchKey), 300);
+    return () => clearTimeout(t);
   }, [searchKey]);
 
   useEffect(() => {
-      setCurrentPage(1);
+    setCurrentPage(1);
   }, [debouncedSearchTerm]);
 
   const [sortOption, setSortOption] = useState<string>("");
   const [filterType, setFilterType] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const { data: Forms, isLoading, isError } = useForms(currentPage, 15, selectedDate || "", debouncedSearchTerm, filterType, sortOption);
+  const {
+    data: Forms,
+    isLoading,
+    isError,
+  } = useForms(
+    currentPage,
+    15,
+    selectedDate || "",
+    debouncedSearchTerm,
+    filterType,
+    sortOption,
+  );
 
-  if(isError) {
-    return <ErrorScreen title={"An error occurred while fetching forms."} message="an error occurred while fetching forms, please try again and contact IT team if the issue persists." />;
+  if (isError) {
+    return (
+      <ErrorScreen
+        title={"An error occurred while fetching forms."}
+        message="an error occurred while fetching forms, please try again and contact IT team if the issue persists."
+      />
+    );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
+    <div className="bg-white dark:bg-surface-glass-bg rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
       <div className="p-4 border-b border-dashboard-border space-y-2">
         <div className="flex items-center justify-between mb-4">
-        <p className="text-md md:text-lg lg:text-xl font-bold text-[#72747A]">
-          Forms {Forms ? `(${Forms.length})` : ""}
-        </p>
-        <div className="flex gap-2 items-center justify-center">
-          <FaChevronLeft
-            className={`cursor-pointer size-4 ${currentPage === 1 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
-            onClick={() => {
-              if (currentPage > 1) {
-                setCurrentPage(currentPage - 1);
-              }
-            }}
-          />
-          <span className="text-[14px] md:text-[15px] lg:text-[16px] font-medium text-contrast">
-            Page {currentPage}
-          </span>
-          <FaChevronRight
-            className={`cursor-pointer size-4 ${Forms && Forms.length < 15 ? "text-gray-300 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
-            onClick={() => {
-              if (Forms && Forms.length === 15) {
-                setCurrentPage(currentPage + 1);
-              }
-            }}
-          />
-        </div>
+          <p className="text-md md:text-lg lg:text-xl font-bold text-text-muted-foreground">
+            Forms {Forms ? `(${Forms.length})` : ""}
+          </p>
+          <div className="flex gap-2 items-center justify-center">
+            <FaChevronLeft
+              className={`cursor-pointer size-4 ${currentPage === 1 ? "text-gray-300 dark:text-gray-600 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
+              onClick={() => {
+                if (currentPage > 1) {
+                  setCurrentPage(currentPage - 1);
+                }
+              }}
+            />
+            <span className="text-[14px] md:text-[15px] lg:text-[16px] font-medium text-contrast dark:text-text-title">
+              Page {currentPage}
+            </span>
+            <FaChevronRight
+              className={`cursor-pointer size-4 ${Forms && Forms.length < 15 ? "text-gray-300 dark:text-gray-600 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
+              onClick={() => {
+                if (Forms && Forms.length === 15) {
+                  setCurrentPage(currentPage + 1);
+                }
+              }}
+            />
+          </div>
         </div>
         <>
           <div
@@ -66,7 +82,7 @@ const FormList = () => {
             {FORM_TYPES.map((type) => (
               <div
                 key={type.value}
-                className={`px-3 py-1 rounded-md text-sm font-semibold ${filterType === type.value ? "text-primary scale-[110%]" : "text-contrast scale-[100%]"} transition-all duration-200 cursor-pointer whitespace-nowrap`}
+                className={`px-3 py-1 rounded-md text-sm font-semibold ${filterType === type.value ? "text-primary scale-[110%]" : "text-contrast dark:text-text-title scale-[100%]"} transition-all duration-200 cursor-pointer whitespace-nowrap`}
                 onClick={() => setFilterType(type.value)}
               >
                 {type.label}
@@ -93,8 +109,10 @@ const FormList = () => {
             }
           `}</style>
         </>
-        <hr className="border-gray-200" />
-        <p className="text-[14px] md:text-[15px] lg:text-[16px] font-semibold text-contrast">Filters</p>
+        <hr className="border-gray-200 dark:border-gray-700" />
+        <p className="text-[14px] md:text-[15px] lg:text-[16px] font-semibold text-contrast dark:text-text-title">
+          Filters
+        </p>
         <div className="flex gap-2 md:flex-row flex-col justify-between">
           <SearchField
             placeholder="Search forms..."
@@ -111,30 +129,26 @@ const FormList = () => {
               />
             </div>
             <div className="flex-grow md:max-w-64 md:-mt-0.5">
-                <DatePicker
-                  value={selectedDate || ""}
-                  onChange={(date) => setSelectedDate(date)}
-                />
+              <DatePicker
+                value={selectedDate || ""}
+                onChange={(date) => setSelectedDate(date)}
+              />
             </div>
           </div>
         </div>
       </div>
       {isLoading ? (
         <div className="flex justify-center items-center h-48">
-          <p className="text-contrast">Loading forms...</p>
+          <p className="text-contrast dark:text-text-title">Loading forms...</p>
         </div>
       ) : (
-      <>
-        {/* Desktop Table View */}
-        <FormTable
-          forms={Forms || []}
-        />
+        <>
+          {/* Desktop Table View */}
+          <FormTable forms={Forms || []} />
 
-        {/* Mobile Card View */}
-        <FormCardView
-          forms={Forms || []}
-        />
-      </>
+          {/* Mobile Card View */}
+          <FormCardView forms={Forms || []} />
+        </>
       )}
     </div>
   );

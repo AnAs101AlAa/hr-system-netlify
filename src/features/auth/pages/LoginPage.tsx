@@ -67,19 +67,21 @@ const LoginPage = () => {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-white to-[#f8f6f1] text-[#121212]">
+    <main className="min-h-screen bg-gradient-to-b from-page-gradient-start via-page-gradient-middle to-page-gradient-end text-text-body-main">
       <form
         onSubmit={handleSubmit}
         className="mx-auto grid min-h-screen max-w-7xl place-items-center px-4 pb-16"
       >
         <section
-          className="w-full max-w-md rounded-2xl border border-black/5 bg-white/80 p-8 shadow-[0_4px_30px_rgba(0,0,0,0.04)] backdrop-blur"
+          className="w-full max-w-md rounded-2xl bg-surface-glass-bg/60 p-8 shadow-2xl backdrop-blur"
           aria-labelledby="login-title"
         >
           <header className="w-full flex flex-col gap-3 items-center">
-            <p className="mb-3 text-[#636569] font-bold">welcome</p>
+            <p className="mb-3 text-text-muted-foreground font-bold">
+              welcome
+            </p>
             <img src={tccd_logo} width={100} alt="azha-logo" />
-            <h2 className="text-2xl font-bold text-[#3B3D41]">
+            <h2 className="text-2xl font-bold text-text-title">
               TCCD HR Portal
             </h2>
           </header>
@@ -87,7 +89,7 @@ const LoginPage = () => {
           <div className="space-y-5 mt-5">
             {/* Email */}
             <div className="space-y-2">
-              <h2 className="text-[#5E6064] text-center font-bold mb-5">
+              <h2 className="text-text-subtitle text-center font-bold mb-5">
                 Login to your account
               </h2>
               <InputField
@@ -125,7 +127,7 @@ const LoginPage = () => {
             />
           </div>
           <footer className="p-10">
-            <p className="text-center text-sm text-[#A5A9B2]">
+            <p className="text-center text-sm text-text-caption">
               HR accounts are created internally by administrators, If you
               require access, please contact your department head.
             </p>

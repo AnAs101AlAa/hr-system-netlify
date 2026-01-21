@@ -1,7 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { EventDetailsHeader, EventInformation, AttendeesList, EventNotFound, VestEventDetailsView, EventModal } from "@/features/events/components";
+import {
+  EventDetailsHeader,
+  EventInformation,
+  AttendeesList,
+  EventNotFound,
+  VestEventDetailsView,
+  EventModal,
+} from "@/features/events/components";
 import WithNavbar from "@/shared/components/hoc/WithNavbar";
-import { useEvent, useEventAttendees, useDeleteEvent } from "@/shared/queries/events/eventQueries";
+import {
+  useEvent,
+  useEventAttendees,
+  useDeleteEvent,
+} from "@/shared/queries/events/eventQueries";
 import { useParams } from "react-router-dom";
 import { LoadingPage } from "tccd-ui";
 import { useEffect, useState } from "react";
@@ -115,7 +126,7 @@ const EventDetails = () => {
 
   return (
     <WithNavbar>
-      <div className="min-h-screen bg-background p-4">
+      <div className="min-h-screen bg-background p-4 text-text-body-main">
         <div className="max-w-6xl mx-auto">
           <EventDetailsHeader onBack={handleBack} />
           <EventInformation

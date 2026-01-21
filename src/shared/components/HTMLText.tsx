@@ -15,10 +15,24 @@ export function HTMLText({ content, className }: RenderHtmlProps) {
     return txt.value;
   };
 
-  const decoded = /&lt;|&gt;|&amp;/.test(content) ? decodeHtmlEntities(content) : content;
+  const decoded = /&lt;|&gt;|&amp;/.test(content)
+    ? decodeHtmlEntities(content)
+    : content;
 
   const safeHtml = DOMPurify.sanitize(decoded, {
-    ALLOWED_TAGS: ["b", "strong", "i", "em", "br", "p", "ul", "ol", "li", "a", "u"],
+    ALLOWED_TAGS: [
+      "b",
+      "strong",
+      "i",
+      "em",
+      "br",
+      "p",
+      "ul",
+      "ol",
+      "li",
+      "a",
+      "u",
+    ],
     ALLOWED_ATTR: ["href", "target", "rel"],
   });
 
@@ -31,9 +45,13 @@ export function HTMLText({ content, className }: RenderHtmlProps) {
             href={props.href}
             target={props.target || "_blank"}
             rel={props.rel || "noopener noreferrer"}
-            className={` ${className || "underline text-secondary font-semibold"}`}
+            className={` ${
+              className || "underline text-primary font-semibold"
+            }`}
           >
-            {domToReact(domNode.children as import("html-react-parser").DOMNode[])}
+            {domToReact(
+              domNode.children as import("html-react-parser").DOMNode[]
+            )}
           </a>
         );
       }

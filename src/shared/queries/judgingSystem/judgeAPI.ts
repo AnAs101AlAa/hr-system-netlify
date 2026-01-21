@@ -192,3 +192,8 @@ export async function getJudgeEvaluationProgress(judgeId: string, eventId: strin
     const response = await systemApi.get(`${JUDGING_API_URL}/Admin/research-attendance/judges/${judgeId}/events/${eventId}/teams/status`);
     return response.data.data;
 }
+
+export async function getJudgesAssignedToTeam(teamId: string): Promise<Judge[]> {
+    const response = await systemApi.get(`${JUDGING_API_URL}/Admin/teams/${teamId}/judges`);
+    return response.data.data.assignedJudges;
+}

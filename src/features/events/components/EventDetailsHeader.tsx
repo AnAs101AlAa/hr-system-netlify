@@ -13,7 +13,9 @@ const EventDetailsHeader = ({ onBack }: EventDetailsHeaderProps) => {
       >
         <IoChevronBack size={20} className="mr-1" />
       </button>
-      <h1 className="text-lg font-bold text-[#626468]">Event Details</h1>
+      <h1 className="text-lg font-bold text-text-muted-foreground">
+        Event Details
+      </h1>
       <div></div> {/* Placeholder for centering the title */}
     </div>
   );
