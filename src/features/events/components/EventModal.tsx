@@ -1,8 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import EVENT_TYPES from "@/constants/eventTypes";
 import type { Event } from "@/shared/types/event";
-import { useAddEvent, useUpdateEvent } from "@/shared/queries/events/eventQueries";
-import { Button, Modal, InputField, TextAreaField, DatePicker, DropdownMenu, ButtonTypes, ButtonWidths, Timepicker } from "tccd-ui";
+import {
+  useAddEvent,
+  useUpdateEvent,
+} from "@/shared/queries/events/eventQueries";
+import {
+  Button,
+  Modal,
+  InputField,
+  TextAreaField,
+  DatePicker,
+  DropdownMenu,
+  ButtonTypes,
+  ButtonWidths,
+  Timepicker,
+} from "tccd-ui";
 
 interface EventModalProps {
   isOpen: boolean;
@@ -22,12 +35,7 @@ interface EventFormData {
   endTime: string;
 }
 
-const EventModal: React.FC<EventModalProps> = ({
-  isOpen,
-  onClose,
-  event,
-  mode,
-}) => {
+const EventModal = ({ isOpen, onClose, event, mode }: EventModalProps) => {
   const [formData, setFormData] = useState<EventFormData>({
     title: "",
     description: "",
@@ -155,7 +163,7 @@ const EventModal: React.FC<EventModalProps> = ({
       formData.endTime
     ) {
       const startDateTime = new Date(
-        `${formData.startDate}T${formData.startTime}`
+        `${formData.startDate}T${formData.startTime}`,
       );
       const endDateTime = new Date(`${formData.endDate}T${formData.endTime}`);
 
@@ -220,10 +228,7 @@ const EventModal: React.FC<EventModalProps> = ({
       onClose={handleClose}
     >
       {/* Form */}
-      <div
-        id="event-form"
-        className="flex flex-col gap-4 p-1"
-      >
+      <div id="event-form" className="flex flex-col gap-4 p-1">
         {/* Title */}
         <InputField
           label="Event Title"
@@ -317,24 +322,23 @@ const EventModal: React.FC<EventModalProps> = ({
         </div>
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 mt-6">
-            <Button
+          <Button
             buttonText="Cancel"
             type={ButtonTypes.SECONDARY}
             width={ButtonWidths.FULL}
             onClick={handleClose}
             disabled={isLoading}
-            />
-            <Button
+          />
+          <Button
             buttonText={mode === "create" ? "Create Event" : "Save Changes"}
             type={ButtonTypes.PRIMARY}
             width={ButtonWidths.FULL}
             disabled={isLoading}
             loading={isLoading}
             onClick={() => handleSubmit()}
-            />
+          />
         </div>
       </div>
-
     </Modal>
   );
 };
