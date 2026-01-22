@@ -25,8 +25,6 @@ export default function EvaluationAnalysisPage() {
   const getJudgesMutation = useGetAssignedJudgesForTeam();
   const {
     refetch: refetchTeams,
-    isLoading: isTeamsLoading,
-    isError: isTeamsError,
   } = useResearchTeams(
     eventId || "",
     1,
