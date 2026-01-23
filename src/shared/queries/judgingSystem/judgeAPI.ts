@@ -19,6 +19,7 @@ export async function getEventTeams(
   codeKey: string,
   courseKey: string,
   departmentKey: string,
+  statusKey: string,
   mode: string,
 ): Promise<any> {
   if (mode === "admin") {
@@ -46,6 +47,7 @@ export async function getEventTeams(
     if (codeKey) params.Code = codeKey;
     if (courseKey) params.Course = courseKey;
     if (departmentKey) params.Department = departmentKey;
+    if (statusKey) params.Status = statusKey;
 
     const response = await systemApi.get(
       `${JUDGING_API_URL}/Team/event/${eventId}`,
@@ -233,6 +235,7 @@ export async function getUnassignedTeamsForJudge(
   codeKey: string,
   courseKey: string,
   departmentKey: string,
+  statusKey: string,
 ): Promise<any> {
   let SortBy: string | undefined = undefined;
   let Order: string | undefined = undefined;
@@ -259,6 +262,7 @@ export async function getUnassignedTeamsForJudge(
   if (codeKey) params.Code = codeKey;
   if (courseKey) params.Course = courseKey;
   if (departmentKey) params.Department = departmentKey;
+  if (statusKey) params.Status = statusKey;
 
   const response = await systemApi.get(
     `${JUDGING_API_URL}/Admin/judges/${judgeId}/teams/unassigned`,

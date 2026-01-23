@@ -29,6 +29,7 @@ const TeamSelectorListing = () => {
   const [debouncedDepartmentKey, setDebouncedDepartmentKey] =
     useState<string>("");
   const [debouncedCourseKey, setDebouncedCourseKey] = useState<string>("");
+  const [debouncedStatusKey, setDebouncedStatusKey] = useState<string>("");
 
   const [sortOption, setSortOption] = useState<string>("");
   const [availableTeams, setAvailableTeams] = useState<{
@@ -51,6 +52,7 @@ const TeamSelectorListing = () => {
     debouncedTeamCode,
     debouncedCourseKey,
     debouncedDepartmentKey,
+    debouncedStatusKey,
   );
   const {
     data: assignedTeamsData,
@@ -69,6 +71,8 @@ const TeamSelectorListing = () => {
     setDepartmentKey: setDebouncedDepartmentKey,
     courseKey: debouncedCourseKey,
     setCourseKey: setDebouncedCourseKey,
+    statusKey: debouncedStatusKey,
+    setStatusKey: setDebouncedStatusKey,
   };
 
   const renderDataSections = (items: Team[], mode: number) => {

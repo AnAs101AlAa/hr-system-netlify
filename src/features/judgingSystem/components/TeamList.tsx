@@ -42,6 +42,7 @@ const TeamList = ({
   const [debouncedDepartmentKey, setDebouncedDepartmentKey] =
     useState<string>("");
   const [debouncedCourseKey, setDebouncedCourseKey] = useState<string>("");
+  const [debouncedStatusKey, setDebouncedStatusKey] = useState<string>("");
   const deleteTeamMutation = useDeleteTeam();
 
   const searchParams: FilterSearchParams = {
@@ -53,6 +54,8 @@ const TeamList = ({
     setDepartmentKey: setDebouncedDepartmentKey,
     courseKey: debouncedCourseKey,
     setCourseKey: setDebouncedCourseKey,
+    statusKey: debouncedStatusKey,
+    setStatusKey: setDebouncedStatusKey,
   };
 
   const handleConfirmDelete = (item: Team) => {
@@ -72,7 +75,7 @@ const TeamList = ({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedTeamName, debouncedTeamCode]);
+  }, [debouncedTeamName, debouncedTeamCode, debouncedStatusKey]);
 
   const [sortOption, setSortOption] = useState<string>("");
   const {
@@ -88,6 +91,7 @@ const TeamList = ({
     debouncedTeamCode,
     debouncedCourseKey,
     debouncedDepartmentKey,
+    debouncedStatusKey,
     isJudge ? "judge" : "admin",
   );
   const { data: judgeEvaluations } = useGetJudgeEvaluations(

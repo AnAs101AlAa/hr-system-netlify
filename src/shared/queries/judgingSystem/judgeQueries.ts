@@ -23,11 +23,22 @@ const judgeKeys = {
     codeKey: string,
     courseKey: string,
     departmentKey: string,
+    statusKey: string,
     mode: string,
   ) =>
     [
       ...judgeKeys.all,
-      { page, count, sortBy, nameKey, codeKey, courseKey, departmentKey, mode },
+      {
+        page,
+        count,
+        sortBy,
+        nameKey,
+        codeKey,
+        courseKey,
+        departmentKey,
+        statusKey,
+        mode,
+      },
     ] as const,
   getTeam: (teamId: string) => [...judgeKeys.all, "team", teamId] as const,
   createTeam: () => [...judgeKeys.all] as const,
@@ -53,6 +64,7 @@ export const useResearchTeams = (
   codeKey: string,
   courseKey: string,
   departmentKey: string,
+  statusKey: string,
   mode: string,
 ): UseQueryResult<{ teams: Team[]; total: number }, Error> => {
   return useQuery({
@@ -64,6 +76,7 @@ export const useResearchTeams = (
       codeKey,
       courseKey,
       departmentKey,
+      statusKey,
       mode,
     ),
     queryFn: async () => {
@@ -76,6 +89,7 @@ export const useResearchTeams = (
         codeKey,
         courseKey,
         departmentKey,
+        statusKey,
         mode,
       );
       const formattedTeams = teams.teams.map((team: Team) => {
@@ -311,6 +325,7 @@ export const useGetUnassignedTeamsForJudge = (
   codeKey: string,
   courseKey: string,
   departmentKey: string,
+  statusKey: string,
 ): UseQueryResult<{ teams: Team[]; total: number }, Error> => {
   return useQuery({
     queryKey: [
@@ -325,6 +340,7 @@ export const useGetUnassignedTeamsForJudge = (
       codeKey,
       courseKey,
       departmentKey,
+      statusKey,
     ],
     queryFn: async () => {
       const teams = await JudgeAPI.getUnassignedTeamsForJudge(
@@ -337,6 +353,7 @@ export const useGetUnassignedTeamsForJudge = (
         codeKey,
         courseKey,
         departmentKey,
+        statusKey,
       );
       const formattedTeams = teams.teams.map((team: Team) => {
         const departmentName =
