@@ -19,6 +19,7 @@ import { getErrorMessage } from "@/shared/utils/errorHandler";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import EvaluationStatusBadge from "./EvaluationStatusBadge";
+import TeamStatusBadge from "./TeamStatusBadge";
 
 const TeamList = ({
   setModalOpen,
@@ -87,11 +88,11 @@ const TeamList = ({
     debouncedTeamCode,
     debouncedCourseKey,
     debouncedDepartmentKey,
-    isJudge ? "judge" : "admin"
+    isJudge ? "judge" : "admin",
   );
   const { data: judgeEvaluations } = useGetJudgeEvaluations(
     teams ? teams.teams.map((team: Team) => team.id) : [],
-    isJudge
+    isJudge,
   );
 
   const teamFullData = useMemo(() => {
@@ -99,7 +100,7 @@ const TeamList = ({
     if (!judgeEvaluations) return teams.teams;
     return teams.teams.map((team: Team) => {
       const evaluation = judgeEvaluations.find(
-        (evalItem) => evalItem.teamId === team.id
+        (evalItem) => evalItem.teamId === team.id,
       );
 
       return {
@@ -212,6 +213,12 @@ const TeamList = ({
                   label: "Course",
                   width: "w-1/6",
                 },
+                {
+                  key: "status" as keyof Team,
+                  label: "Status",
+                  width: "w-1/6",
+                  formatter: (value: any) => <TeamStatusBadge status={value} />,
+                },
                 !isJudge
                   ? {
                       key: "totalScore" as keyof Team,
@@ -246,7 +253,7 @@ const TeamList = ({
                     }
                     onClick={() => {
                       navigate(
-                        `/judging-system/assess-team/${eventId}/${item.id}`
+                        `/judging-system/assess-team/${eventId}/${item.id}`,
                       );
                     }}
                     width="fit"
@@ -298,7 +305,7 @@ const TeamList = ({
                     }
                     onClick={() => {
                       navigate(
-                        `/judging-system/assess-team/${eventId}/${item.id}`
+                        `/judging-system/assess-team/${eventId}/${item.id}`,
                       );
                     }}
                     width="fit"
@@ -333,6 +340,11 @@ const TeamList = ({
               { key: "code", label: "Team Code" },
               { key: "department", label: "Department" },
               { key: "course", label: "Course" },
+              {
+                key: "status",
+                label: "Status",
+                formatter: (value: any) => <TeamStatusBadge status={value} />,
+              },
               !isJudge
                 ? { key: "totalScore", label: "Total Score" }
                 : {

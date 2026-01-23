@@ -15,6 +15,7 @@ import CardView from "@/shared/components/table/CardView";
 import { FaFilter } from "react-icons/fa";
 import type { FilterSearchParams } from "../types";
 import FilterModal from "./FiltersModal";
+import TeamStatusBadge from "./TeamStatusBadge";
 
 const TeamSelectorListing = () => {
   const { eventId, judgeId } = useParams<{
@@ -80,6 +81,12 @@ const TeamSelectorListing = () => {
             { key: "code", label: "Team Code", width: "w-1/4" },
             { key: "department", label: "Department", width: "w-1/4" },
             { key: "course", label: "Course", width: "w-1/6" },
+            {
+              key: "status",
+              label: "Status",
+              width: "w-1/6",
+              formatter: (value: any) => <TeamStatusBadge status={value} />,
+            },
             { key: "totalScore", label: "Total Score", width: "w-1/6" },
           ]}
           renderActions={(item) => (
@@ -114,6 +121,11 @@ const TeamSelectorListing = () => {
             { key: "code", label: "Team Code" },
             { key: "department", label: "Department" },
             { key: "course", label: "Course" },
+            {
+              key: "status",
+              label: "Status",
+              formatter: (value: any) => <TeamStatusBadge status={value} />,
+            },
             { key: "totalScore", label: "Total Score" },
           ]}
           emptyMessage="No teams found."
