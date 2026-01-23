@@ -2,7 +2,7 @@ import { Button, DropdownMenu } from "tccd-ui";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  useResearchTeams,
+  useGetUnassignedTeamsForJudge,
   useGetAssignedTeamsForJudge,
   useAssignTeamsToJudge,
   useRemoveTeamFromJudge,
@@ -40,16 +40,16 @@ const TeamSelectorListing = () => {
     data: teams,
     isLoading: isTeamsLoading,
     isError: isTeamsError,
-  } = useResearchTeams(
+  } = useGetUnassignedTeamsForJudge(
+    judgeId!,
     eventId!,
     1,
     9999,
     sortOption,
     debouncedTeamName,
     debouncedTeamCode,
-    debouncedDepartmentKey,
     debouncedCourseKey,
-    "admin"
+    debouncedDepartmentKey,
   );
   const {
     data: assignedTeamsData,
@@ -144,11 +144,11 @@ const TeamSelectorListing = () => {
   const handleSubmit = async () => {
     const assignedTeamIds = new Set(assignedTeams.map((team) => team.id));
     const initialTeamIds = new Set(
-      assignedTeamsData?.map((team) => team.id) || []
+      assignedTeamsData?.map((team) => team.id) || [],
     );
 
     const teamsToAdd = assignedTeams.filter(
-      (team) => !initialTeamIds.has(team.id)
+      (team) => !initialTeamIds.has(team.id),
     );
     const teamsToRemove =
       assignedTeamsData?.filter((team) => !assignedTeamIds.has(team.id)) || [];
@@ -172,19 +172,17 @@ const TeamSelectorListing = () => {
       }, 2000);
     } catch {
       toast.error(
-        "An error occurred while updating team assignments. Please try again."
+        "An error occurred while updating team assignments. Please try again.",
       );
     }
   };
 
   useEffect(() => {
-    if (teams && assignedTeamsData) {
+    if (assignedTeamsData) {
       setAssignedTeams(assignedTeamsData);
-      const assignedTeamIds = new Set(assignedTeamsData.map((team) => team.id));
-      const filteredTeams = teams.teams.filter(
-        (team) => !assignedTeamIds.has(team.id)
-      );
-      setAvailableTeams({ teams: filteredTeams, total: filteredTeams.length });
+    }
+    if (teams) {
+      setAvailableTeams({ teams: teams.teams, total: teams.total });
     }
   }, [teams, assignedTeamsData]);
 
