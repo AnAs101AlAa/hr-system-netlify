@@ -265,11 +265,9 @@ export async function getUnassignedTeamsForJudge(
   if (statusKey) params.Status = statusKey;
 
   const response = await systemApi.get(
-    `${JUDGING_API_URL}/Admin/judges/${judgeId}/teams/unassigned`,
+    `${JUDGING_API_URL}/Admin/judges/${judgeId}/events/${eventId}/teams/unassigned`,
     { params },
   );
-  // Assuming the response structure mirrors getEventTeams for now, or returns a list.
-  // Adapting to typical pattern: { data: { data: Team[], total: number } }
   return { total: response.data.data.total, teams: response.data.data.data };
 }
 
