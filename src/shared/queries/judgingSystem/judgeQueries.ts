@@ -174,6 +174,15 @@ export const useDeleteTeam = () => {
   });
 };
 
+export const useUpdateTeamStatus = () => {
+  return useMutation({
+    mutationKey: ["judgingSystem", "updateTeamStatus"],
+    mutationFn: async (payload: { teamId: string; status: string }) => {
+      await JudgeAPI.updateTeamStatus(payload.teamId, payload.status);
+    },
+  });
+};
+
 export const useEventQuestions = (
   eventId: string,
 ): UseQueryResult<JudgeQuestion[], Error> => {
@@ -264,29 +273,6 @@ export const useGetAllTeamEvaluations = (teamId: string) => {
   });
 };
 
-export const useGetJudgeEvaluations = (teamIds: string[], isJudge: boolean) => {
-  return useQuery({
-    queryKey: ["judgingSystem", "judgeEvaluations", teamIds],
-    queryFn: async () => {
-      const evaluations = [];
-      for (const teamId of teamIds) {
-        try {
-          const evaluation = await JudgeAPI.getTeamEvaluation(teamId);
-          evaluations.push({
-            teamId: teamId,
-            isEvaluated: evaluation !== null,
-          });
-        } catch (error: any) {
-          if (error.status === 404) {
-            evaluations.push({ teamId: teamId, isEvaluated: false });
-          }
-        }
-      }
-      return evaluations;
-    },
-    enabled: teamIds.length > 0 && isJudge,
-  });
-};
 
 export const useGetJudgesForEvent = (
   page: number,

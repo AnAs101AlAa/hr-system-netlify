@@ -6,6 +6,7 @@ export interface Team {
   department: string;
   scores?: number[];
   totalScore?: number;
+  finalScore?: number;
   teamMembers: TeamMember[];
   isEvaluated?: string;
   status?: "Not Evaluated" | "Evaluated" | "Certified";

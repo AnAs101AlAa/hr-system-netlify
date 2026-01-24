@@ -1,5 +1,5 @@
 interface StatusBadgeProps {
-  status: "Evaluated" | "Not evaluated";
+  status: "Evaluated" | "Not evaluated" | "Not Evaluated";
 }
 
 const EvaluationStatusBadge = ({ status }: StatusBadgeProps) => {

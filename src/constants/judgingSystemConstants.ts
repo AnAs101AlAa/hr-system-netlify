@@ -7,7 +7,7 @@ export const TEAM_SORTING_OPTIONS = [
 
 export const TEAM_STATUS_OPTIONS = [
   { label: "All Statuses", value: "" },
-  { label: "Not Evaluated", value: "Not Evaluated" },
+  { label: "Not Evaluated", value: "NotEvaluated" },
   { label: "Evaluated", value: "Evaluated" },
   { label: "Certified", value: "Certified" },
 ];

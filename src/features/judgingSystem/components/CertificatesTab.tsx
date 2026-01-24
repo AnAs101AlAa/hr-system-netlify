@@ -1,15 +1,22 @@
 import { Button } from "tccd-ui";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useResearchTeams } from "@/shared/queries/judgingSystem/judgeQueries";
+import {
+  useResearchTeams,
+  useUpdateTeamStatus,
+} from "@/shared/queries/judgingSystem/judgeQueries";
 import type { Team } from "@/shared/types/judgingSystem";
 import Table from "@/shared/components/table/Table";
 import CardView from "@/shared/components/table/CardView";
 import { FaCertificate } from "react-icons/fa";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const CertificatesTab = () => {
   const { eventId } = useParams();
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const updateTeamStatusMutation = useUpdateTeamStatus();
+  const queryClient = useQueryClient();
 
   const {
     data: teams,
@@ -18,13 +25,13 @@ const CertificatesTab = () => {
   } = useResearchTeams(
     eventId!,
     currentPage,
-    9999,
+    1000, // Fetch a large number since we are filtering client-side for now
     "",
     "",
     "",
     "",
     "",
-    "",
+    "", // Fetch all statuses
     "admin",
   );
 
@@ -34,10 +41,28 @@ const CertificatesTab = () => {
         team.status === "Evaluated" || team.status === "Certified",
     ) || [];
 
-  const handleRollCertificate = (team: Team) => {
-    // Placeholder for rolling certificate action
-    console.log("Rolling certificate for team:", team.name);
-    // You might want to trigger a download or API call here
+  const handleRollCertificate = async (team: Team) => {
+    const newStatus = team.status === "Evaluated" ? "Certified" : "Evaluated";
+    const actionText = team.status === "Evaluated" ? "roll" : "cancel";
+
+    try {
+      await updateTeamStatusMutation.mutateAsync({
+        teamId: team.id,
+        status: newStatus,
+      });
+      toast.success(
+        `Certificate ${actionText === "roll" ? "rolled" : "cancelled"} successfully.`,
+      );
+      // Invalidate queries to refresh the list
+      queryClient.invalidateQueries({
+        queryKey: ["judgingSystem", "unassignedTeams"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["judgingSystem", "getTeams"],
+      });
+    } catch {
+      toast.error(`Failed to ${actionText} certificate. Please try again.`);
+    }
   };
 
   return (
@@ -71,21 +96,24 @@ const CertificatesTab = () => {
               { key: "code", label: "Team Code", width: "w-1/4" },
               { key: "department", label: "Department", width: "w-1/4" },
               { key: "totalScore", label: "Total Score", width: "w-1/6" },
+              { key: "finalScore", label: "Final Score", width: "w-1/6" },
             ]}
             renderActions={(item) => (
               <Button
                 type={item.status === "Certified" ? "secondary" : "primary"}
                 buttonText={
                   item.status === "Certified"
-                    ? "Re-roll Certificate"
+                    ? "Cancel Certificate"
                     : "Roll Certificate"
                 }
                 buttonIcon={<FaCertificate />}
                 onClick={() => handleRollCertificate(item)}
                 width="fit"
+                loading={updateTeamStatusMutation.isPending}
+                disabled={updateTeamStatusMutation.isPending}
               />
             )}
-            emptyMessage="No finished teams found."
+            emptyMessage="No evaluated or certified teams found."
           />
 
           <CardView
@@ -96,20 +124,23 @@ const CertificatesTab = () => {
                 type={item.status === "Certified" ? "secondary" : "primary"}
                 buttonText={
                   item.status === "Certified"
-                    ? "Re-roll Certificate"
+                    ? "Cancel Certificate"
                     : "Roll Certificate"
                 }
                 buttonIcon={<FaCertificate />}
                 onClick={() => handleRollCertificate(item)}
                 width="fit"
+                loading={updateTeamStatusMutation.isPending}
+                disabled={updateTeamStatusMutation.isPending}
               />
             )}
             renderedFields={[
               { key: "code", label: "Team Code" },
               { key: "department", label: "Department" },
               { key: "totalScore", label: "Total Score" },
+              { key: "finalScore", label: "Final Score" },
             ]}
-            emptyMessage="No finished teams found."
+            emptyMessage="No evaluated or certified teams found."
           />
         </>
       )}

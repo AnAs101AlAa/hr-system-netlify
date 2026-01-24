@@ -92,6 +92,7 @@ const TeamSelectorListing = () => {
               formatter: (value: any) => <TeamStatusBadge status={value} />,
             },
             { key: "totalScore", label: "Total Score", width: "w-1/6" },
+            { key: "finalScore", label: "Final Score", width: "w-1/6" },
           ]}
           renderActions={(item) => (
             <Button
@@ -131,6 +132,7 @@ const TeamSelectorListing = () => {
               formatter: (value: any) => <TeamStatusBadge status={value} />,
             },
             { key: "totalScore", label: "Total Score" },
+            { key: "finalScore", label: "Final Score" },
           ]}
           emptyMessage="No teams found."
         />

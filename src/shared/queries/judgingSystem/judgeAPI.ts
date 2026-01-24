@@ -115,6 +115,15 @@ export async function deleteTeam(teamId: string): Promise<void> {
   await systemApi.delete(`${JUDGING_API_URL}/Team/${teamId}`);
 }
 
+export async function updateTeamStatus(
+  teamId: string,
+  status: string,
+): Promise<void> {
+  await systemApi.patch(`${JUDGING_API_URL}/Team/${teamId}/status`, {
+    status,
+  });
+}
+
 export async function getEventQuestions(
   eventId: string,
 ): Promise<JudgeQuestion[]> {
