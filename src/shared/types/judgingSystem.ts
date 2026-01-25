@@ -9,6 +9,7 @@ export interface Team {
   finalScore?: number;
   teamMembers: TeamMember[];
   isEvaluated?: string;
+  evaluated: boolean;
   status?: "Not Evaluated" | "Evaluated" | "Certified";
 }
 

@@ -200,7 +200,14 @@ const TeamList = ({
                   key: "status" as keyof Team,
                   label: "Status",
                   width: "w-1/6",
-                  formatter: (value: any) => <TeamStatusBadge status={value} />,
+                  formatter: (value: any, item: Team) => {
+                    const status = isJudge
+                      ? item.evaluated
+                        ? "Evaluated"
+                        : "Not Evaluated"
+                      : value;
+                    return <TeamStatusBadge status={status} />;
+                  },
                 },
                 !isJudge
                   ? {
@@ -226,13 +233,9 @@ const TeamList = ({
               <>
                 {isJudge ? (
                   <Button
-                    type={`${
-                      item.status === "Evaluated" ? "secondary" : "primary"
-                    }`}
+                    type={`${item.evaluated ? "secondary" : "primary"}`}
                     buttonText={
-                      item.status === "Evaluated"
-                        ? "Edit Assessment"
-                        : "Start Assessment"
+                      item.evaluated ? "Edit Assessment" : "Start Assessment"
                     }
                     onClick={() => {
                       navigate(
@@ -282,9 +285,7 @@ const TeamList = ({
                   <Button
                     type="primary"
                     buttonText={
-                      item.status === "Evaluated"
-                        ? "Edit Assessment"
-                        : "Start Assessment"
+                      item.evaluated ? "Edit Assessment" : "Start Assessment"
                     }
                     onClick={() => {
                       navigate(
@@ -327,7 +328,14 @@ const TeamList = ({
                 {
                   key: "status",
                   label: "Status",
-                  formatter: (value: any) => <TeamStatusBadge status={value} />,
+                  formatter: (value: any, item: Team) => {
+                    const status = isJudge
+                      ? item.evaluated
+                        ? "Evaluated"
+                        : "Not Evaluated"
+                      : value;
+                    return <TeamStatusBadge status={status} />;
+                  },
                 },
                 !isJudge
                   ? { key: "totalScore", label: "Total Score" }

@@ -8,7 +8,7 @@ const TeamStatusBadge = ({ status }: TeamStatusBadgeProps) => {
       case "Certified":
         return "text-green-600 dark:text-green-400";
       case "Evaluated":
-        return "text-blue-600 dark:text-blue-400";
+        return "text-green-600 dark:text-green-400";
       case "Not Evaluated":
       case "NotEvaluated":
       default:
