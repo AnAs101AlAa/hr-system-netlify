@@ -2,6 +2,7 @@ import { Modal, SearchField, Button, DropdownMenu } from "tccd-ui";
 import type { FilterSearchParams } from "../types";
 import { useState } from "react";
 import DEPARTMENT_LIST from "@/constants/departments";
+import { TEAM_STATUS_OPTIONS } from "@/constants/judgingSystemConstants";
 
 export default function FilterModal({
   isOpen,
@@ -15,15 +16,18 @@ export default function FilterModal({
   const [localNameKey, setLocalNameKey] = useState(searchParams.nameKey);
   const [localCodeKey, setLocalCodeKey] = useState(searchParams.codeKey);
   const [localDepartmentKey, setLocalDepartmentKey] = useState(
-    searchParams.departmentKey
+    searchParams.departmentKey,
   );
   const [localCourseKey, setLocalCourseKey] = useState(searchParams.courseKey);
+  const [localStatusKey, setLocalStatusKey] = useState(searchParams.statusKey);
 
   const onConfirm = () => {
     searchParams.setNameKey(localNameKey);
     searchParams.setCodeKey(localCodeKey);
     searchParams.setDepartmentKey(localDepartmentKey);
     searchParams.setCourseKey(localCourseKey);
+    if (searchParams.setStatusKey)
+      searchParams.setStatusKey(localStatusKey || "");
     onClose();
   };
 
@@ -77,6 +81,19 @@ export default function FilterModal({
             onChange={(value) => setLocalCourseKey(value)}
           />
         </div>
+        {searchParams.setStatusKey && (
+          <div className="w-full">
+            <p className="lg:text-[16px] md:text-[15px] text-[14px] font-medium mb-2 text-text-body-main">
+              Status
+            </p>
+            <DropdownMenu
+              placeholder="Select Status"
+              options={TEAM_STATUS_OPTIONS}
+              value={localStatusKey || ""}
+              onChange={(value) => setLocalStatusKey(value)}
+            />
+          </div>
+        )}
         <div className="flex justify-center mt-2">
           <Button type="primary" onClick={onConfirm} buttonText="Confirm" />
         </div>

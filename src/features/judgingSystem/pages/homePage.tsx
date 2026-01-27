@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import ConditionalWrapper from "@/shared/utils/conditionalWrapper";
 import logo from "@/assets/TCCD_logo.svg";
 import JudgesPage from "./JudgePage";
+import CertificatesTab from "../components/CertificatesTab";
 
 export default function JudgingSystemHomePage() {
   const { eventId } = useParams();
@@ -76,6 +77,20 @@ export default function JudgingSystemHomePage() {
               </div>
             </div>
           )}
+          {
+            <div
+              onClick={() => setActiveTab("certificates")}
+              className={`flex-1 hover:bg-muted-primary/20 ${
+                activeTab === "certificates"
+                  ? "bg-muted-primary/10"
+                  : "bg-transparent"
+              } transition-colors duration-200 ease-in-out shadow-lg flex items-center justify-center p-2 cursor-pointe r`}
+            >
+              <div className="text-text-body-main font-bold text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] leading-[10px] md:leading-[14px] font-inter text-center">
+                Certificates
+              </div>
+            </div>
+          }
         </div>
       )}
       <Activity
@@ -90,6 +105,11 @@ export default function JudgingSystemHomePage() {
         mode={activeTab === "judges" && !isJudge ? "visible" : "hidden"}
       >
         <JudgesPage event={event} />
+      </Activity>
+      <Activity
+        mode={activeTab === "certificates" && !isJudge ? "visible" : "hidden"}
+      >
+        <CertificatesTab />
       </Activity>
     </div>
   );

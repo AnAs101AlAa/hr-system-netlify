@@ -6,7 +6,7 @@ import * as XLSX from "xlsx";
 import DEPARTMENT_LIST from "@/constants/departments";
 
 export default function useManageTeamModalUtils (eventId: string, mode: number, teamData: Team | undefined) {
-    const [teamDataState, setTeamDataState] = useState<Team | undefined>({id: "", name: "", code: "", course: "", department: "", teamMembers: []});
+    const [teamDataState, setTeamDataState] = useState<Team | undefined>({id: "", name: "", code: "", course: "", department: "", teamMembers: [], evaluated: false});
     const [formErrors, setFormErrors] = useState<{attr: string, value:string}[]>([]);
     const [isProcessingFile, setIsProcessingFile] = useState(false);
     const [uploadError, setUploadError] = useState<string>("");
@@ -65,9 +65,10 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
             const codeIndex = headers.findIndex((h: string) => h.includes("code"));
             const departmentIndex = headers.findIndex((h: string) => h.includes("department"));
             const membersIndex = headers.findIndex((h: string) => h.includes("member") || h.includes("members"));
+            const isEvaluatedIndex = headers.findIndex((h: string) => h.includes("evaluated"));
 
             // Validate required columns exist
-            if (nameIndex === -1 || courseIndex === -1 || codeIndex === -1 || departmentIndex === -1 || membersIndex === -1) {
+            if (nameIndex === -1 || courseIndex === -1 || codeIndex === -1 || departmentIndex === -1 || membersIndex === -1 || isEvaluatedIndex === -1) {
                 setUploadError("Missing required columns. Please ensure your Excel has: Team Name, Course, Code, Department, and Team Members columns.");
                 setIsProcessingFile(false);
                 return;
@@ -93,6 +94,8 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
                 const code = String(row[codeIndex] || "").trim();
                 const departmentLabel = String(row[departmentIndex] || "").trim();
                 const membersStr = String(row[membersIndex] || "").trim();
+                const evaluatedStr = String(row[isEvaluatedIndex] || "").trim();
+                const evaluated = evaluatedStr.toLowerCase() === "yes" || evaluatedStr.toLowerCase() === "true";
 
                 // Skip rows with empty required fields
                 if (!teamName || !course || !code || !departmentLabel) continue;
@@ -122,7 +125,8 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
                     code: code,
                     course: course,
                     department: departmentValue, // Use the mapped value
-                    teamMembers: teamMembers
+                    teamMembers: teamMembers,
+                    evaluated: evaluated,
                 });
             }
 
@@ -197,7 +201,7 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
     const submitTeam = () => {
         setTeamDataState((prev : Team | undefined) => {
             if (!prev) return prev;
-            return {id: prev.id, name: prev.name.trim(), code: prev.code.trim(), course: prev.course.trim(), department: prev.department.trim(), teamMembers: prev.teamMembers.map(mem => {return {...mem, name: mem.name.trim()}})};
+            return {id: prev.id, name: prev.name.trim(), code: prev.code.trim(), course: prev.course.trim(), department: prev.department.trim(), teamMembers: prev.teamMembers.map(mem => {return {...mem, name: mem.name.trim()}}), evaluated: prev.evaluated};
         });
         const errors = validateTeamData();
         if(errors.length > 0) {

@@ -2,7 +2,7 @@ import { Button, DropdownMenu } from "tccd-ui";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  useResearchTeams,
+  useGetUnassignedTeamsForJudge,
   useGetAssignedTeamsForJudge,
   useAssignTeamsToJudge,
   useRemoveTeamFromJudge,
@@ -15,6 +15,7 @@ import CardView from "@/shared/components/table/CardView";
 import { FaFilter } from "react-icons/fa";
 import type { FilterSearchParams } from "../types";
 import FilterModal from "./FiltersModal";
+import TeamStatusBadge from "./TeamStatusBadge";
 
 const TeamSelectorListing = () => {
   const { eventId, judgeId } = useParams<{
@@ -28,6 +29,7 @@ const TeamSelectorListing = () => {
   const [debouncedDepartmentKey, setDebouncedDepartmentKey] =
     useState<string>("");
   const [debouncedCourseKey, setDebouncedCourseKey] = useState<string>("");
+  const [debouncedStatusKey, setDebouncedStatusKey] = useState<string>("");
 
   const [sortOption, setSortOption] = useState<string>("");
   const [availableTeams, setAvailableTeams] = useState<{
@@ -40,16 +42,17 @@ const TeamSelectorListing = () => {
     data: teams,
     isLoading: isTeamsLoading,
     isError: isTeamsError,
-  } = useResearchTeams(
+  } = useGetUnassignedTeamsForJudge(
+    judgeId!,
     eventId!,
     1,
     9999,
     sortOption,
     debouncedTeamName,
     debouncedTeamCode,
-    debouncedDepartmentKey,
     debouncedCourseKey,
-    "admin"
+    debouncedDepartmentKey,
+    debouncedStatusKey,
   );
   const {
     data: assignedTeamsData,
@@ -68,6 +71,8 @@ const TeamSelectorListing = () => {
     setDepartmentKey: setDebouncedDepartmentKey,
     courseKey: debouncedCourseKey,
     setCourseKey: setDebouncedCourseKey,
+    statusKey: debouncedStatusKey,
+    setStatusKey: setDebouncedStatusKey,
   };
 
   const renderDataSections = (items: Team[], mode: number) => {
@@ -80,7 +85,14 @@ const TeamSelectorListing = () => {
             { key: "code", label: "Team Code", width: "w-1/4" },
             { key: "department", label: "Department", width: "w-1/4" },
             { key: "course", label: "Course", width: "w-1/6" },
+            {
+              key: "status",
+              label: "Status",
+              width: "w-1/6",
+              formatter: (value: any) => <TeamStatusBadge status={value} />,
+            },
             { key: "totalScore", label: "Total Score", width: "w-1/6" },
+            { key: "finalScore", label: "Final Score", width: "w-1/6" },
           ]}
           renderActions={(item) => (
             <Button
@@ -114,7 +126,13 @@ const TeamSelectorListing = () => {
             { key: "code", label: "Team Code" },
             { key: "department", label: "Department" },
             { key: "course", label: "Course" },
+            {
+              key: "status",
+              label: "Status",
+              formatter: (value: any) => <TeamStatusBadge status={value} />,
+            },
             { key: "totalScore", label: "Total Score" },
+            { key: "finalScore", label: "Final Score" },
           ]}
           emptyMessage="No teams found."
         />
@@ -144,11 +162,11 @@ const TeamSelectorListing = () => {
   const handleSubmit = async () => {
     const assignedTeamIds = new Set(assignedTeams.map((team) => team.id));
     const initialTeamIds = new Set(
-      assignedTeamsData?.map((team) => team.id) || []
+      assignedTeamsData?.map((team) => team.id) || [],
     );
 
     const teamsToAdd = assignedTeams.filter(
-      (team) => !initialTeamIds.has(team.id)
+      (team) => !initialTeamIds.has(team.id),
     );
     const teamsToRemove =
       assignedTeamsData?.filter((team) => !assignedTeamIds.has(team.id)) || [];
@@ -172,19 +190,17 @@ const TeamSelectorListing = () => {
       }, 2000);
     } catch {
       toast.error(
-        "An error occurred while updating team assignments. Please try again."
+        "An error occurred while updating team assignments. Please try again.",
       );
     }
   };
 
   useEffect(() => {
-    if (teams && assignedTeamsData) {
+    if (assignedTeamsData) {
       setAssignedTeams(assignedTeamsData);
-      const assignedTeamIds = new Set(assignedTeamsData.map((team) => team.id));
-      const filteredTeams = teams.teams.filter(
-        (team) => !assignedTeamIds.has(team.id)
-      );
-      setAvailableTeams({ teams: filteredTeams, total: filteredTeams.length });
+    }
+    if (teams) {
+      setAvailableTeams({ teams: teams.teams, total: teams.total });
     }
   }, [teams, assignedTeamsData]);
 

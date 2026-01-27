@@ -1,5 +1,5 @@
 import { DropdownMenu, Button } from "tccd-ui";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useResearchTeams } from "@/shared/queries/judgingSystem/judgeQueries";
 import type { Team } from "@/shared/types/judgingSystem";
@@ -10,15 +10,12 @@ import { FaFilter } from "react-icons/fa6";
 import FilterModal from "./FiltersModal";
 import Table from "@/shared/components/table/Table";
 import CardView from "@/shared/components/table/CardView";
-import {
-  useDeleteTeam,
-  useGetJudgeEvaluations,
-} from "@/shared/queries/judgingSystem/judgeQueries";
+import { useDeleteTeam } from "@/shared/queries/judgingSystem/judgeQueries";
 import { toast } from "react-hot-toast";
 import { getErrorMessage } from "@/shared/utils/errorHandler";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import EvaluationStatusBadge from "./EvaluationStatusBadge";
+import TeamStatusBadge from "./TeamStatusBadge";
 
 const TeamList = ({
   setModalOpen,
@@ -41,6 +38,7 @@ const TeamList = ({
   const [debouncedDepartmentKey, setDebouncedDepartmentKey] =
     useState<string>("");
   const [debouncedCourseKey, setDebouncedCourseKey] = useState<string>("");
+  const [debouncedStatusKey, setDebouncedStatusKey] = useState<string>("");
   const deleteTeamMutation = useDeleteTeam();
 
   const searchParams: FilterSearchParams = {
@@ -52,6 +50,8 @@ const TeamList = ({
     setDepartmentKey: setDebouncedDepartmentKey,
     courseKey: debouncedCourseKey,
     setCourseKey: setDebouncedCourseKey,
+    statusKey: debouncedStatusKey,
+    setStatusKey: setDebouncedStatusKey,
   };
 
   const handleConfirmDelete = (item: Team) => {
@@ -71,7 +71,7 @@ const TeamList = ({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedTeamName, debouncedTeamCode]);
+  }, [debouncedTeamName, debouncedTeamCode, debouncedStatusKey]);
 
   const [sortOption, setSortOption] = useState<string>("");
   const {
@@ -87,27 +87,11 @@ const TeamList = ({
     debouncedTeamCode,
     debouncedCourseKey,
     debouncedDepartmentKey,
-    isJudge ? "judge" : "admin"
-  );
-  const { data: judgeEvaluations } = useGetJudgeEvaluations(
-    teams ? teams.teams.map((team: Team) => team.id) : [],
-    isJudge
+    debouncedStatusKey,
+    isJudge ? "judge" : "admin",
   );
 
-  const teamFullData = useMemo(() => {
-    if (!teams) return [];
-    if (!judgeEvaluations) return teams.teams;
-    return teams.teams.map((team: Team) => {
-      const evaluation = judgeEvaluations.find(
-        (evalItem) => evalItem.teamId === team.id
-      );
-
-      return {
-        ...team,
-        isEvaluated: evaluation?.isEvaluated ? "Evaluated" : "Not evaluated",
-      };
-    });
-  }, [teams, judgeEvaluations]);
+  const teamData = teams?.teams || [];
 
   return (
     <div className="bg-surface-glass-bg rounded-lg shadow-sm border border-surface-glass-border/10 overflow-hidden">
@@ -189,7 +173,7 @@ const TeamList = ({
       ) : (
         <>
           <Table
-            items={teamFullData || []}
+            items={teamData}
             columns={
               [
                 {
@@ -212,20 +196,33 @@ const TeamList = ({
                   label: "Course",
                   width: "w-1/6",
                 },
+                {
+                  key: "status" as keyof Team,
+                  label: "Status",
+                  width: "w-1/6",
+                  formatter: (value: any, item: Team) => {
+                    const status = isJudge
+                      ? item.evaluated
+                        ? "Evaluated"
+                        : "Not Evaluated"
+                      : value;
+                    return <TeamStatusBadge status={status} />;
+                  },
+                },
                 !isJudge
                   ? {
                       key: "totalScore" as keyof Team,
                       label: "Total Score",
                       width: "w-1/6",
                     }
-                  : {
-                      key: "isEvaluated" as keyof Team,
-                      label: "Evaluation Status",
+                  : undefined,
+                !isJudge
+                  ? {
+                      key: "finalScore" as keyof Team,
+                      label: "Final Score",
                       width: "w-1/6",
-                      formatter: (value: any) => (
-                        <EvaluationStatusBadge status={value} />
-                      ),
-                    },
+                    }
+                  : undefined,
               ].filter(Boolean) as {
                 key: keyof Team;
                 label: string;
@@ -236,17 +233,13 @@ const TeamList = ({
               <>
                 {isJudge ? (
                   <Button
-                    type={`${
-                      item.isEvaluated === "Evaluated" ? "secondary" : "primary"
-                    }`}
+                    type={`${item.evaluated ? "secondary" : "primary"}`}
                     buttonText={
-                      item.isEvaluated === "Evaluated"
-                        ? "Edit Assessment"
-                        : "Start Assessment"
+                      item.evaluated ? "Edit Assessment" : "Start Assessment"
                     }
                     onClick={() => {
                       navigate(
-                        `/judging-system/assess-team/${eventId}/${item.id}`
+                        `/judging-system/assess-team/${eventId}/${item.id}`,
                       );
                     }}
                     width="fit"
@@ -284,7 +277,7 @@ const TeamList = ({
           />
 
           <CardView
-            items={teamFullData || []}
+            items={teamData}
             titleKey="name"
             renderButtons={(item, triggerDelete) => (
               <>
@@ -292,13 +285,11 @@ const TeamList = ({
                   <Button
                     type="primary"
                     buttonText={
-                      item.isEvaluated === "Evaluated"
-                        ? "Edit Assessment"
-                        : "Start Assessment"
+                      item.evaluated ? "Edit Assessment" : "Start Assessment"
                     }
                     onClick={() => {
                       navigate(
-                        `/judging-system/assess-team/${eventId}/${item.id}`
+                        `/judging-system/assess-team/${eventId}/${item.id}`,
                       );
                     }}
                     width="fit"
@@ -329,20 +320,31 @@ const TeamList = ({
                 )}
               </>
             )}
-            renderedFields={[
-              { key: "code", label: "Team Code" },
-              { key: "department", label: "Department" },
-              { key: "course", label: "Course" },
-              !isJudge
-                ? { key: "totalScore", label: "Total Score" }
-                : {
-                    key: "isEvaluated",
-                    label: "Evaluation Status",
-                    formatter: (value: any) => (
-                      <EvaluationStatusBadge status={value} />
-                    ),
+            renderedFields={
+              [
+                { key: "code", label: "Team Code" },
+                { key: "department", label: "Department" },
+                { key: "course", label: "Course" },
+                {
+                  key: "status",
+                  label: "Status",
+                  formatter: (value: any, item: Team) => {
+                    const status = isJudge
+                      ? item.evaluated
+                        ? "Evaluated"
+                        : "Not Evaluated"
+                      : value;
+                    return <TeamStatusBadge status={status} />;
                   },
-            ]}
+                },
+                !isJudge
+                  ? { key: "totalScore", label: "Total Score" }
+                  : undefined,
+                !isJudge
+                  ? { key: "finalScore", label: "Final Score" }
+                  : undefined,
+              ].filter(Boolean) as any
+            }
             modalTitle="Delete Team"
             modalSubTitle="Are you sure you want to delete this team? This action cannot be undone."
             confirmationAction={handleConfirmDelete}

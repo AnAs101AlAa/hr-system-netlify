@@ -23,9 +23,7 @@ export default function EvaluationAnalysisPage() {
   const [searchData, setSearchData] = useState<SearchData | null>(null);
 
   const getJudgesMutation = useGetAssignedJudgesForTeam();
-  const {
-    refetch: refetchTeams,
-  } = useResearchTeams(
+  const { refetch: refetchTeams } = useResearchTeams(
     eventId || "",
     1,
     100,
@@ -34,14 +32,15 @@ export default function EvaluationAnalysisPage() {
     searchQuery,
     "",
     "",
-    "admin"
+    "",
+    "admin",
   );
 
   const isEvaluated = (teamId: string, judgeId: string): boolean => {
     try {
       const evaluation = searchData?.evaluations.find(
         (evaluation) =>
-          evaluation.teamId === teamId && evaluation.judgeId === judgeId
+          evaluation.teamId === teamId && evaluation.judgeId === judgeId,
       );
       return evaluation?.isEvaluated ?? false;
     } catch {
@@ -183,7 +182,7 @@ export default function EvaluationAnalysisPage() {
                 <p className="text-2xl font-bold text-text-body-main">
                   {
                     searchData.evaluations.filter(
-                      (evaluation) => evaluation.isEvaluated
+                      (evaluation) => evaluation.isEvaluated,
                     ).length
                   }
                 </p>

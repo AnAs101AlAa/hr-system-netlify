@@ -13,6 +13,7 @@ export default function EventSelectionPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
   const isJudge = userRoles.includes("Judge") && userRoles.length === 1;
+  const isAdmin = userRoles.includes("Admin");
 
   const [eventSearchTerm, setEventSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] =
@@ -27,12 +28,16 @@ export default function EventSelectionPage() {
     setCurrentPage(1);
   }, [debouncedSearchTerm]);
 
+  const eventStatuses = isAdmin
+    ? ["Upcoming", "Running", "Past"]
+    : ["Upcoming", "Running"];
+
   const { data, isLoading } = useAllEvents(
     currentPage,
     10,
     "ResearchDay",
     debouncedSearchTerm,
-    ["Upcoming", "Running"]
+    eventStatuses,
   );
   const events = data?.items ?? [];
   const [selectedEvent, setSelectedEvent] = useState<string>("");

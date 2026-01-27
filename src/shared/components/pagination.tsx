@@ -1,5 +1,5 @@
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
-import { Button, ButtonTypes, ButtonWidths } from "tccd-ui";
+import { Button } from "tccd-ui";
 
 interface PaginationProps {
   currentPage: number;
@@ -33,8 +33,8 @@ const Pagination = ({
               <Button
                 buttonText="Add"
                 onClick={onAdd}
-                type={ButtonTypes.PRIMARY}
-                width={ButtonWidths.FULL}
+                type="primary"
+                width="full"
               />
             </div>
           )}
