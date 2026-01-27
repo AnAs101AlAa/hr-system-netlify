@@ -14,7 +14,7 @@ import toast from "react-hot-toast";
 
 const CertificatesTab = () => {
   const { eventId } = useParams();
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPage] = useState<number>(1);
   const [loadingTeamId, setLoadingTeamId] = useState<string | null>(null);
   const updateTeamStatusMutation = useUpdateTeamStatus();
   const queryClient = useQueryClient();
