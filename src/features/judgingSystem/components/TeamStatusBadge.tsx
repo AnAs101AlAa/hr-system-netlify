@@ -1,5 +1,5 @@
 interface TeamStatusBadgeProps {
-  status?: "Not Evaluated" | "Evaluated" | "Certified" | "NotEvaluated";
+  status?: "In Progress" | "Evaluated" | "Certified" | "InProgress";
 }
 
 const TeamStatusBadge = ({ status }: TeamStatusBadgeProps) => {
@@ -9,15 +9,16 @@ const TeamStatusBadge = ({ status }: TeamStatusBadgeProps) => {
         return "text-green-600 dark:text-green-400";
       case "Evaluated":
         return "text-green-600 dark:text-green-400";
-      case "Not Evaluated":
-      case "NotEvaluated":
+      case "In Progress":
+      case "InProgress":
+        return "text-yellow-600 dark:text-yellow-400";
       default:
         return "text-red-600 dark:text-red-400";
     }
   };
 
   const displayStatus =
-    status === "NotEvaluated" ? "Not Evaluated" : status || "Not Evaluated";
+    status === "InProgress" ? "In Progress" : status || "In Progress";
 
   return (
     <span className={`text-md font-bold capitalize ${getStatusConfig()}`}>

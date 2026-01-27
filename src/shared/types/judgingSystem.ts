@@ -10,7 +10,7 @@ export interface Team {
   teamMembers: TeamMember[];
   isEvaluated?: string;
   evaluated: boolean;
-  status?: "Not Evaluated" | "Evaluated" | "Certified";
+  status?: "In Progress" | "Evaluated" | "Certified";
 }
 
 export interface TeamMember {

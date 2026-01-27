@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 const CertificatesTab = () => {
   const { eventId } = useParams();
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [loadingTeamId, setLoadingTeamId] = useState<string | null>(null);
   const updateTeamStatusMutation = useUpdateTeamStatus();
   const queryClient = useQueryClient();
 
@@ -44,25 +45,31 @@ const CertificatesTab = () => {
   const handleRollCertificate = async (team: Team) => {
     const newStatus = team.status === "Evaluated" ? "Certified" : "Evaluated";
     const actionText = team.status === "Evaluated" ? "roll" : "cancel";
-
-    try {
-      await updateTeamStatusMutation.mutateAsync({
-        teamId: team.id,
-        status: newStatus,
-      });
-      toast.success(
-        `Certificate ${actionText === "roll" ? "rolled" : "cancelled"} successfully.`,
-      );
-      // Invalidate queries to refresh the list
-      queryClient.invalidateQueries({
-        queryKey: ["judgingSystem", "unassignedTeams"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["judgingSystem", "getTeams"],
-      });
-    } catch {
-      toast.error(`Failed to ${actionText} certificate. Please try again.`);
-    }
+    setLoadingTeamId(team.id);
+    updateTeamStatusMutation.mutate(
+      { teamId: team.id, status: newStatus },
+      {
+        onSuccess: () => {
+          toast.success(
+            `Certificate ${actionText === "roll" ? "rolled" : "cancelled"} successfully.`,
+          );
+          // Update the cache for getTeams and unassignedTeams
+          queryClient.invalidateQueries({
+            queryKey: ["judgingSystem", "unassignedTeams"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["judgingSystem", "getTeams"],
+          });
+          queryClient.invalidateQueries({ queryKey: ["judgingSystem"] });
+        },
+        onError: () => {
+          toast.error(`Failed to ${actionText} certificate. Please try again.`);
+        },
+        onSettled: () => {
+          setLoadingTeamId(null);
+        },
+      },
+    );
   };
 
   return (
@@ -109,8 +116,8 @@ const CertificatesTab = () => {
                 buttonIcon={<FaCertificate />}
                 onClick={() => handleRollCertificate(item)}
                 width="fit"
-                loading={updateTeamStatusMutation.isPending}
-                disabled={updateTeamStatusMutation.isPending}
+                loading={loadingTeamId === item.id}
+                disabled={loadingTeamId === item.id}
               />
             )}
             emptyMessage="No evaluated or certified teams found."
@@ -130,8 +137,8 @@ const CertificatesTab = () => {
                 buttonIcon={<FaCertificate />}
                 onClick={() => handleRollCertificate(item)}
                 width="fit"
-                loading={updateTeamStatusMutation.isPending}
-                disabled={updateTeamStatusMutation.isPending}
+                loading={loadingTeamId === item.id}
+                disabled={loadingTeamId === item.id}
               />
             )}
             renderedFields={[
