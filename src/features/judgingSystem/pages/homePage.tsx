@@ -4,7 +4,7 @@ import QuestionManagePage from "./QuestionManagePage";
 import { useEvent } from "@/shared/queries/events";
 import { useParams } from "react-router-dom";
 import { LoadingPage, ErrorScreen } from "tccd-ui";
-import { useState, Activity } from "react";
+import { useState, Activity, useEffect } from "react";
 import { useSelector } from "react-redux";
 import ConditionalWrapper from "@/shared/utils/conditionalWrapper";
 import logo from "@/assets/TCCD_logo.svg";
@@ -17,6 +17,21 @@ export default function JudgingSystemHomePage() {
   const isJudge = userRoles.includes("Judge") && userRoles.length === 1;
   const [activeTab, setActiveTab] = useState<string>("teams");
   const { data: event, isLoading, isError } = useEvent(eventId!);
+  const [hasInitializedTab, setHasInitializedTab] = useState(false);
+
+  useEffect(() => {
+    const storedTab = localStorage.getItem(`judgingSystemActiveTab_${eventId}`);
+    
+    setActiveTab(storedTab || "teams");
+    setHasInitializedTab(true);
+  }, [eventId]);
+
+  useEffect(() => {
+    if(!hasInitializedTab)
+      return;
+
+    localStorage.setItem(`judgingSystemActiveTab_${eventId}`, activeTab);
+  }, [activeTab]);
 
   if (isLoading) {
     return <LoadingPage />;
@@ -119,7 +134,7 @@ export default function JudgingSystemHomePage() {
       condition={!isJudge}
       wrapper={(children) => <WithNavbar>{children}</WithNavbar>}
     >
-      <main className="min-h-screen bg-gradient-to-b from-page-gradient-start via-page-gradient-middle to-page-gradient-end text-text-body-main transition-colors duration-500">
+      <main className="min-h-screen bg-white dark:bg-gradient-to-b dark:from-page-gradient-start dark:via-page-gradient-middle dark:to-page-gradient-end text-text-body-main transition-colors duration-500">
         <img
           src={logo}
           alt="TCCD Logo"
