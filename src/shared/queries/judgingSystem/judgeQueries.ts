@@ -1,6 +1,7 @@
 import {
   useMutation,
   useQuery,
+  useQueryClient,
   type UseQueryResult,
 } from "@tanstack/react-query";
 import type {
@@ -166,10 +167,15 @@ export const useUpdateTeam = () => {
 };
 
 export const useDeleteTeam = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: judgeKeys.deleteTeam(),
     mutationFn: async (teamId: string) => {
       await JudgeAPI.deleteTeam(teamId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: judgeKeys.all });
     },
   });
 };
@@ -205,10 +211,15 @@ export const useCreateEventQuestion = () => {
 };
 
 export const useDeleteEventQuestion = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: judgeKeys.deleteQuestion(),
     mutationFn: async (questionId: string) => {
       await JudgeAPI.deleteEventQuestion(questionId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: judgeKeys.all });
     },
   });
 };

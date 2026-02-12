@@ -6,7 +6,7 @@ const WelcomeCard = () => {
   const { user } = useSelector((state: RootState) => state.auth);
 
   return (
-    <div className="mt-4 mb-4 md:mb-6 w-full rounded-[7px] relative overflow-hidden bg-dashboard-welcome-bg">
+    <div className="mb-4 md:mb-6 w-full rounded-[7px] relative overflow-hidden bg-dashboard-welcome-bg">
       <div className="py-10 flex flex-col items-center justify-center gap-2">
         <div className="w-[100px] h-[100px] bg-gray-300 dark:bg-gray-700 mb-3 rounded-full flex-shrink-0 sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[130px] lg:h-[130px] xl:w-[140px] xl:h-[140px] flex items-center justify-center overflow-hidden">
           <LazyImageLoader

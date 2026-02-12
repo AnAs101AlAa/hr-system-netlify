@@ -3,6 +3,7 @@ import { UserApi } from "./userApi";
 import { useDispatch } from "react-redux";
 import { setUser, logout as logoutAction } from "@/shared/redux/slices/authSlice";
 import toast from "react-hot-toast";
+import type { member } from "@/shared/types/member";
 
 export const userKeys = {
   all: ["user"] as const,
@@ -78,4 +79,52 @@ export const useGetHRUsers = (nameKey: string, page: number, count: number) => {
     queryKey: userKeys.getHRUsers(nameKey, page, count),
     queryFn: () => userApiInstance.getHRUsers(nameKey, page, count),
   });
+};
+
+export const useGetAllUsers = () => {
+  return useQuery({
+    queryKey: [...userKeys.all, "allUsers"] as const,
+    queryFn: () => userApiInstance.getAllUsers(),
+  });
+};
+
+export const useCreateUser = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (userData: member) => userApiInstance.createUser(userData),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: userKeys.all });
+            toast.success("Member created successfully");
+        },
+        onError: () => {
+            toast.error("Failed to create member");
+        },
+    });
+}
+
+export const useUpdateUser = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (params: { userId: string; userData: member }) => userApiInstance.updateUser(params.userId, params.userData),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: userKeys.all });
+            toast.success("Member updated successfully");
+        },
+        onError: () => {
+            toast.error("Failed to update member");
+        },
+    });
+}
+
+export const useDeleteUser = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (userId: string) => userApiInstance.deleteUser(userId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: userKeys.all });
+        }
+    });
 };

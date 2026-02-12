@@ -1,22 +1,22 @@
 import { Button, ButtonTypes, Modal } from "tccd-ui";
-import { useDeleteForm } from "@/shared/queries/forms/formQueries";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@/shared/utils";
+import { useDeleteUser } from "@/shared/queries/users";
 
-export default function FormDeleteModal({
+export default function UserDeleteModal({
   showModal,
   setShowModal,
 }: {
   showModal: string;
   setShowModal: (val: string) => void;
 }) {
-  const deleteFormMutation = useDeleteForm();
+  const deleteUserMutation = useDeleteUser();
 
   const handleConfirmDelete = () => {
     if (!showModal) return;
-    deleteFormMutation.mutate(showModal, {
+    deleteUserMutation.mutate(showModal, {
       onSuccess: () => {
-        toast.success("Form deleted successfully");
+        toast.success("Member deleted successfully");
         setShowModal("");
       },
       onError: (error: any) => {
@@ -36,7 +36,7 @@ export default function FormDeleteModal({
         >
           <div className="p-4">
             <p className="mb-6 text-center dark:text-text-body-main">
-              Are you sure you want to delete this form? This action cannot be
+              Are you sure you want to delete this member? This action cannot be
               undone.
             </p>
             <div className="flex justify-center gap-4">
@@ -48,7 +48,7 @@ export default function FormDeleteModal({
               <Button
                 type={ButtonTypes.DANGER}
                 onClick={handleConfirmDelete}
-                loading={deleteFormMutation.isPending}
+                loading={deleteUserMutation.isPending}
                 buttonText="Delete"
               />
             </div>

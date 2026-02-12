@@ -5,4 +5,9 @@ export interface member {
   committee: string;
   email: string;
   phoneNumber: string;
+  position?: string;
+  nationalId: string;
+  engineeringMajor: string;
+  educationSystem: string;
+  gradYear: number;
 }
