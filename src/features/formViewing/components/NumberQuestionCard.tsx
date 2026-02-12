@@ -78,10 +78,9 @@ const NumberQuestionCard = forwardRef<
       <div>
         <NumberField
           label=""
-          id={`question-${question.questionNumber}`}
           value={answer}
           placeholder="Enter a number..."
-          onChange={(e) => setAnswer(e.target.value)}
+          onChange={(value) => setAnswer(typeof value === "number" ? value.toString() : value)}
         />
 
         {errors.length > 0 && (

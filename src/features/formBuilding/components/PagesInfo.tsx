@@ -495,20 +495,19 @@ const PagesInfo = forwardRef(
                                         <div className="w-full lg:w-[49%]">
                                           <NumberField
                                             label="Character Limit"
-                                            id={`question-charlimit-${index}-${qIndex}`}
                                             value={
                                               question.maxLength
                                                 ? question.maxLength.toString()
                                                 : ""
                                             }
                                             placeholder="e.g. 250"
-                                            onChange={(e) =>
+                                            onChange={(value) =>
                                               handleQuestionChange(
                                                 qIndex,
                                                 index,
                                                 "maxLength",
-                                                e.target.value !== ""
-                                                  ? parseInt(e.target.value)
+                                                value !== ""
+                                                  ? value
                                                   : null,
                                               )
                                             }
@@ -640,20 +639,19 @@ const PagesInfo = forwardRef(
                                         <div className="w-full lg:w-[49%]">
                                           <NumberField
                                             label="Max File Size (MB)"
-                                            id={`question-maxfilesize-${index}-${qIndex}`}
                                             value={
                                               question.maxFileSizeMB
                                                 ? question.maxFileSizeMB.toString()
                                                 : ""
                                             }
                                             placeholder="e.g. 5"
-                                            onChange={(e) =>
+                                            onChange={(value) =>
                                               handleQuestionChange(
                                                 qIndex,
                                                 index,
                                                 "maxFileSizeMB",
-                                                e.target.value !== ""
-                                                  ? parseInt(e.target.value)
+                                                value !== ""
+                                                  ? value
                                                   : null,
                                               )
                                             }
