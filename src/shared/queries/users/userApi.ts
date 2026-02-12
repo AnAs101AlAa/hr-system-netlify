@@ -1,3 +1,4 @@
+import type { member } from "@/shared/types/member";
 import { systemApi } from "../axiosInstance";
 import type { User } from "@/shared/types/user";
 
@@ -37,5 +38,54 @@ export class UserApi {
 
     const { data } = await systemApi.get(`/v1/User/HR`, { params });
     return data.data.data;
+  }
+
+  async getAllUsers() {
+    const { data } = await systemApi.get(`/v1/Members`);
+    return data.data.map((att: any) => ({
+          ...att,
+          name: att.fullName,
+          id: att.id,
+          gradYear: att.graduationYear,
+        }));
+  }
+
+  async createUser(userData: member) {
+    const mappedData = {
+      fullName: userData.name,
+      email: userData.email,
+      phoneNumber: userData.phoneNumber,
+      committee: userData.committee,
+      position: userData.position,
+      nationalId: userData.nationalId,
+      engineeringMajor: userData.engineeringMajor,
+      educationSystem: userData.educationSystem,
+      gradYear: userData.gradYear,
+    };
+
+    const { data } = await systemApi.post(`/v1/Members`, mappedData);
+    return data;
+  }
+
+  async updateUser(userId: string, userData: member) {
+    const mappedData = {
+      fullName: userData.name,
+      email: userData.email,
+      phoneNumber: userData.phoneNumber,
+      committee: userData.committee,
+      position: userData.position,
+      nationalId: userData.nationalId,
+      engineeringMajor: userData.engineeringMajor,
+      educationSystem: userData.educationSystem,
+      gradYear: userData.gradYear,
+    };
+
+    const { data } = await systemApi.put(`/v1/Members/${userId}`, mappedData);
+    return data;
+  }
+
+  async deleteUser(userId: string) {
+    const { data } = await systemApi.delete(`/v1/Members/${userId}`);
+    return data;
   }
 }

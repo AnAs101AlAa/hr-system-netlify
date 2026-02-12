@@ -16,7 +16,7 @@ const Navbar = () => {
       />
       <nav
         className="
-          relative w-full max-w-xl
+          relative w-full max-w-2xl
           rounded-full border border-surface-glass-border/20
           bg-surface-glass-bg/80
           backdrop-blur supports-[backdrop-filter]:backdrop-blur-md
@@ -43,10 +43,10 @@ const Navbar = () => {
                     ? "bg-muted-primary/10 text-primary shadow-inner"
                     : "text-text-muted-foreground hover:bg-muted-primary/5 hover:text-primary"
                 }
-                ${index === 1 ? "mr-10" : index === 2 ? "ml-10" : ""}
+                ${index === 2 ? "mr-10" : index === 3 ? "ml-10" : ""}
               `}
             >
-              <span className="inline-block">{title}</span>
+              <span className="inline-block whitespace-nowrap">{title}</span>
             </NavLink>
           );
         })}

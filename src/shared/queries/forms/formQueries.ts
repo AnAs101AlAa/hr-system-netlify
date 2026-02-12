@@ -1,4 +1,4 @@
-import { useMutation, useQuery, type UseQueryResult } from "@tanstack/react-query"
+import { useMutation, useQuery, type UseQueryResult, useQueryClient } from "@tanstack/react-query"
 import * as formAPI from "./formAPI"
 import type { form, serverRequestForm, serverResponseForm } from "@/shared/types/form"
 import type { Answer } from "@/shared/types/question"
@@ -80,10 +80,15 @@ export const useCreateForm = () => {
 }
 
 export const useDeleteForm = () => {
+    const qc = useQueryClient();
+
     return useMutation( {
         mutationFn: (formId: string) => {
             return formAPI.deleteForm(formId);
         },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: formKeys.all });
+        }
     });
 };
 

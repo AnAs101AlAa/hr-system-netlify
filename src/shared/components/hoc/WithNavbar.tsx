@@ -4,7 +4,7 @@ import MobileNavbar from "../navbar/MobileNavbar";
 const WithNavbar = ({ children }: { children: React.ReactNode }) => {
   return (
     <main className="relative bg-white dark:bg-background">
-      <div className="md:block hidden fixed top-6 w-xl left-1/2 -translate-x-1/2 z-40">
+      <div className="md:block hidden fixed top-6 w-2xl left-1/2 -translate-x-1/2 z-40">
         <Navbar />
       </div>
       <main className="bg-white dark:bg-background min-h-screen dark:bg-gradient-to-b dark:from-page-gradient-start dark:via-page-gradient-middle dark:to-page-gradient-end text-text-body-main transition-colors duration-500 py-4">

@@ -51,7 +51,10 @@ const CardView = <T extends { id?: string }>({
           subtitle={modalSubTitle}
           isOpen={!!showDeleteModal}
           onClose={() => setShowDeleteModal("")}
-          onSubmit={(target: T) => confirmationAction(target)}
+          onSubmit={(target: T) => {
+            confirmationAction(target);
+            setShowDeleteModal("");
+          }}
           isSubmitting={isSubmitting}
         />
       )}
@@ -67,7 +70,7 @@ const CardView = <T extends { id?: string }>({
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-4 text-sm mt-4">
+            <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm mt-4">
               {renderedFields.map((field, idx) => {
                 const value = item[field.key];
                 const displayValue = field.formatter
@@ -77,19 +80,19 @@ const CardView = <T extends { id?: string }>({
                 return (
                   <div
                     key={idx}
-                    className={field.fullWidth ? "col-span-2" : ""}
+                    className={field.fullWidth ? "w-full" : "min-w-32 flex-1"}
                   >
-                    <span className="font-medium text-text-muted-foreground mb-1">
+                    <p className="font-medium text-text-muted-foreground text-xs mb-0.5">
                       {field.label}
-                    </span>
-                    <div className="text-text-body-main">{displayValue}</div>
+                    </p>
+                    <p className="text-text-body-main truncate" title={String(displayValue)}>{displayValue}</p>
                   </div>
                 );
               })}
             </div>
 
             {renderButtons && (
-              <div className="mt-4 flex justify-center items-center gap-3">
+              <div className="mt-4 pt-3 border-t border-surface-glass-border/10 flex justify-center items-center gap-2">
                 {renderButtons(
                   item,
                   (id: string) => setShowDeleteModal(id),
