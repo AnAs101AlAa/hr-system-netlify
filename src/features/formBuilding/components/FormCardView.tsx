@@ -134,7 +134,7 @@ const FormCardView = ({ forms }: FormCardViewProps) => {
                   width="fit"
                 />
               )}
-              {userRoles.includes("Admin") && userRoles.length === 1 && (
+              {userRoles.includes("Admin") && (
                 <Button
                   type={ButtonTypes.DANGER}
                   onClick={() => setShowDeleteModal(form.id || "")}
