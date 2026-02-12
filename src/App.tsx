@@ -3,12 +3,17 @@ import routes from "@/shared/routing/Routes";
 import { Toaster } from "react-hot-toast";
 import MemberRoute from "@/shared/routing/ProtectedRoutes";
 import { useEffect, useState } from "react";
+import { setDarkModeConfig,  } from "tccd-ui";
 
 function App() {
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem("darkMode");
     return saved !== null ? JSON.parse(saved) : false;
   });
+
+  useEffect(() => {
+    setDarkModeConfig({ enableDarkMode: isDark });
+  }, [isDark]);
 
   useEffect(() => {
     localStorage.setItem("darkMode", JSON.stringify(isDark));
