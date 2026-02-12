@@ -77,13 +77,12 @@ const BranchInfo = forwardRef<FormBranchHandle, BranchInfoProps>(
           <div className="lg:w-[32%] w-full">
             <NumberField
               label="Branching Question Number"
-              id={`branching-question-${initialValue.id}`}
               placeholder="e.g. 1"
               value={String(branchData?.questionNumber) || ""}
-              onChange={(e) => {
+              onChange={(value) => {
                 setBranchData({
                   ...branchData,
-                  questionNumber: parseInt(e.target.value),
+                  questionNumber: parseInt(String(value)),
                 });
               }}
             />
@@ -102,13 +101,12 @@ const BranchInfo = forwardRef<FormBranchHandle, BranchInfoProps>(
           <div className="lg:w-[32%] w-full">
             <NumberField
               label="Page to skip to"
-              id={`branching-targetpage-${initialValue.id}`}
               placeholder="e.g. 2"
               value={String(branchData?.targetPage + 1) || ""}
-              onChange={(e) =>
+              onChange={(value) =>
                 setBranchData({
                   ...branchData,
-                  targetPage: parseInt(e.target.value) - 1,
+                  targetPage: parseInt(String(value)) - 1,
                 })
               }
             />
