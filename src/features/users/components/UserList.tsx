@@ -1,5 +1,5 @@
 import { useGetAllUsers, useDeleteUser } from "@/shared/queries/users";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { Button, DropdownMenu, SearchField } from "tccd-ui";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { USERS_SORTING_OPTIONS, TEAM_COMMITTEES } from "@/constants/usersConstants";
@@ -23,6 +23,7 @@ const UserList = ({ setModalOpen }: { setModalOpen: React.Dispatch<React.SetStat
 
     const deleteEventMutation = useDeleteUser();
 
+
     const handleDelete = (userId: string) => {
         deleteEventMutation.mutate(userId, {
             onSuccess: () => {
@@ -39,7 +40,6 @@ const UserList = ({ setModalOpen }: { setModalOpen: React.Dispatch<React.SetStat
     }, [userSearchTerm, filterCommittee]);
 
     const { data: members, isLoading, isError } = useGetAllUsers();
-
 
     useEffect(() => {
         if (!members) {

@@ -42,12 +42,12 @@ export class UserApi {
 
   async getAllUsers() {
     const { data } = await systemApi.get(`/v1/Members`);
-    return data.data.map((att: any) => ({
-          ...att,
-          name: att.fullName,
-          id: att.id,
-          gradYear: att.graduationYear,
-        }));
+    return data.data.data.map((att: any) => ({
+      ...att,
+      name: att.fullName,
+      id: att.id,
+      gradYear: att.graduationYear,
+    }));
   }
 
   async createUser(userData: member) {
