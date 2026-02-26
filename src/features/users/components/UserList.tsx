@@ -21,10 +21,10 @@ const UserList = ({ setModalOpen }: { setModalOpen: React.Dispatch<React.SetStat
     const [filterCommittee, setFilterCommittee] = useState("All");
     const userRoles = useSelector((state: any) => state.auth.user?.roles || []);
 
-    const deleteEventMutation = useDeleteUser();
+    const deleteUserMutation = useDeleteUser();
 
     const handleDelete = (userId: string) => {
-        deleteEventMutation.mutate(userId, {
+        deleteUserMutation.mutate(userId, {
             onSuccess: () => {
                 toast.success("Member deleted successfully");
             },
@@ -150,7 +150,7 @@ const UserList = ({ setModalOpen }: { setModalOpen: React.Dispatch<React.SetStat
                     items={displayedUsers || []}
                     modalTitle="Delete Member"
                     modalSubTitle="Are you sure you want to delete this member? This action cannot be undone."
-                    isSubmitting={deleteEventMutation.isPending}
+                    isSubmitting={deleteUserMutation.isPending}
                     confirmationAction={(user) => handleDelete(user.id)}
                     columns={[
                     { key: "name", label: "Name" },
@@ -216,7 +216,7 @@ const UserList = ({ setModalOpen }: { setModalOpen: React.Dispatch<React.SetStat
                     emptyMessage="No members found."
                     modalTitle="Delete Member"
                     modalSubTitle="Are you sure you want to delete this member? This action cannot be undone."
-                    isSubmitting={deleteEventMutation.isPending}
+                    isSubmitting={deleteUserMutation.isPending}
                     confirmationAction={(user) => handleDelete(user.id)}
                 />
             </>
