@@ -42,7 +42,7 @@ export class UserApi {
 
   async getAllUsers() {
     const { data } = await systemApi.get(`/v1/Members`);
-    return data.data.map((att: any) => ({
+    return data.data.data.map((att: any) => ({
           ...att,
           name: att.fullName,
           id: att.id,
