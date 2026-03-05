@@ -341,7 +341,7 @@ const PagesInfo = forwardRef(
                                 >
                                   <div
                                     key={qIndex}
-                                    className="p-3 border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-surface-glass-bg space-y-3 flex flex-wrap lg:gap-[2%] relative w-full"
+                                    className="p-3 border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-surface-glass-bg space-y-3 flex flex-wrap lg:gap-[2%] relative w-full h-fit"
                                   >
                                     <div className="absolute right-4 top-4 flex gap-2 items-center">
                                       {allowModifiers ? (
