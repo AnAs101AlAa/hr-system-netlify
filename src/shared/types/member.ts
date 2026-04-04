@@ -10,4 +10,6 @@ export interface member {
   engineeringMajor: string;
   educationSystem: string;
   gradYear: number;
+  hasAccount?: boolean;
+  accountPassword?: string;
 }
