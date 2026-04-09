@@ -2,8 +2,8 @@ import type { member } from "@/shared/types/member";
 import { systemApi } from "../axiosInstance";
 import type { User } from "@/shared/types/user";
 
-const LOGIN_ROUTE = "/v1/Auth/";    // <-- NO /api prefix here
-const USER_API_URL = "/users/";     // <-- NO /api prefix here
+const LOGIN_ROUTE = "/v1/Auth/"; // <-- NO /api prefix here
+const USER_API_URL = "/users/"; // <-- NO /api prefix here
 
 export class UserApi {
   async login(credentials: Partial<User>) {
@@ -40,14 +40,42 @@ export class UserApi {
     return data.data.data;
   }
 
-  async getAllUsers() {
-    const { data } = await systemApi.get(`/v1/Members`);
-    return data.data.data.map((att: any) => ({
-          ...att,
-          name: att.fullName,
-          id: att.id,
-          gradYear: att.graduationYear,
-        }));
+  async getMembers(params: {
+    page: number;
+    count: number;
+    name?: string;
+    committee?: string;
+    graduationYear?: number;
+    position?: string;
+  }) {
+    const queryParams: Record<string, string | number> = {
+      Page: params.page,
+      Count: params.count,
+    };
+    if (params.name) queryParams.Name = params.name;
+    if (params.committee && params.committee !== "All")
+      queryParams.Committee = params.committee;
+    if (params.graduationYear)
+      queryParams.GraduationYear = params.graduationYear;
+    if (params.position && params.position !== "All")
+      queryParams.Position = params.position;
+
+    const { data } = await systemApi.get(`/v1/Members`, {
+      params: queryParams,
+    });
+    const paged = data.data;
+    return {
+      members: (paged.data as any[]).map((m) => ({
+        ...m,
+        name: m.fullName,
+        gradYear: m.graduationYear,
+      })),
+      total: paged.total as number,
+      totalPages: paged.totalPages as number,
+      hasNextPage: paged.hasNextPage as boolean,
+      hasPreviousPage: paged.hasPreviousPage as boolean,
+      page: paged.page as number,
+    };
   }
 
   async createUser(userData: member) {
@@ -86,6 +114,34 @@ export class UserApi {
 
   async deleteUser(userId: string) {
     const { data } = await systemApi.delete(`/v1/Members/${userId}`);
+    return data;
+  }
+
+  async registerAccount(accountData: {
+    name: string;
+    email: string;
+    password: string;
+    nationalId: string;
+    graduationYear: number;
+    educationSystem: string;
+    major: string;
+    role: string;
+    committee: string;
+    position: string;
+  }) {
+    const { data } = await systemApi.post(`/v1/Auth/register`, accountData);
+    return data;
+  }
+
+  async deleteAccount(userId: string) {
+    const { data } = await systemApi.delete(
+      `/v1/Auth/delete-account/${userId}`,
+    );
+    return data;
+  }
+
+  async sendQRCode(userId: string) {
+    const { data } = await systemApi.post(`/v1/Members/qr-code/${userId}`);
     return data;
   }
 }

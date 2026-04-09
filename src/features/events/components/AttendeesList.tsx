@@ -1,7 +1,7 @@
 import type { Attendee } from "@/shared/types/event";
 import { useEffect, useState } from "react";
 import AttendeeTimelineModal from "./AttendeeTimelineModal";
-import { SearchField } from "tccd-ui";
+import { SearchField, Button } from "tccd-ui";
 import Table from "@/shared/components/table/Table";
 import CardView from "@/shared/components/table/CardView";
 import format from "@/shared/utils/Formater";
@@ -33,7 +33,7 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
   }, [searchKey, attendees]);
 
   return (
-    <div className="bg-white dark:bg-surface-glass-bg rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
+    <div className="bg-white dark:bg-surface-glass-bg rounded-b-lg shadow-sm border border-dashboard-card-border border-t-0 overflow-x-auto -mt-1">
       {attendeeTimeline !== null && (
         <AttendeeTimelineModal
           onCLose={() => setAttendeeTimeline(null)}
@@ -129,12 +129,12 @@ const AttendeesList = ({ attendees, eventEndTime }: AttendeesListProps) => {
         ]}
         emptyMessage="No attendees found"
         renderActions={(attendee) => (
-          <div
+          <Button
+            buttonText="View Timeline"
             onClick={() => setAttendeeTimeline(attendee)}
-            className="px-3 py-2 rounded-full cursor-pointer text-xs font-bold capitalize whitespace-nowrap text-white bg-secondary shadow-sm"
-          >
-            View Timeline
-          </div>
+            type="secondary"
+            width="auto"
+          />
         )}
       />
 

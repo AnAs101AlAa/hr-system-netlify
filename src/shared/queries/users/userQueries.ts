@@ -1,7 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { UserApi } from "./userApi";
 import { useDispatch } from "react-redux";
-import { setUser, logout as logoutAction } from "@/shared/redux/slices/authSlice";
+import {
+  setUser,
+  logout as logoutAction,
+} from "@/shared/redux/slices/authSlice";
 import toast from "react-hot-toast";
 import type { member } from "@/shared/types/member";
 
@@ -10,7 +13,8 @@ export const userKeys = {
   session: () => [...userKeys.all, "session"] as const,
   login: () => [...userKeys.all, "login"] as const,
   logout: () => [...userKeys.all, "logout"] as const,
-  getHRUsers: (nameKey: string, page: number, count: number) => [...userKeys.all, "HR", { nameKey, page, count }] as const,
+  getHRUsers: (nameKey: string, page: number, count: number) =>
+    [...userKeys.all, "HR", { nameKey, page, count }] as const,
 };
 
 const userApiInstance = new UserApi();
@@ -34,7 +38,7 @@ export const useLogin = () => {
         roles = [],
       } = data.data || {};
       dispatch(
-        setUser({ id, email, name, profileImageUrl, phoneNumber, roles })
+        setUser({ id, email, name, profileImageUrl, phoneNumber, roles }),
       );
       toast.success("Login successful! Welcome back!");
     },
@@ -81,50 +85,84 @@ export const useGetHRUsers = (nameKey: string, page: number, count: number) => {
   });
 };
 
-export const useGetAllUsers = () => {
+export const useGetMembers = (params: {
+  page: number;
+  count: number;
+  name?: string;
+  committee?: string;
+  graduationYear?: number;
+  position?: string;
+}) => {
   return useQuery({
-    queryKey: [...userKeys.all, "allUsers"] as const,
-    queryFn: () => userApiInstance.getAllUsers(),
+    queryKey: [...userKeys.all, "members", params] as const,
+    queryFn: () => userApiInstance.getMembers(params),
   });
 };
 
 export const useCreateUser = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (userData: member) => userApiInstance.createUser(userData),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: userKeys.all });
-            toast.success("Member created successfully");
-        },
-        onError: () => {
-            toast.error("Failed to create member");
-        },
-    });
-}
+  return useMutation({
+    mutationFn: (userData: member) => userApiInstance.createUser(userData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      toast.success("Member created successfully");
+    },
+    onError: () => {
+      toast.error("Failed to create member");
+    },
+  });
+};
 
 export const useUpdateUser = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (params: { userId: string; userData: member }) => userApiInstance.updateUser(params.userId, params.userData),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: userKeys.all });
-            toast.success("Member updated successfully");
-        },
-        onError: () => {
-            toast.error("Failed to update member");
-        },
-    });
-}
+  return useMutation({
+    mutationFn: (params: { userId: string; userData: member }) =>
+      userApiInstance.updateUser(params.userId, params.userData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      toast.success("Member updated successfully");
+    },
+    onError: () => {
+      toast.error("Failed to update member");
+    },
+  });
+};
 
 export const useDeleteUser = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (userId: string) => userApiInstance.deleteUser(userId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: userKeys.all });
-        }
-    });
+  return useMutation({
+    mutationFn: (userId: string) => userApiInstance.deleteUser(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+    },
+  });
+};
+
+export const useRegisterAccount = () => {
+  return useMutation({
+    mutationFn: (
+      accountData: Parameters<typeof userApiInstance.registerAccount>[0],
+    ) => userApiInstance.registerAccount(accountData),
+    onError: () => {
+      toast.error("Failed to create system account");
+    },
+  });
+};
+
+export const useDeleteAccount = () => {
+  return useMutation({
+    mutationFn: (userId: string) => userApiInstance.deleteAccount(userId),
+    onError: () => {
+      toast.error("Failed to delete system account");
+    },
+  });
+};
+
+export const useSendQRCode = () => {
+  return useMutation({
+    mutationFn: (userId: string) => userApiInstance.sendQRCode(userId)
+  });
 };

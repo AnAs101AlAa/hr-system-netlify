@@ -237,16 +237,11 @@ export const useOngoingEvent = (toDate: string) => {
   });
 };
 
-export const useEventAttendees = (eventId: string, roles: string[]) => {
+export const useEventAttendees = (eventId: string) => {
   return useQuery({
     queryKey: eventKeys.eventAttendees(eventId),
     queryFn: async () => {
-      let data;
-      if (roles && roles.length === 1 && roles[0] === "Vest") {
-        data = await eventsApiInstance.fetchVestEventAttendees(eventId);
-      } else {
-        data = await eventsApiInstance.fetchEventAttendees(eventId);
-      }
+      const data = await eventsApiInstance.fetchEventAttendees(eventId);
       return data;
     },
     enabled: !!eventId,
@@ -289,5 +284,16 @@ export const useVestStatus = (memberId: string, eventId: string) => {
       return data;
     },
     enabled: !!memberId && !!eventId,
+  });
+};
+
+export const useVestEventAttendees = (eventId: string) => {
+  return useQuery({
+    queryKey: [...eventKeys.eventAttendees(eventId), "vest"],
+    queryFn: async () => {
+      const data = await eventsApiInstance.fetchVestEventAttendees(eventId);
+      return data;
+    },
+    enabled: !!eventId,
   });
 };

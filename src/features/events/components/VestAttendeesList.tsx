@@ -7,7 +7,8 @@ import VestActionModal from "./VestActionModal";
 import VestTimelineModal from "./VestTimelineModal";
 import { useUpdateVestStatus } from "@/shared/queries/events";
 import toast from "react-hot-toast";
-import StatusBadge from "./StatusBadge";
+import VestStatusBadge from "./VestStatusBadge";
+import format from "@/shared/utils/Formater";
 
 interface VestAttendeesListProps {
   attendees: VestAttendee[];
@@ -147,7 +148,7 @@ const VestAttendeesList = ({
   }, [searchKey, attendees]);
 
   return (
-    <div className="bg-white dark:bg-surface-glass-bg rounded-lg shadow-sm border border-dashboard-card-border overflow-hidden">
+    <div className="bg-white dark:bg-surface-glass-bg rounded-b-lg shadow-sm border border-dashboard-card-border border-t-0 overflow-x-auto -mt-1">
       <div className="p-4 border-b border-dashboard-border flex md:flex-row flex-col gap-2 md:gap-4 items-center">
         <h3 className="text-lg font-bold text-text-muted-foreground">
           Attendees {attendees?.length ? `(${attendees.length})` : ""}
@@ -164,12 +165,17 @@ const VestAttendeesList = ({
         items={displayedAttendees}
         columns={[
           { key: "name", label: "Name" },
-          { key: "email", label: "Email" },
-          { key: "committee", label: "Committee" },
+          {
+            key: "phoneNumber",
+            label: "Phone",
+            width: "w-32 min-w-32",
+            formatter: (value) => format(value, "phone"),
+          },
+          { key: "committee", label: "Team" },
           {
             key: "status",
-            label: "Vest Status",
-            formatter: (value) => <StatusBadge status={value} />,
+            label: "Status",
+            formatter: (value) => <VestStatusBadge status={value} />,
           },
         ]}
         emptyMessage="No attendees found."
@@ -181,12 +187,16 @@ const VestAttendeesList = ({
         items={displayedAttendees}
         titleKey="name"
         renderedFields={[
-          { key: "email", label: "Email" },
-          { key: "committee", label: "Committee" },
+          {
+            key: "phoneNumber",
+            label: "Phone",
+            formatter: (value) => format(value, "phone"),
+          },
+          { key: "committee", label: "Team" },
           {
             key: "status",
-            label: "Vest Status",
-            formatter: (value) => <StatusBadge status={value} />,
+            label: "Status",
+            formatter: (value) => <VestStatusBadge status={value} />,
             fullWidth: true,
           },
         ]}
