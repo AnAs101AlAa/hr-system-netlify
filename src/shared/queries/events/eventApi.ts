@@ -13,7 +13,7 @@ class eventsApi {
     const statusParams = eventStatuses.map(status => `eventStatuses=${status}`).join('&');
     const eventTypeParam = eventType && eventType !== "All" ? `eventType=${eventType}&` : "";
     const response = await systemApi.get(`${EVENTS_API_URL}Events/filtered?${eventTypeParam}${statusParams}&page=${page}&count=${pageSize}&${title != "" ? `title=${title}` : ""}&page=${page}&count=${pageSize}&OrderBy=startDate&Descending=true`);
-    return {items: response.data.data.items, totalCount: response.data.data.totalCount};
+    return {items: response.data.data.data, totalCount: response.data.data.totalCount};
   }
 
   async createEvent(eventData: Omit<Event, "id">) {
