@@ -7,6 +7,7 @@ import {
 import { useState, useMemo } from "react";
 import { Button, DropdownMenu, SearchField } from "tccd-ui";
 import { FaChevronLeft, FaChevronRight, FaKey } from "react-icons/fa";
+import { BsQrCode } from "react-icons/bs";
 import {
   USERS_SORTING_OPTIONS,
   TEAM_COMMITTEES,
@@ -329,6 +330,13 @@ const UserList = ({
               ]}
               renderButtons={(item, triggerDelete) => (
                 <>
+                  <Button
+                    type="tertiary"
+                    onClick={() => handleSendQRCode(item.id)}
+                    buttonIcon={<BsQrCode size={15} />}
+                    width="fit"
+                    loading={sendQRCodeMutation.isPending}
+                  />
                   {getCredentials(item.id) && (
                     <Button
                       type="secondary"
