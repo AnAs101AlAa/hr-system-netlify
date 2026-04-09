@@ -26,7 +26,7 @@ const VestStatusBadge = ({ status }: VestStatusBadgeProps) => {
 
     return (
         <span
-            className={`inline-flex items-center px-3 py-1.5 rounded-full text-[11px] md:text-[13px] font-medium border whitespace-nowrap ${styles}`}
+            className={`px-2 md:px-3 py-1 md:py-1.5 rounded-full text-[11px] md:text-xs font-bold capitalize border shadow-sm ${styles}`}
         >
             {text}
         </span>

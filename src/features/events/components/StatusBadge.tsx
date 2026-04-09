@@ -20,7 +20,7 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
 
   return (
     <span
-      className={`px-3 py-1 rounded-xl text-xs font-bold capitalize border ${getStatusStyles()} shadow-sm`}
+      className={`px-2 md:px-3 py-1 md:py-1.5 rounded-full text-[11px] md:text-xs font-bold capitalize border ${getStatusStyles()} shadow-sm`}
     >
       {status}
     </span>

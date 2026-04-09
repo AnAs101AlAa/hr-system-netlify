@@ -2,6 +2,7 @@ import {
   useGetMembers,
   useDeleteUser,
   useDeleteAccount,
+  useSendQRCode,
 } from "@/shared/queries/users";
 import { useState, useMemo } from "react";
 import { Button, DropdownMenu, SearchField } from "tccd-ui";
@@ -63,6 +64,7 @@ const UserList = ({
 
   const deleteUserMutation = useDeleteUser();
   const deleteAccountMutation = useDeleteAccount();
+  const sendQRCodeMutation = useSendQRCode();
 
   const handleSearchChange = (value: string) => {
     setUserSearchTerm(value);
@@ -108,6 +110,13 @@ const UserList = ({
       }
     });
   }, [rawMembers, sortOption]);
+
+  const handleSendQRCode = (userId: string) => {
+    sendQRCodeMutation.mutate(userId, {
+      onSuccess: () => toast.success("QR code sent successfully"),
+      onError: () => toast.error("Failed to send QR code"),
+    });
+  };
 
   const handleDelete = (userId: string) => {
     const memberEntry = accountsCreated.find((a) => a.memberId === userId);
@@ -262,7 +271,14 @@ const UserList = ({
               ]}
               emptyMessage="No members found."
               renderActions={(item, triggerDelete) => (
-                <>
+                <>            
+                  <Button
+                    type="tertiary"
+                    onClick={() => handleSendQRCode(item.id)}
+                    buttonText="Send QR"
+                    width="fit"
+                    loading={sendQRCodeMutation.isPending}
+                  />
                   {getCredentials(item.id) && (
                     <Button
                       type="secondary"

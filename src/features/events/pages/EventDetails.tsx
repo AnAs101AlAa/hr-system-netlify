@@ -6,19 +6,21 @@ import {
   EventNotFound,
   VestEventDetailsView,
   EventModal,
+  VestAttendeesList,
 } from "@/features/events/components";
 import WithNavbar from "@/shared/components/hoc/WithNavbar";
 import {
   useEvent,
   useEventAttendees,
   useDeleteEvent,
+  useVestEventAttendees,
 } from "@/shared/queries/events/eventQueries";
 import { useParams } from "react-router-dom";
 import { LoadingPage } from "tccd-ui";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
-import type { Attendee, VestAttendee, Event } from "@/shared/types/event";
+import type { Event } from "@/shared/types/event";
 import type { RootState } from "@/shared/redux/store/store";
 
 const EventDetails = () => {
@@ -40,13 +42,17 @@ const EventDetails = () => {
     data: attendees,
     error: attendeesError,
     isError: isAttendeesError,
-  } = useEventAttendees(id ? id : "", userRole ? userRole : []);
+  } = useEventAttendees(id ? id : "");
+
+  const {
+    data: vestAttendees,
+    error: vestAttendeesError,
+    isError: isVestAttendeesError,
+  } = useVestEventAttendees(id ? id : "");
 
   const deleteEventMutation = useDeleteEvent();
 
-  const [displayedAttendees, setDisplayedAttendees] = useState<
-    Attendee[] | VestAttendee[]
-  >([]);
+  const [activeTab, setActiveTab] = useState<"attendance" | "vest">("attendance");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
@@ -57,11 +63,10 @@ const EventDetails = () => {
     if (isAttendeesError && attendeesError) {
       toast.error("Failed to fetch event attendees, please try again");
     }
-
-    if (attendees) {
-      setDisplayedAttendees(attendees);
+    if (isVestAttendeesError && vestAttendeesError) {
+      toast.error("Failed to fetch vest attendees, please try again");
     }
-  }, [isEventError, eventError, isAttendeesError, attendeesError, attendees]);
+  }, [isEventError, eventError, isAttendeesError, attendeesError, isVestAttendeesError, vestAttendeesError]);
 
   const handleBack = () => {
     navigate(-1);
@@ -115,11 +120,11 @@ const EventDetails = () => {
     return (
       <VestEventDetailsView
         event={event}
-        attendees={displayedAttendees as VestAttendee[]}
+        attendees={vestAttendees || []}
         onBack={handleBack}
         onEdit={isAdmin ? handleEdit : undefined}
         onDelete={isAdmin ? handleDelete : undefined}
-        setAttendees={setDisplayedAttendees}
+        setAttendees={() => {}}
       />
     );
   }
@@ -128,17 +133,36 @@ const EventDetails = () => {
     <WithNavbar>
       <div className="min-h-screen bg-background p-4 text-text-body-main">
         <div className="max-w-6xl mx-auto">
-          <EventDetailsHeader onBack={handleBack} />
+          <EventDetailsHeader 
+            onBack={handleBack} 
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
           <EventInformation
             event={event}
-            attendees={displayedAttendees as Attendee[]}
+            attendees={attendees || []}
+            vestAttendees={vestAttendees || []}
             onEdit={isAdmin ? handleEdit : undefined}
             onDelete={isAdmin ? handleDelete : undefined}
+            activeTab={activeTab}
           />
-          <AttendeesList
-            attendees={(displayedAttendees as Attendee[]) || []}
-            eventEndTime={event.endDate}
-          />
+          
+          {/* Attendance Tab */}
+          {activeTab === "attendance" && (
+            <AttendeesList
+              attendees={attendees || []}
+              eventEndTime={event.endDate}
+            />
+          )}
+
+          {/* Vest Management Tab */}
+          {activeTab === "vest" && (
+            <VestAttendeesList
+              attendees={vestAttendees || []}
+              eventId={event.id}
+              setAttendees={() => {}}
+            />
+          )}
         </div>
       </div>
       <EventModal

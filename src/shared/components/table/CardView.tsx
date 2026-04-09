@@ -80,12 +80,12 @@ const CardView = <T extends { id?: string }>({
                 return (
                   <div
                     key={idx}
-                    className={field.fullWidth ? "w-full" : "min-w-32 flex-1"}
+                    className={`flex flex-col ${field.fullWidth ? "w-full" : "min-w-32 flex-1"}`}
                   >
                     <p className="font-medium text-text-muted-foreground text-xs mb-0.5">
                       {field.label}
                     </p>
-                    <p className="text-text-body-main truncate" title={String(displayValue)}>{displayValue}</p>
+                    <p className="text-text-body-main break-words whitespace-normal leading-relaxed" title={String(displayValue)}>{displayValue}</p>
                   </div>
                 );
               })}

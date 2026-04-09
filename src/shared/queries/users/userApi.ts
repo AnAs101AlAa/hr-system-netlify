@@ -139,4 +139,9 @@ export class UserApi {
     );
     return data;
   }
+
+  async sendQRCode(userId: string) {
+    const { data } = await systemApi.post(`/v1/Members/qr-code/${userId}`);
+    return data;
+  }
 }

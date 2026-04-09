@@ -160,3 +160,9 @@ export const useDeleteAccount = () => {
     },
   });
 };
+
+export const useSendQRCode = () => {
+  return useMutation({
+    mutationFn: (userId: string) => userApiInstance.sendQRCode(userId)
+  });
+};
