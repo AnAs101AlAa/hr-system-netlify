@@ -7,6 +7,7 @@ import {
   VestEventDetailsView,
   EventModal,
   VestAttendeesList,
+  CateringDistributionList,
 } from "@/features/events/components";
 import WithNavbar from "@/shared/components/hoc/WithNavbar";
 import {
@@ -15,6 +16,7 @@ import {
   useDeleteEvent,
   useVestEventAttendees,
 } from "@/shared/queries/events/eventQueries";
+import { useEventCateringItems } from "@/shared/queries/catering";
 import { useParams } from "react-router-dom";
 import { LoadingPage } from "tccd-ui";
 import { useEffect, useState } from "react";
@@ -26,10 +28,11 @@ import type { RootState } from "@/shared/redux/store/store";
 const EventDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
+  
   const { user } = useSelector((state: RootState) => state.auth);
   const userRole = user?.roles;
   const isAdmin = userRole?.includes("Admin") || false;
+  const [activeTab, setActiveTab] = useState<"attendance" | "vest" | "catering">("attendance");
 
   const {
     data: event,
@@ -42,17 +45,22 @@ const EventDetails = () => {
     data: attendees,
     error: attendeesError,
     isError: isAttendeesError,
-  } = useEventAttendees(id ? id : "");
+  } = useEventAttendees(id ? id : "", activeTab === "attendance");
 
   const {
     data: vestAttendees,
     error: vestAttendeesError,
     isError: isVestAttendeesError,
-  } = useVestEventAttendees(id ? id : "");
+  } = useVestEventAttendees(id ? id : "", activeTab === "vest");
+
+  const {
+    data: cateringData,
+    error: cateringError,
+    isError: isCateringError,
+  } = useEventCateringItems(id ? id : "", activeTab === "catering");
 
   const deleteEventMutation = useDeleteEvent();
 
-  const [activeTab, setActiveTab] = useState<"attendance" | "vest">("attendance");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
@@ -63,10 +71,13 @@ const EventDetails = () => {
     if (isAttendeesError && attendeesError) {
       toast.error("Failed to fetch event attendees, please try again");
     }
-    if (isVestAttendeesError && vestAttendeesError) {
+    if (isVestAttendeesError && vestAttendeesError ) {
       toast.error("Failed to fetch vest attendees, please try again");
     }
-  }, [isEventError, eventError, isAttendeesError, attendeesError, isVestAttendeesError, vestAttendeesError]);
+    if (isCateringError && cateringError ) {
+      toast.error("Failed to fetch catering items, please try again");
+    }
+  }, [isEventError, eventError, isAttendeesError, attendeesError, isVestAttendeesError, vestAttendeesError, isCateringError, cateringError]);
 
   const handleBack = () => {
     navigate(-1);
@@ -142,6 +153,7 @@ const EventDetails = () => {
             event={event}
             attendees={attendees || []}
             vestAttendees={vestAttendees || []}
+            cateringData={cateringData || []}
             onEdit={isAdmin ? handleEdit : undefined}
             onDelete={isAdmin ? handleDelete : undefined}
             activeTab={activeTab}
@@ -161,6 +173,14 @@ const EventDetails = () => {
               attendees={vestAttendees || []}
               eventId={event.id}
               setAttendees={() => {}}
+            />
+          )}
+
+          {/* Catering Tab */}
+          {activeTab === "catering" && (
+            <CateringDistributionList
+              cateringData={cateringData || []}
+              eventId={event.id}
             />
           )}
         </div>
