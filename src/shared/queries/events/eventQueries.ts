@@ -237,14 +237,14 @@ export const useOngoingEvent = (toDate: string) => {
   });
 };
 
-export const useEventAttendees = (eventId: string) => {
+export const useEventAttendees = (eventId: string, enabled: boolean = true) => {
   return useQuery({
     queryKey: eventKeys.eventAttendees(eventId),
     queryFn: async () => {
       const data = await eventsApiInstance.fetchEventAttendees(eventId);
       return data;
     },
-    enabled: !!eventId,
+    enabled: !!eventId && enabled,
   });
 };
 
@@ -287,13 +287,13 @@ export const useVestStatus = (memberId: string, eventId: string) => {
   });
 };
 
-export const useVestEventAttendees = (eventId: string) => {
+export const useVestEventAttendees = (eventId: string, enabled: boolean = true) => {
   return useQuery({
     queryKey: [...eventKeys.eventAttendees(eventId), "vest"],
     queryFn: async () => {
       const data = await eventsApiInstance.fetchVestEventAttendees(eventId);
       return data;
     },
-    enabled: !!eventId,
+    enabled: !!eventId && enabled,
   });
 };
