@@ -7,7 +7,7 @@ import {
   SearchField
 } from "tccd-ui";
 import type { CateringItem } from "@/shared/types/catering";
-import { useCateringItems, useAddCateringItem, useBulkAllocateCateringItems } from "@/shared/queries/catering";
+import { useCateringItems, useAddCateringItem, useBulkAllocateCateringItems, useBulkDeleteCateringAllocations } from "@/shared/queries/catering";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
 import { IoTrashSharp, IoAdd } from "react-icons/io5";
@@ -47,6 +47,7 @@ const ManageCateringModal = ({ isOpen, onClose, cateringData, eventId, membersDa
   const { data: allCateringItems, isPending: isLoadingItems } = useCateringItems();
   const addCateringItemMutation = useAddCateringItem();
   const bulkAllocateCateringItemsMutation = useBulkAllocateCateringItems();
+  const bulkDeleteCateringAllocationsMutation = useBulkDeleteCateringAllocations();
 
   // Filter members based on search query
   const filteredMembers = useMemo(() => {
@@ -179,6 +180,18 @@ const ManageCateringModal = ({ isOpen, onClose, cateringData, eventId, membersDa
     }
 
     try {
+      const initialItemIds = cateringData?.map(item => item.id) || [];
+      const currentItemIds = formData.items.map(item => item.id);
+      const removedItemIds = initialItemIds.filter(id => !currentItemIds.includes(id));
+
+      if (removedItemIds.length > 0) {
+        await bulkDeleteCateringAllocationsMutation.mutateAsync({
+          eventId,
+          memberIds: Array.from(selectedMemberIds),
+          cateringItemIds: removedItemIds,
+        });
+      }
+
       await bulkAllocateCateringItemsMutation.mutateAsync({
         eventId,
         memberIds: Array.from(selectedMemberIds),
@@ -479,14 +492,14 @@ const ManageCateringModal = ({ isOpen, onClose, cateringData, eventId, membersDa
               onClick={handleClose} 
               buttonText="Cancel" 
               type="secondary" 
-              disabled={bulkAllocateCateringItemsMutation.isPending}
+              disabled={bulkAllocateCateringItemsMutation.isPending || bulkDeleteCateringAllocationsMutation.isPending}
               width="auto"
             />
             <Button 
               onClick={handleSubmit} 
               buttonText="Save Changes" 
               type="primary" 
-              loading={bulkAllocateCateringItemsMutation.isPending}
+              loading={bulkAllocateCateringItemsMutation.isPending || bulkDeleteCateringAllocationsMutation.isPending}
               width="auto"
             />
           </div>

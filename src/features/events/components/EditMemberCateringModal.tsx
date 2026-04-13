@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { Modal, NumberField, Button } from "tccd-ui";
+import { FaXmark } from "react-icons/fa6";
 import type { AllocatedCateringItem } from "@/shared/types/catering";
-import { useBulkAllocateCateringItems, useCateringItems } from "@/shared/queries/catering";
+import { useBulkAllocateCateringItems, useCateringItems, useBulkDeleteCateringAllocations } from "@/shared/queries/catering";
 import toast from "react-hot-toast";
 
 interface EditMemberCateringModalProps {
@@ -28,6 +29,25 @@ const EditMemberCateringModal = ({
   const [formData, setFormData] = useState<AllocationFormData>({});
   const { data: allCateringItems } = useCateringItems();
   const bulkAllocateMutation = useBulkAllocateCateringItems();
+  const bulkDeleteMutation = useBulkDeleteCateringAllocations();
+  const [displayedCateringItems, setDisplayedCateringItems] = useState(allCateringItems || []);
+
+  // Remove item from display and set its quantity to 0 in formData
+  const handleRemoveItem = (itemId: string) => {
+    setDisplayedCateringItems((prev) => prev.filter((item) => item.id !== itemId));
+    setFormData((prev) => {
+      const data = { ...prev };
+      delete data[itemId];
+      return data;
+    });
+  };
+
+
+  useEffect(() => {
+    if (isOpen && allCateringItems) {
+      setDisplayedCateringItems(allCateringItems.filter(item => memberAllocations.some(allocation => allocation.cateringItemId === item.id)));
+    }
+  }, [isOpen, allCateringItems]);
 
   // Initialize form with current allocations
   useEffect(() => {
@@ -37,10 +57,10 @@ const EditMemberCateringModal = ({
         initialData[allocation.cateringItemId] = allocation.amount;
       });
       setFormData(initialData);
-    } else if (isOpen && allCateringItems && allCateringItems.length > 0) {
+    } else if (isOpen && displayedCateringItems && displayedCateringItems.length > 0) {
       // Initialize empty form for all items if no allocations
       const initialData: AllocationFormData = {};
-      allCateringItems.forEach((item) => {
+      displayedCateringItems.forEach((item) => {
         initialData[item.id] = 0;
       });
       setFormData(initialData);
@@ -49,10 +69,10 @@ const EditMemberCateringModal = ({
 
   // Get items that are allocated to this member (or all items if none allocated)
   const itemsToDisplay = useMemo(() => {
-    if (!allCateringItems) return [];
+    if (!displayedCateringItems) return [];
     
     // Show all items, but pre-fill quantities for items already allocated to this member
-    return allCateringItems.map((item) => {
+    return displayedCateringItems.map((item) => {
       const allocation = memberAllocations.find(
         (a) => a.cateringItemId === item.id
       );
@@ -61,7 +81,7 @@ const EditMemberCateringModal = ({
         currentAmount: allocation?.amount || 0,
       };
     });
-  }, [allCateringItems, memberAllocations]);
+  }, [displayedCateringItems, memberAllocations]);
 
   const handleQuantityChange = (itemId: string, value: string | number) => {
     const numValue = Math.max(0, parseInt(String(value)) || 0);
@@ -81,6 +101,26 @@ const EditMemberCateringModal = ({
           amount,
         }));
 
+      // Find items that were initially allocated but now removed (not present or set to 0)
+      const initialItemIds = memberAllocations.map(a => a.cateringItemId);
+      const currentItemIds = Object.entries(formData)
+        .filter(([, amount]) => amount > 0)
+        .map(([cateringItemId]) => cateringItemId);
+      const removedItemIds = initialItemIds.filter(id => !currentItemIds.includes(id));
+
+      console.log("Submitting with items:", currentItemIds);
+      console.log("Items to remove:", removedItemIds);
+
+      // If any items were removed, call bulkDelete
+      if (removedItemIds.length > 0) {
+        await bulkDeleteMutation.mutateAsync({
+          eventId,
+          memberIds: [memberId],
+          cateringItemIds: removedItemIds,
+        });
+      }
+
+      // Allocate the remaining items
       await bulkAllocateMutation.mutateAsync({
         eventId,
         memberIds: [memberId],
@@ -115,8 +155,16 @@ const EditMemberCateringModal = ({
             {itemsToDisplay.map((item) => (
               <div
                 key={item.id}
-                className="p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800"
+                className="p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 relative"
               >
+                <button
+                  type="button"
+                  className="absolute top-2 right-2 p-1 text-red-500 hover:bg-red-100 dark:hover:bg-red-900 rounded-full"
+                  title="Remove item"
+                  onClick={() => handleRemoveItem(item.id)}
+                >
+                  <FaXmark size={16} />
+                </button>
                 <div className="flex flex-col gap-2 mb-3">
                   <h4 className="font-medium text-gray-800 dark:text-gray-100">
                     {item.name}

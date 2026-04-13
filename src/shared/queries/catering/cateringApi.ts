@@ -50,7 +50,21 @@ class cateringApi {
     );
     return response.data.data;
   }
-}
 
+  async bulkDeleteCateringAllocations(eventId: string, memberIds: string[], cateringItemIds: string[]): Promise<void> {    
+    const response = await systemApi.delete(
+      CATERING_API_URL + `allocations/bulk`,
+      {
+        data: {
+          eventId,
+          memberIds,
+          cateringItemIds
+        },
+        timeout: 600000 // 10 minutes timeout
+      }
+    );
+    return response.data.data;
+  }
+}
 // Export a singleton instance for use across the application
 export const cateringApiInstance = new cateringApi();

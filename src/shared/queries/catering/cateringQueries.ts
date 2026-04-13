@@ -62,3 +62,14 @@ export const useBulkAllocateCateringItems = () => {
     }
   });
 }
+
+export const useBulkDeleteCateringAllocations = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ eventId, memberIds, cateringItemIds }: { eventId: string; memberIds: string[]; cateringItemIds: string[] }) => cateringApiInstance.bulkDeleteCateringAllocations(eventId, memberIds, cateringItemIds),
+    onSuccess: () => {
+      // Invalidate all event catering items queries to ensure data consistency
+      queryClient.invalidateQueries({ queryKey: cateringKeys.all });
+    }
+  });
+}

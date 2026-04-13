@@ -85,7 +85,7 @@ const CateringDistributionList = ({
         if (itemData) {
           row[id] = `${itemData.amount} - ${itemData.remainingAmount}`;
         } else {
-          row[id] = "-";
+          row[id] = "N/A";
         }
       });
 
