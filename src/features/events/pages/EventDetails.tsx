@@ -57,7 +57,7 @@ const EventDetails = () => {
     data: cateringData,
     error: cateringError,
     isError: isCateringError,
-  } = useEventCateringItems(id ? id : "", activeTab === "catering");
+  } = useEventCateringItems(id ? id : "", undefined, activeTab === "catering");
 
   const deleteEventMutation = useDeleteEvent();
 

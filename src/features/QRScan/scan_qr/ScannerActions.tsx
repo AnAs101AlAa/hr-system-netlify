@@ -4,9 +4,11 @@
  */
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { ButtonTypes, ButtonWidths, Button } from "tccd-ui";
+import { Button } from "tccd-ui";
 import { useUpdateVestStatus, useVestStatus } from "@/shared/queries/events";
 import type { MemberData } from "@/shared/types/attendance";
+import { useEventCateringItems } from "@/shared/queries/catering";
+import AdjustMemberCateringModal from "./AdjustMemberCateringModal";
 
 /**
  * Props for ScannerActions.
@@ -60,8 +62,11 @@ const ScannerActions = ({
 }: ScannerActionsProps) => {
   const vestStatusUpdate = useUpdateVestStatus();
   const { data: vestStatus } = useVestStatus(memberData?.id || "", eventId);
+  const { data: cateringItems } = useEventCateringItems(eventId, memberData?.id, memberData ? true : false);
+
   const isNotMeeting = eventType !== "Meeting";
   const [currentVestStatus, setCurrentVestStatus] = useState<string>(vestStatus || "NotReceived");
+  const [isCateringModalOpen, setIsCateringModalOpen] = useState(false);
 
   useEffect(() => {
     if (vestStatus) {
@@ -129,14 +134,14 @@ const ScannerActions = ({
         <Button
           buttonText="Return to Events"
           onClick={onReturnToEvents}
-          type={ButtonTypes.SECONDARY}
-          width={ButtonWidths.FULL}
+          type="secondary"
+          width="full"
         />
         <Button
           buttonText="Scan Another QR Code"
           onClick={onResetScanner}
-          type={ButtonTypes.GHOST}
-          width={ButtonWidths.FULL}
+          type="ghost"
+          width="full"
         />
       </div>
     );
@@ -149,8 +154,8 @@ const ScannerActions = ({
         <Button
           buttonText={getConfirmButtonText()}
           onClick={onConfirmAttendance}
-          type={ButtonTypes.SECONDARY}
-          width={ButtonWidths.FULL}
+          type="secondary"
+          width="full"
           disabled={isConfirmDisabled()}
           loading={isConfirming}
         />
@@ -158,16 +163,30 @@ const ScannerActions = ({
           <Button
             buttonText={getVestButtonText()}
             onClick={handleVestStatus}
-            type={ButtonTypes.PRIMARY}
-            width={ButtonWidths.FULL}
+            type="primary"
+            width="full"
             loading={vestStatusUpdate.isPending}
           />
         )}
         <Button
+          buttonText="Adjust catering items"
+          onClick={() => setIsCateringModalOpen(true)}
+          type="tertiary"
+          width="full"
+        />
+        <Button
           buttonText="Scan Another QR Code"
           onClick={onResetScanner}
-          type={ButtonTypes.GHOST}
-          width={ButtonWidths.FULL}
+          type="ghost"
+          width="full"
+        />
+        <AdjustMemberCateringModal
+          isOpen={isCateringModalOpen}
+          onClose={() => setIsCateringModalOpen(false)}
+          memberId={memberData.id}
+          memberName={memberData.fullName}
+          eventId={eventId}
+          memberAllocations={cateringItems || []}
         />
       </div>
     );

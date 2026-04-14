@@ -25,8 +25,8 @@ class cateringApi {
     return response.data.data;
   }
 
-  async fetchEventCateringItems(id: string): Promise<AllocatedCateringItem[]> {
-    const response = await systemApi.get(`${CATERING_API_URL}allocations/Events/${id}`);
+  async fetchEventCateringItems(id: string, memberId?: string): Promise<AllocatedCateringItem[]> {
+    const response = await systemApi.get(`${CATERING_API_URL}allocations/Events/${id}` + (memberId ? `?memberId=${memberId}` : ''));
     return response.data.data;
   }
 
@@ -65,6 +65,15 @@ class cateringApi {
     );
     return response.data.data;
   }
+
+  async consumeCateringItems (eventId: string, memberId: string, items: {cateringItemId: string, quantity: number}[]): Promise<void> {
+    const response = await systemApi.post(
+      CATERING_API_URL + `consume/bulk`,
+      { eventId, memberId, items }
+    );
+    return response.data.data;
+  }
+
 }
 // Export a singleton instance for use across the application
 export const cateringApiInstance = new cateringApi();
