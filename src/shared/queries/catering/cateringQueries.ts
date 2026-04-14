@@ -4,7 +4,7 @@ import type { CateringItem } from "@/shared/types/catering";
 
 export const cateringKeys = {
   all: ["catering"] as const,
-  eventCateringItems: (eventId: string) => [...cateringKeys.all, "event", eventId] as const,
+  eventCateringItems: (eventId: string, memberId?: string) => [...cateringKeys.all, "event", eventId, memberId] as const,
 };
 
 export const useCateringItems = () => {
@@ -34,10 +34,10 @@ export const useUpdateCateringItem = () => {
   });
 }
 
-export const useEventCateringItems = (eventId: string, enabled: boolean = true) => {
+export const useEventCateringItems = (eventId: string, memberId?: string, enabled: boolean = true) => {
   return useQuery({
-    queryKey: cateringKeys.eventCateringItems(eventId),
-    queryFn: () => cateringApiInstance.fetchEventCateringItems(eventId),
+    queryKey: cateringKeys.eventCateringItems(eventId, memberId),
+    queryFn: () => cateringApiInstance.fetchEventCateringItems(eventId, memberId),
     enabled: !!eventId && enabled,
   });
 }
@@ -67,6 +67,17 @@ export const useBulkDeleteCateringAllocations = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ eventId, memberIds, cateringItemIds }: { eventId: string; memberIds: string[]; cateringItemIds: string[] }) => cateringApiInstance.bulkDeleteCateringAllocations(eventId, memberIds, cateringItemIds),
+    onSuccess: () => {
+      // Invalidate all event catering items queries to ensure data consistency
+      queryClient.invalidateQueries({ queryKey: cateringKeys.all });
+    }
+  });
+}
+
+export const useConsumeCateringItems = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ eventId, memberId, items }: { eventId: string; memberId: string; items: {cateringItemId: string; quantity: number}[] }) => cateringApiInstance.consumeCateringItems(eventId, memberId, items),
     onSuccess: () => {
       // Invalidate all event catering items queries to ensure data consistency
       queryClient.invalidateQueries({ queryKey: cateringKeys.all });

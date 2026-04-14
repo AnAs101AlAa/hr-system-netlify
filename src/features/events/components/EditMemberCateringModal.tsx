@@ -46,6 +46,8 @@ const EditMemberCateringModal = ({
   useEffect(() => {
     if (isOpen && allCateringItems) {
       setDisplayedCateringItems(allCateringItems.filter(item => memberAllocations.some(allocation => allocation.cateringItemId === item.id)));
+    } else if (!isOpen) {
+      setDisplayedCateringItems([]);
     }
   }, [isOpen, allCateringItems]);
 
@@ -107,9 +109,6 @@ const EditMemberCateringModal = ({
         .filter(([, amount]) => amount > 0)
         .map(([cateringItemId]) => cateringItemId);
       const removedItemIds = initialItemIds.filter(id => !currentItemIds.includes(id));
-
-      console.log("Submitting with items:", currentItemIds);
-      console.log("Items to remove:", removedItemIds);
 
       // If any items were removed, call bulkDelete
       if (removedItemIds.length > 0) {
@@ -177,6 +176,7 @@ const EditMemberCateringModal = ({
                 </div>
                 <NumberField
                   label="Quantity"
+                  min={0}
                   value={String(formData[item.id] !== undefined ? formData[item.id] : item.currentAmount)}
                   onChange={(value) =>
                     handleQuantityChange(item.id, value)
