@@ -16,3 +16,8 @@ export { default as EventModal } from "./EventModal";
 export { default as EventsList } from "@/features/dashboard/components/eventsList";
 export { default as ManageCateringModal } from "./ManageCateringModal";
 export { default as EditMemberCateringModal } from "./EditMemberCateringModal";
+export { default as CompaniesDistributionList } from "./CompaniesDistributionList";
+export { default as AddCompanyModal } from "./AddCompanyModal";
+export { default as EditCompanyDataModal } from "./EditCompanyDataModal";
+export { default as EditCompanyCateringModal } from "./EditCompanyCateringModal";
+export { default as ManageCompanyCateringModal } from "./ManageCompanyCateringModal";

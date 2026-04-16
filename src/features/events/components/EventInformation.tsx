@@ -4,17 +4,25 @@ import { Button } from "tccd-ui";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/shared/redux/store/store";
 import type { AllocatedCateringItem, CateringItem } from "@/shared/types/catering";
+import type {
+  Company,
+  CompanyCateringAllocation,
+} from "@/shared/types/company";
 import { useMemo, useState } from "react";
 import ManageCateringModal from "./ManageCateringModal";
+import AddCompanyModal from "./AddCompanyModal";
+import ManageCompanyCateringModal from "./ManageCompanyCateringModal";
 
 interface EventInformationProps {
   event: Event;
   attendees?: Attendee[];
   vestAttendees?: VestAttendee[];
   cateringData?: AllocatedCateringItem[];
+  companiesData?: Company[];
+  companyCateringData?: CompanyCateringAllocation[];
   onEdit?: (eventId: string) => void;
   onDelete?: (eventId: string) => void;
-  activeTab?: "attendance" | "vest" | "catering";
+  activeTab?: "attendance" | "vest" | "catering" | "companies";
 }
 
 const EventInformation = ({
@@ -22,6 +30,8 @@ const EventInformation = ({
   attendees,
   vestAttendees,
   cateringData,
+  companiesData,
+  companyCateringData,
   onEdit,
   onDelete,
   activeTab = "attendance",
@@ -31,10 +41,18 @@ const EventInformation = ({
   const isAdmin = userRole.includes("Admin");
 
   const [isCateringModalOpen, setIsCateringModalOpen] = useState(false);
+  const [isCompanyCateringModalOpen, setIsCompanyCateringModalOpen] =
+    useState(false);
+  const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
 
   const membersData = useMemo(() => {
     return attendees?.map(att => ({ id: att.id, name: att.name })) || [];
   }, [attendees]);
+
+  const companiesSelectionData = useMemo(
+    () => companiesData?.map((company) => ({ id: company.id, name: company.name })) || [],
+    [companiesData]
+  );
 
   const formattedCateringItems = useMemo(() => {
     return Object.values(
@@ -46,6 +64,22 @@ const EventInformation = ({
       }, {} as Record<string, CateringItem>) || {}
     );
   }, [cateringData]);
+
+  const formattedCompanyCateringItems = useMemo(() => {
+    return Object.values(
+      companyCateringData?.reduce((acc: Record<string, CateringItem>, item) => {
+        if (!acc[item.cateringItemId]) {
+          acc[item.cateringItemId] = {
+            name: item.itemName,
+            quantity: item.amount,
+            description: "",
+            id: item.cateringItemId,
+          };
+        }
+        return acc;
+      }, {} as Record<string, CateringItem>) || {}
+    );
+  }, [companyCateringData]);
 
   return (
     <div className="bg-white dark:bg-surface-glass-bg rounded-b-lg shadow-sm border border-dashboard-card-border border-t-0 p-4 sm:p-6 mb-4 sm:mb-6 -mt-1">
@@ -259,12 +293,147 @@ const EventInformation = ({
         )}
         </>
       )}
+
+      {activeTab === "companies" && (
+        <>
+          {companyCateringData && companyCateringData.length > 0 ? (
+            <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-dashboard-border">
+              <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                  Company Catering Items
+                </h3>
+                {isAdmin && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      buttonText="Add Company"
+                      onClick={() => setIsAddCompanyModalOpen(true)}
+                      type="secondary"
+                      width="auto"
+                    />
+                    <Button
+                      buttonText="Manage Items"
+                      onClick={() => setIsCompanyCateringModalOpen(true)}
+                      type="primary"
+                      width="auto"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                {Object.entries(
+                  companyCateringData.reduce(
+                    (
+                      acc: Record<
+                        string,
+                        { itemName: string; total: number; remaining: number }
+                      >,
+                      item
+                    ) => {
+                      if (!acc[item.cateringItemId]) {
+                        acc[item.cateringItemId] = {
+                          itemName: item.itemName,
+                          total: 0,
+                          remaining: 0,
+                        };
+                      }
+
+                      acc[item.cateringItemId].total += item.amount;
+                      acc[item.cateringItemId].remaining += item.remainingAmount;
+                      return acc;
+                    },
+                    {}
+                  )
+                ).map(([itemId, itemData]) => {
+                  const used = itemData.total - itemData.remaining;
+
+                  return (
+                    <div
+                      key={itemId}
+                      className="rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 dark:border-gray-600"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-800 dark:text-gray-100 mb-2">
+                            {itemData.itemName}
+                          </h4>
+                          <div className="grid grid-cols-3 gap-2 text-sm">
+                            <div className="bg-blue-50 dark:bg-blue-800/40 rounded p-2">
+                              <div className="font-bold text-blue-600 dark:text-blue-300">
+                                {itemData.total}
+                              </div>
+                              <div className="text-xs text-blue-500 dark:text-blue-200">
+                                Total
+                              </div>
+                            </div>
+                            <div className="bg-red-50 dark:bg-red-800/40 rounded p-2">
+                              <div className="font-bold text-red-600 dark:text-red-300">
+                                {used}
+                              </div>
+                              <div className="text-xs text-red-500 dark:text-red-200">
+                                Used
+                              </div>
+                            </div>
+                            <div className="bg-green-50 dark:bg-green-800/40 rounded p-2">
+                              <div className="font-bold text-green-600 dark:text-green-300">
+                                {itemData.remaining}
+                              </div>
+                              <div className="text-xs text-green-500 dark:text-green-200">
+                                Remaining
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-dashboard-border flex flex-col items-center text-dashboard-description">
+              No company catering items allocated for this event.
+              {isAdmin && (
+                <div className="flex items-center gap-2 mt-3">
+                  <Button
+                    buttonText="Add Company"
+                    onClick={() => setIsAddCompanyModalOpen(true)}
+                    type="secondary"
+                    width="auto"
+                  />
+                  <Button
+                    buttonText="Manage Items"
+                    onClick={() => setIsCompanyCateringModalOpen(true)}
+                    type="primary"
+                    width="auto"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
       <ManageCateringModal
         isOpen={isCateringModalOpen}
         onClose={() => setIsCateringModalOpen(false)}
         eventId={event.id}
         cateringData={formattedCateringItems}
         membersData={membersData}
+      />
+
+      <ManageCompanyCateringModal
+        isOpen={isCompanyCateringModalOpen}
+        onClose={() => setIsCompanyCateringModalOpen(false)}
+        eventId={event.id}
+        cateringData={formattedCompanyCateringItems}
+        companiesData={companiesSelectionData}
+      />
+
+      <AddCompanyModal
+        isOpen={isAddCompanyModalOpen}
+        onClose={() => setIsAddCompanyModalOpen(false)}
+        eventId={event.id}
       />
     </div>
   );

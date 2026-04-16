@@ -44,7 +44,7 @@ const VestEventDetailsView: React.FC<VestEventDetailsViewProps> = ({
     <WithNavbar>
       <div className="min-h-screen bg-background p-4">
         <div className="max-w-6xl mx-auto">
-          <EventDetailsHeader onBack={onBack} />
+          <EventDetailsHeader onBack={onBack} isAdmin={false} />
           <VestEventInformation
             event={event}
             attendees={attendees}
