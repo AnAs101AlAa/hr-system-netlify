@@ -159,6 +159,7 @@ export function useAttendanceFlow(eventId: string) {
     setLeaveExcuse("");
     setIsConfirming(false);
     setAttendanceConfirmed(false);
+    setCompanyData(null);
   };
 
   return {

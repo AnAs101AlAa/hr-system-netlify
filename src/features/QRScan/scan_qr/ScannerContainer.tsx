@@ -9,6 +9,7 @@ import FinalConfirmation from "./FinalConfirmation";
 import ScannerLoading from "./ScannerLoading";
 import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
 import type { MemberData } from "@/shared/types/attendance";
+import type { CompanyQRScanResponse } from "@/shared/types/company";
 
 /**
  * Props for ScannerContainer.
@@ -29,6 +30,7 @@ interface ScannerContainerProps {
   isScanning: boolean;
   error: string | null;
   memberData: MemberData | null;
+  companyData: CompanyQRScanResponse | null;
   attendanceConfirmed: boolean;
   lateReason: string;
   attendanceStatus: number | null;
@@ -44,6 +46,7 @@ const ScannerContainer = ({
   isScanning,
   error,
   memberData,
+  companyData,
   attendanceConfirmed,
   lateReason,
   attendanceStatus,
@@ -57,7 +60,7 @@ const ScannerContainer = ({
   return (
     <div className="relative">
       {/* Scanner State */}
-      {isScanning && !error && !memberData && !isVerifying && (
+      {isScanning && !error && !memberData && !companyData && !isVerifying && (
         <QRCodeScanner onScan={onScan} onError={onError} />
       )}
 
