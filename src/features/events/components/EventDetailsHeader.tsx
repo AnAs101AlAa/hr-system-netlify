@@ -2,11 +2,19 @@ import { IoChevronBack } from "react-icons/io5";
 
 interface EventDetailsHeaderProps {
   onBack: () => void;
-  activeTab?: "attendance" | "vest" | "catering";
-  onTabChange?: (tab: "attendance" | "vest" | "catering") => void;
+  isAdmin: boolean;
+  activeTab?: "attendance" | "vest" | "catering" | "companies";
+  onTabChange?: (
+    tab: "attendance" | "vest" | "catering" | "companies"
+  ) => void;
 }
 
-const EventDetailsHeader = ({ onBack, activeTab, onTabChange }: EventDetailsHeaderProps) => {
+const EventDetailsHeader = ({
+  onBack,
+  isAdmin,
+  activeTab,
+  onTabChange,
+}: EventDetailsHeaderProps) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-0 pb-4">
@@ -55,6 +63,18 @@ const EventDetailsHeader = ({ onBack, activeTab, onTabChange }: EventDetailsHead
           >
             Catering
           </button>
+          {isAdmin && (
+            <button
+              onClick={() => onTabChange("companies")}
+              className={`flex-1 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer ${
+                activeTab === "companies"
+                  ? "bg-secondary text-white border-b-2 border-secondary"
+                  : "text-dashboard-heading hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
+            >
+              Companies
+            </button>
+          )}
         </div>
       )}
     </div>
