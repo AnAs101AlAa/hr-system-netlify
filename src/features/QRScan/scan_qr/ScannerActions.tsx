@@ -9,6 +9,9 @@ import { useUpdateVestStatus, useVestStatus } from "@/shared/queries/events";
 import type { MemberData } from "@/shared/types/attendance";
 import { useEventCateringItems } from "@/shared/queries/catering";
 import AdjustMemberCateringModal from "./AdjustMemberCateringModal";
+import AdjustCompanyCateringModal from "./AdjustCompanyCateringModal";
+import type { CompanyQRScanResponse } from "@/shared/types/company";
+import { useEventCompanyCatering } from "@/shared/queries/companies";
 
 /**
  * Props for ScannerActions.
@@ -28,6 +31,7 @@ import AdjustMemberCateringModal from "./AdjustMemberCateringModal";
 interface ScannerActionsProps {
   attendanceConfirmed: boolean;
   memberData: MemberData | null;
+  companyData: CompanyQRScanResponse | null;
   isConfirming: boolean;
   lateReason: string;
   leaveExcuse?: string;
@@ -50,6 +54,7 @@ const STATUS = {
 const ScannerActions = ({
   attendanceConfirmed,
   memberData,
+  companyData,
   isConfirming,
   lateReason,
   onConfirmAttendance,
@@ -63,10 +68,12 @@ const ScannerActions = ({
   const vestStatusUpdate = useUpdateVestStatus();
   const { data: vestStatus } = useVestStatus(memberData?.id || "", eventId);
   const { data: cateringItems } = useEventCateringItems(eventId, memberData?.id, memberData ? true : false);
+  const { data: companyCateringItems } = useEventCompanyCatering(eventId, companyData?.companyId, companyData ? true : false);
 
   const isNotMeeting = eventType !== "Meeting";
   const [currentVestStatus, setCurrentVestStatus] = useState<string>(vestStatus || "NotReceived");
-  const [isCateringModalOpen, setIsCateringModalOpen] = useState(false);
+  const [isMemberCateringModalOpen, setIsMemberCateringModalOpen] = useState(false);
+  const [isCompanyCateringModalOpen, setIsCompanyCateringModalOpen] = useState(false);
 
   useEffect(() => {
     if (vestStatus) {
@@ -170,7 +177,7 @@ const ScannerActions = ({
         )}
         <Button
           buttonText="Adjust catering items"
-          onClick={() => setIsCateringModalOpen(true)}
+          onClick={() => setIsMemberCateringModalOpen(true)}
           type="tertiary"
           width="full"
         />
@@ -181,8 +188,8 @@ const ScannerActions = ({
           width="full"
         />
         <AdjustMemberCateringModal
-          isOpen={isCateringModalOpen}
-          onClose={() => setIsCateringModalOpen(false)}
+          isOpen={isMemberCateringModalOpen}
+          onClose={() => setIsMemberCateringModalOpen(false)}
           memberId={memberData.id}
           memberName={memberData.fullName}
           eventId={eventId}
@@ -190,6 +197,32 @@ const ScannerActions = ({
         />
       </div>
     );
+  }
+
+  if (companyData) {
+    return (
+      <div className="space-y-2">
+        <Button
+          buttonText="Adjust catering items"
+          onClick={() => setIsCompanyCateringModalOpen(true)}
+          type="tertiary"
+          width="full"
+        />
+        <Button
+          buttonText="Scan Another QR Code"
+          onClick={onResetScanner}
+          type="ghost"
+          width="full"
+        />
+        <AdjustCompanyCateringModal
+          isOpen={isCompanyCateringModalOpen}
+          onClose={() => setIsCompanyCateringModalOpen(false)}
+          companyData={companyData}
+          eventId={eventId}
+          cateringItems={companyCateringItems || []}
+        />
+      </div>
+    )
   }
 
   // Render idle/waiting state

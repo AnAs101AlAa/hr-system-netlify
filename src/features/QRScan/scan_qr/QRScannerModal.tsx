@@ -23,6 +23,7 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
     isScanning,
     error,
     memberData,
+    companyData,
     attendanceStatus,
     lateReason,
     setLateReason,
@@ -136,6 +137,7 @@ const QRScannerModal = ({ isOpen, onClose, event }: QRScannerModalProps) => {
               <ScannerActions
                 attendanceConfirmed={attendanceConfirmed}
                 memberData={memberData}
+                companyData={companyData}
                 attendanceStatus={attendanceStatus}
                 isConfirming={isConfirming}
                 lateReason={lateReason}

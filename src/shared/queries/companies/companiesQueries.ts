@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CateringItem } from "@/shared/types/catering";
 import type {
+  CompanyAllocationItemConsume,
   CompanyAllocationItemInput,
   CompanyPayload,
 } from "@/shared/types/company";
@@ -108,6 +109,35 @@ export const useDeleteCompany = () => {
   });
 };
 
+export const useAllocateCompanyCateringItems = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      companyId,
+      eventId,
+      cateringItemId,
+      amount,
+    }: {
+      companyId: string;
+      eventId: string;
+      cateringItemId: string;
+      amount: number;
+    }) =>
+      companiesApiInstance.allocateCompanyCateringItems(
+        companyId,
+        eventId,
+        cateringItemId,
+        amount,
+      ),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: companyKeys.eventAllocations(variables.eventId),
+      });
+    },
+  });
+} 
+
 export const useBulkAllocateCompanyCateringItems = () => {
   const queryClient = useQueryClient();
 
@@ -153,4 +183,83 @@ export const useBulkDeleteCompanyCateringAllocations = () => {
       });
     },
   });
+}
+
+export const useBulkSendCompanyCateringAllocationsEmail = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      eventId,
+      companyIds,
+    }: {
+      eventId: string;
+      companyIds: string[];
+    }) =>
+      companiesApiInstance.bulkSendCompanyCateringAllocationsEmail(
+        eventId,
+        companyIds,
+      ),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: companyKeys.eventAllocations(variables.eventId),
+      });
+    },
+  });
 };
+
+export const useConsumeCompanyCateringItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      companyId,
+      eventId,
+      cateringItemId,
+      quantity,
+    }: {
+      companyId: string;
+      eventId: string;
+      cateringItemId: string;
+      quantity: number;
+    }) =>
+      companiesApiInstance.consumeCompanyCateringItem(
+        companyId,
+        eventId,
+        cateringItemId,
+        quantity
+      ),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: companyKeys.eventAllocations(variables.eventId),
+      });
+    },
+  });
+};
+
+export const useBulkConsumeCompanyCateringItems = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      companyId,
+      eventId,
+      items,
+    }: {
+      companyId: string;
+      eventId: string;
+      items: CompanyAllocationItemConsume[];
+    }) =>
+      companiesApiInstance.bulkConsumeCompanyCateringItems(
+        companyId,
+        eventId,
+        items
+      ),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: companyKeys.eventAllocations(variables.eventId),
+      });
+    }
+  });
+}
+

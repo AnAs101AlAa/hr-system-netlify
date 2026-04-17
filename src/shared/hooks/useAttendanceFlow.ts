@@ -6,11 +6,13 @@ import { UserApi } from "@/shared/queries/users";
 import { eventsApiInstance } from "@/shared/queries/events/eventApi";
 import { getErrorMessage } from "@/shared/utils";
 import toast from "react-hot-toast";
+import type { CompanyQRScanResponse } from "../types/company";
 
 export function useAttendanceFlow(eventId: string) {
   const [isScanning, setIsScanning] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [memberData, setMemberData] = useState<MemberData | null>(null);
+  const [companyData, setCompanyData] = useState<CompanyQRScanResponse | null>(null);
   const [attendanceStatus, setAttendanceStatus] = useState<number | null>(null);
   const [lateReason, setLateReason] = useState("");
   const [leaveExcuse, setLeaveExcuse] = useState("");
@@ -70,8 +72,17 @@ export function useAttendanceFlow(eventId: string) {
         const parsedData = JSON.parse(detectedCodes[0].rawValue);
         if (parsedData && typeof parsedData.userId === "string") {
           await fetchMemberData(parsedData.userId);
+          // For company QR:
+          // CompanyId: uuid
+          // CompanyName: string
+          // No need for any other data fetching
+        } else if (parsedData && typeof parsedData.CompanyId === "string") {
+            setCompanyData({
+              companyId: parsedData.CompanyId,
+              companyName: parsedData.CompanyName
+            })
         } else {
-          setError("Invalid QR code format. Expected userId.");
+          setError("Invalid QR code format. Expected a user or a company");
         }
       } catch {
         setError("Invalid QR code data. Could not parse QR code.");
@@ -154,6 +165,7 @@ export function useAttendanceFlow(eventId: string) {
     isScanning,
     error,
     memberData,
+    companyData,
     attendanceStatus,
     lateReason,
     setLateReason,

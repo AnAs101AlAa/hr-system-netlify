@@ -1,6 +1,7 @@
 import type { CateringItem } from "@/shared/types/catering";
 import type {
   Company,
+  CompanyAllocationItemConsume,
   CompanyAllocationItemInput,
   CompanyCateringAllocation,
   CompanyPayload,
@@ -70,6 +71,20 @@ class CompaniesApi {
     await systemApi.delete(`${COMPANY_API_URL}/${companyId}`);
   }
 
+  async allocateCompanyCateringItems(
+    companyId: string,
+    eventId: string,
+    cateringItemId: string,
+    amount: number
+  ): Promise<void> {
+    await systemApi.put(`${COMPANY_CATERING_API_URL}/allocations`, {
+      companyId,
+      eventId,
+      cateringItemId,
+      amount
+    });
+  }
+
   async bulkAllocateCompanyCateringItems(
     eventId: string,
     companyIds: string[],
@@ -93,6 +108,42 @@ class CompaniesApi {
         companyIds,
         cateringItemIds,
       },
+    });
+  }
+
+  async bulkSendCompanyCateringAllocationsEmail(
+    eventId: string,
+    companyIds: string[]
+  ): Promise<void> {
+    await systemApi.post(`${COMPANY_CATERING_API_URL}/allocations/send-email/bulk`, {
+      eventId,
+      companyIds
+    });
+  }
+
+  async consumeCompanyCateringItem(
+    companyId: string,
+    eventId: string,
+    cateringItemId: string,
+    quantity: number
+  ): Promise<void> {
+    await systemApi.post(`${COMPANY_CATERING_API_URL}/consume`, {
+      companyId,
+      eventId,
+      cateringItemId,
+      quantity
+    });
+  }
+  
+  async bulkConsumeCompanyCateringItems(
+    companyId: string,
+    eventId: string,
+    items: CompanyAllocationItemConsume[]
+  ): Promise<void> {
+    await systemApi.post(`${COMPANY_CATERING_API_URL}/consume/bulk`, {
+      companyId,
+      eventId,
+      items
     });
   }
 }
