@@ -79,7 +79,7 @@ export function useAttendanceFlow(eventId: string) {
         } else if (parsedData && typeof parsedData.CompanyId === "string") {
             setCompanyData({
               companyId: parsedData.CompanyId,
-              companyName: parsedData.CompanyName
+              companyName: parsedData.Name
             })
         } else {
           setError("Invalid QR code format. Expected a user or a company");

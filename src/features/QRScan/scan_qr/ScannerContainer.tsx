@@ -68,12 +68,12 @@ const ScannerContainer = ({
       {isVerifying && <ScannerLoading />}
 
       {/* Error State */}
-      {error && !memberData && (
+      {error && !memberData && !companyData && (
         <ErrorFallBack error={error} resetScanner={onResetScanner} />
       )}
 
       {/* Success State - Attendance Confirmation */}
-      {memberData && !attendanceConfirmed && !isVerifying && (
+      {memberData && !companyData && !attendanceConfirmed && !isVerifying && (
         <AttendanceConfirmation
           memberData={memberData}
           attendanceStatus={attendanceStatus}
@@ -90,6 +90,32 @@ const ScannerContainer = ({
           leaveExcuse={leaveExcuse}
           attendanceStatus={attendanceStatus}
         />
+      )}
+
+      {companyData && !memberData && (
+        <div className="w-full bg-green-50 dark:bg-green-900/10 text-center p-6">
+          <div className="w-16 h-16 md:w-20 md:h-20 mb-4 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+            <svg
+              className="w-8 h-8 md:w-10 md:h-10 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <h2 className="text-lg md:text-xl font-semibold text-green-600 dark:text-green-400 mb-2">
+            QR Verified!
+          </h2>
+          <p className="text-sm text-[var(--color-dashboard-description)] mb-4">
+            Hello, {companyData.companyName}!
+          </p>
+        </div>
       )}
     </div>
   );
