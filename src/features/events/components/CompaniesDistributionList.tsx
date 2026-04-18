@@ -12,6 +12,7 @@ import type {
 import {
   useCompanyCateringItems,
   useDeleteCompany,
+  useBulkSendCompanyCateringAllocationsEmail,
 } from "@/shared/queries/companies";
 import EditCompanyCateringModal from "./EditCompanyCateringModal";
 import EditCompanyDataModal from "./EditCompanyDataModal";
@@ -51,6 +52,7 @@ const CompaniesDistributionList = ({
 
   const { data: allItems } = useCompanyCateringItems();
   const deleteCompanyMutation = useDeleteCompany();
+  const sendEmailMutation = useBulkSendCompanyCateringAllocationsEmail();
 
   const { rows, itemColumns } = useMemo(() => {
     const itemsMap = new Map<string, { id: string; name: string }>();
@@ -143,6 +145,18 @@ const CompaniesDistributionList = ({
     }
   };
 
+  const handleSendEmail = async (companyId: string) => {
+    try {
+      await sendEmailMutation.mutateAsync({
+        eventId,
+        companyIds: [companyId],
+      });
+      toast.success("Email sent successfully");
+    } catch {
+      toast.error("Failed to send email");
+    }
+  };
+
   const renderActionButton = (
     row: CompanyDistributionRow,
     triggerDelete: (id: string) => void
@@ -181,6 +195,16 @@ const CompaniesDistributionList = ({
             onClick={() => triggerDelete(row.id)}
             type="danger"
             width="auto"
+          />
+        )}
+
+        {isAdmin && (
+          <Button
+            buttonText="Send Email"
+            onClick={() => handleSendEmail(row.companyId)}
+            type="primary"
+            width="auto"
+            disabled={sendEmailMutation.isPending}
           />
         )}
       </>
