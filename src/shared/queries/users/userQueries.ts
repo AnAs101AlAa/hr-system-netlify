@@ -103,7 +103,7 @@ export const useCreateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({userData, password}: { userData: member; password: string }) => userApiInstance.createUser(userData, password),
+    mutationFn: ({userData, password}: { userData: member; password?: string }) => userApiInstance.createUser(userData, password),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
       toast.success("Member created successfully");

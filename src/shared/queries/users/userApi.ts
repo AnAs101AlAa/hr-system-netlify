@@ -78,7 +78,7 @@ export class UserApi {
     };
   }
 
-  async createUser(userData: member, password: string) {
+  async createUser(userData: member, password?: string) {
     const mappedData = {
       fullName: userData.name,
       email: userData.email,
