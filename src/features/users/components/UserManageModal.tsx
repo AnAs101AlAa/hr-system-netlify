@@ -12,7 +12,6 @@ import type { member } from "@/shared/types/member";
 import {
   useCreateUser,
   useUpdateUser,
-  useRegisterAccount,
 } from "@/shared/queries/users";
 import {
   memberSchema,
@@ -88,13 +87,11 @@ const UserManageModal = ({
 
   const createUserMutation = useCreateUser();
   const updateUserMutation = useUpdateUser();
-  const registerAccountMutation = useRegisterAccount();
 
   const isLoading =
     createUserMutation.isPending ||
-    updateUserMutation.isPending ||
-    registerAccountMutation.isPending;
-
+    updateUserMutation.isPending;
+    
   const derivedRole = deriveRole(formData.committee, formData.position || "");
   const shouldCreateAccount = mode === "create" && derivedRole !== null;
 
@@ -189,27 +186,13 @@ const UserManageModal = ({
 
     try {
       if (mode === "create") {
-        const createResult = await createUserMutation.mutateAsync(memberData);
-
-        // If this member qualifies for a system account, register one
-        if (shouldCreateAccount && derivedRole) {
-          const memberId = createResult?.data?.id || "";
-          await registerAccountMutation.mutateAsync({
-            name: memberData.name,
-            email: memberData.email,
-            password: password,
-            nationalId: memberData.nationalId,
-            graduationYear: memberData.gradYear,
-            educationSystem: memberData.educationSystem,
-            major: memberData.engineeringMajor,
-            role: derivedRole,
-            committee: memberData.committee,
-            position: memberData.position || "Member",
-          });
+        const createResult = await createUserMutation.mutateAsync({
+          userData: memberData,
+          password,
+        });
 
           // Notify parent so it can show credentials modal
-          onAccountCreated?.(memberId, memberData.email, password);
-        }
+        onAccountCreated?.(createResult.id, memberData.email, password);
       } else if (mode === "edit" && user) {
         await updateUserMutation.mutateAsync({
           userId: user.id,

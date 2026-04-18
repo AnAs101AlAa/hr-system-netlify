@@ -78,7 +78,7 @@ export class UserApi {
     };
   }
 
-  async createUser(userData: member) {
+  async createUser(userData: member, password: string) {
     const mappedData = {
       fullName: userData.name,
       email: userData.email,
@@ -86,9 +86,10 @@ export class UserApi {
       committee: userData.committee,
       position: userData.position,
       nationalId: userData.nationalId,
-      engineeringMajor: userData.engineeringMajor,
+      major: userData.engineeringMajor,
       educationSystem: userData.educationSystem,
-      gradYear: userData.gradYear,
+      graduationYear: userData.gradYear,
+      password: password,
     };
 
     const { data } = await systemApi.post(`/v1/Members`, mappedData);
@@ -103,9 +104,9 @@ export class UserApi {
       committee: userData.committee,
       position: userData.position,
       nationalId: userData.nationalId,
-      engineeringMajor: userData.engineeringMajor,
+      major: userData.engineeringMajor,
       educationSystem: userData.educationSystem,
-      gradYear: userData.gradYear,
+      graduationYear: userData.gradYear,
     };
 
     const { data } = await systemApi.put(`/v1/Members/${userId}`, mappedData);
@@ -114,22 +115,6 @@ export class UserApi {
 
   async deleteUser(userId: string) {
     const { data } = await systemApi.delete(`/v1/Members/${userId}`);
-    return data;
-  }
-
-  async registerAccount(accountData: {
-    name: string;
-    email: string;
-    password: string;
-    nationalId: string;
-    graduationYear: number;
-    educationSystem: string;
-    major: string;
-    role: string;
-    committee: string;
-    position: string;
-  }) {
-    const { data } = await systemApi.post(`/v1/Auth/register`, accountData);
     return data;
   }
 

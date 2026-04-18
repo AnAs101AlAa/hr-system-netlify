@@ -103,7 +103,7 @@ export const useCreateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (userData: member) => userApiInstance.createUser(userData),
+    mutationFn: ({userData, password}: { userData: member; password: string }) => userApiInstance.createUser(userData, password),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
       toast.success("Member created successfully");
@@ -137,17 +137,6 @@ export const useDeleteUser = () => {
     mutationFn: (userId: string) => userApiInstance.deleteUser(userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
-    },
-  });
-};
-
-export const useRegisterAccount = () => {
-  return useMutation({
-    mutationFn: (
-      accountData: Parameters<typeof userApiInstance.registerAccount>[0],
-    ) => userApiInstance.registerAccount(accountData),
-    onError: () => {
-      toast.error("Failed to create system account");
     },
   });
 };
