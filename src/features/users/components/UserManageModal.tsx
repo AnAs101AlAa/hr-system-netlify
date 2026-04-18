@@ -188,7 +188,7 @@ const UserManageModal = ({
       if (mode === "create") {
         const createResult = await createUserMutation.mutateAsync({
           userData: memberData,
-          password,
+          password: password === "" ? undefined : password,
         });
 
           // Notify parent so it can show credentials modal
@@ -227,11 +227,6 @@ const UserManageModal = ({
             error={errors.name}
             placeholder="Enter full name"
           />
-          {errors.name && (
-            <p className="text-primary text-[12px] lg:text-[13px] font-medium">
-              {errors.name}
-            </p>
-          )}
         </div>
 
         <div className="space-y-1">
@@ -244,11 +239,6 @@ const UserManageModal = ({
             error={errors.email}
             placeholder="Enter email address"
           />
-          {errors.email && (
-            <p className="text-primary text-[12px] lg:text-[13px] font-medium">
-              {errors.email}
-            </p>
-          )}
         </div>
 
         <div className="space-y-1">
@@ -261,11 +251,6 @@ const UserManageModal = ({
             error={errors.phoneNumber}
             placeholder="01xxxxxxxxx"
           />
-          {errors.phoneNumber && (
-            <p className="text-primary text-[12px] lg:text-[13px] font-medium">
-              {errors.phoneNumber}
-            </p>
-          )}
         </div>
 
         <div className="space-y-1">
@@ -278,11 +263,6 @@ const UserManageModal = ({
             error={errors.nationalId}
             placeholder="Enter 14-digit national ID"
           />
-          {errors.nationalId && (
-            <p className="text-primary text-[12px] lg:text-[13px] font-medium">
-              {errors.nationalId}
-            </p>
-          )}
         </div>
 
         <div className="space-y-1">
@@ -299,11 +279,6 @@ const UserManageModal = ({
             error={errors.gradYear}
             placeholder="Enter graduation year"
           />
-          {errors.gradYear && (
-            <p className="text-primary text-[12px] lg:text-[13px] font-medium">
-              {errors.gradYear}
-            </p>
-          )}
         </div>
 
         <div className="space-y-1">
@@ -318,11 +293,6 @@ const UserManageModal = ({
             disabled={isLoading}
             placeholder="Select committee"
           />
-          {errors.committee && (
-            <p className="text-primary text-[12px] lg:text-[13px] font-medium">
-              {errors.committee}
-            </p>
-          )}
         </div>
 
         <div className="space-y-1">
@@ -337,11 +307,6 @@ const UserManageModal = ({
             disabled={isLoading}
             placeholder="Select position"
           />
-          {errors.position && (
-            <p className="text-primary text-[12px] lg:text-[13px] font-medium">
-              {errors.position}
-            </p>
-          )}
         </div>
 
         <div className="space-y-1">
@@ -356,11 +321,6 @@ const UserManageModal = ({
             disabled={isLoading}
             placeholder="Select engineering major"
           />
-          {errors.engineeringMajor && (
-            <p className="text-primary text-[12px] lg:text-[13px] font-medium">
-              {errors.engineeringMajor}
-            </p>
-          )}
         </div>
 
         <div className="space-y-1">
@@ -375,11 +335,6 @@ const UserManageModal = ({
             disabled={isLoading}
             placeholder="Select education system"
           />
-          {errors.educationSystem && (
-            <p className="text-primary text-[12px] lg:text-[13px] font-medium">
-              {errors.educationSystem}
-            </p>
-          )}
         </div>
 
         {/* System Account Section — only shown in create mode when role is determined */}
