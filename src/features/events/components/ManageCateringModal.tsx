@@ -7,7 +7,7 @@ import {
   SearchField
 } from "tccd-ui";
 import type { CateringItem } from "@/shared/types/catering";
-import { useCateringItems, useAddCateringItem, useBulkAllocateCateringItems, useBulkDeleteCateringAllocations } from "@/shared/queries/catering";
+import { useCateringItems, useAddCateringItem, useBulkAllocateCateringItems, useBulkDeleteCateringAllocations, useDeleteCateringItem } from "@/shared/queries/catering";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
 import { IoTrashSharp, IoAdd } from "react-icons/io5";
@@ -46,8 +46,24 @@ const ManageCateringModal = ({ isOpen, onClose, cateringData, eventId, membersDa
 
   const { data: allCateringItems, isPending: isLoadingItems } = useCateringItems();
   const addCateringItemMutation = useAddCateringItem();
+  const deleteCateringItemMutation = useDeleteCateringItem();
   const bulkAllocateCateringItemsMutation = useBulkAllocateCateringItems();
   const bulkDeleteCateringAllocationsMutation = useBulkDeleteCateringAllocations();
+
+  const handleDeleteItem = async (itemId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm("Are you sure you want to permanently delete this catering item?")) {
+      try {
+        await deleteCateringItemMutation.mutateAsync(itemId);
+        toast.success("Item deleted successfully");
+        setFormData(prev => ({
+          items: prev.items.filter(item => item.id !== itemId)
+        }));
+      } catch (error: any) {
+        toast.error(error.response?.data?.message || "Failed to delete item");
+      }
+    }
+  };
 
   // Filter members based on search query
   const filteredMembers = useMemo(() => {
@@ -302,15 +318,24 @@ const ManageCateringModal = ({ isOpen, onClose, cateringData, eventId, membersDa
                                   : ""
                               }`}
                             >
-                              <div className="flex flex-col gap-1">
-                                <p className="font-medium text-gray-800 dark:text-gray-100 text-sm">
-                                  {item.name}
-                                </p>
-                                {item.description && (
-                                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                                    {item.description}
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex flex-col gap-1 flex-1 min-w-0">
+                                  <p className="font-medium text-gray-800 dark:text-gray-100 text-sm truncate">
+                                    {item.name}
                                   </p>
-                                )}
+                                  {item.description && (
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                                      {item.description}
+                                    </p>
+                                  )}
+                                </div>
+                                <button
+                                  onClick={(e) => handleDeleteItem(item.id, e)}
+                                  className="p-1.5 text-primary hover:bg-primary/10 dark:hover:bg-primary/70 rounded cursor-pointer"
+                                  title="Delete item"
+                                >
+                                  <IoTrashSharp size={16} />
+                                </button>
                               </div>
                             </div>
                           )}

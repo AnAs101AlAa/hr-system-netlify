@@ -17,6 +17,13 @@ class cateringApi {
     return response.data.data;
   }
 
+  async deleteCateringItem(itemId: string): Promise<void> {
+    const response = await systemApi.delete(
+      CATERING_API_URL + `items/${itemId}`
+    );
+    return response.data.data;
+  }
+
   async updateCateringItem(itemId: string, itemData: Omit<CateringItem, "id" | "quantity">): Promise<CateringItem> {
     const response = await systemApi.put(
       CATERING_API_URL + `items/${itemId}`,
