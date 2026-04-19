@@ -193,7 +193,6 @@ const ScannerActions = ({
           memberId={memberData.id}
           memberName={memberData.fullName}
           eventId={eventId}
-          memberAllocations={cateringItems || []}
         />
       </div>
     );
@@ -219,7 +218,7 @@ const ScannerActions = ({
           onClose={() => setIsCompanyCateringModalOpen(false)}
           companyData={companyData}
           eventId={eventId}
-          cateringItems={companyCateringItems || []}
+
         />
       </div>
     )
