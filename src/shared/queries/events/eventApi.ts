@@ -9,11 +9,11 @@ class eventsApi {
     return response.data.data;
   }
   
-  async fetchAllEvents(page: number, pageSize: number,eventType: string, title: string, eventStatuses: string[]): Promise<{items: Event[], totalCount: number}> {
+  async fetchAllEvents(page: number, pageSize: number,eventType: string, title: string, eventStatuses: string[]): Promise<{items: Event[], totalCount: number, totalPages: number}> {
     const statusParams = eventStatuses.map(status => `eventStatuses=${status}`).join('&');
     const eventTypeParam = eventType && eventType !== "All" ? `eventType=${eventType}&` : "";
     const response = await systemApi.get(`${EVENTS_API_URL}Events/filtered?${eventTypeParam}${statusParams}&page=${page}&count=${pageSize}&${title != "" ? `title=${title}` : ""}&page=${page}&count=${pageSize}&OrderBy=startDate&Descending=true`);
-    return {items: response.data.data.data, totalCount: response.data.data.totalCount};
+    return {items: response.data.data.data, totalCount: response.data.data.totalCount, totalPages: response.data.data.totalPages};
   }
 
   async createEvent(eventData: Omit<Event, "id">) {

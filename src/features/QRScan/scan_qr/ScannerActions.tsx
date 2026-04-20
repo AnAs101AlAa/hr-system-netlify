@@ -166,15 +166,13 @@ const ScannerActions = ({
           disabled={isConfirmDisabled()}
           loading={isConfirming}
         />
-        {isNotMeeting && (
-          <Button
-            buttonText={getVestButtonText()}
-            onClick={handleVestStatus}
-            type="primary"
-            width="full"
-            loading={vestStatusUpdate.isPending}
-          />
-        )}
+        <Button
+          buttonText={getVestButtonText()}
+          onClick={handleVestStatus}
+          type="primary"
+          width="full"
+          loading={vestStatusUpdate.isPending}
+        />
         <Button
           buttonText="Adjust catering items"
           onClick={() => setIsMemberCateringModalOpen(true)}
