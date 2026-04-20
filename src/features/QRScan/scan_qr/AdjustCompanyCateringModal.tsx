@@ -127,6 +127,7 @@ const AdjustCompanyCateringModal = ({
                 <NumberField
                   id="quantity"
                   label={`Quantity (Max: ${item.remainingAmount})`}
+                  id={`quantity-${item.id}`}
                   min={0}
                   max={item.remainingAmount}
                   value={String(

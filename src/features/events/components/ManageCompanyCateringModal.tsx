@@ -423,7 +423,7 @@ const ManageCompanyCateringModal = ({
                                       {editingId === item.id ? (
                                         <div className="flex items-center gap-1">
                                           <NumberField
-                                            id={`edit-quantity-${item.id}`}
+                                            id={`quantity-${item.id}`}
                                             className="w-20"
                                             labelClassName="hidden"
                                             label=""
