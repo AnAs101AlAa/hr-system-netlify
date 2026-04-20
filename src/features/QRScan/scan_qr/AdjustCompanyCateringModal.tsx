@@ -1,7 +1,6 @@
 import { useBulkConsumeCompanyCateringItems, useEventCompanyCatering } from "@/shared/queries/companies";
 import type { CateringItem } from "@/shared/types/catering";
 import type {
-  CompanyCateringAllocation,
   CompanyQRScanResponse,
 } from "@/shared/types/company";
 import { useEffect, useState } from "react";
