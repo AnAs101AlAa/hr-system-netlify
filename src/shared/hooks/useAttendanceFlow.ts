@@ -70,8 +70,10 @@ export function useAttendanceFlow(eventId: string) {
       setIsScanning(false);
       try {
         const parsedData = JSON.parse(detectedCodes[0].rawValue);
-        if (parsedData && typeof parsedData.userId === "string") {
-          await fetchMemberData(parsedData.userId);
+        console.log(parsedData);
+
+        if (parsedData && typeof parsedData.UserId === "string") {
+          await fetchMemberData(parsedData.UserId);
           // For company QR:
           // CompanyId: uuid
           // CompanyName: string
