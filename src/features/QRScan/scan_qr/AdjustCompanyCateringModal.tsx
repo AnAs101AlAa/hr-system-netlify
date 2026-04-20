@@ -114,7 +114,8 @@ const AdjustCompanyCateringModal = ({
                   )}
                 </div>
                 <NumberField
-                  label="Quantity"
+                  id={`quantity-${item.id}`}
+                  label={`Quantity (Max: ${item.remainingAmount})`}
                   min={0}
                   value={String(
                     displayedCateringItems.find((i) => i.id === item.id)

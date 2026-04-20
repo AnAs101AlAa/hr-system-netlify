@@ -494,6 +494,7 @@ const PagesInfo = forwardRef(
                                         </div>
                                         <div className="w-full lg:w-[49%]">
                                           <NumberField
+                                            id="question-maxlength"
                                             label="Character Limit"
                                             value={
                                               question.maxLength
@@ -638,6 +639,7 @@ const PagesInfo = forwardRef(
                                       <>
                                         <div className="w-full lg:w-[49%]">
                                           <NumberField
+                                            id="question-maxfilesize"
                                             label="Max File Size (MB)"
                                             value={
                                               question.maxFileSizeMB

@@ -77,6 +77,7 @@ const NumberQuestionCard = forwardRef<
 
       <div>
         <NumberField
+          id={`number-question-${question.questionNumber}`}
           label=""
           value={answer}
           placeholder="Enter a number..."

@@ -76,6 +76,7 @@ const BranchInfo = forwardRef<FormBranchHandle, BranchInfoProps>(
         <div className="flex flex-wrap lg:gap-[2%] gap-4 mb-2">
           <div className="lg:w-[32%] w-full">
             <NumberField
+              id="branching-question-number"
               label="Branching Question Number"
               placeholder="e.g. 1"
               value={String(branchData?.questionNumber) || ""}
@@ -100,6 +101,7 @@ const BranchInfo = forwardRef<FormBranchHandle, BranchInfoProps>(
           </div>
           <div className="lg:w-[32%] w-full">
             <NumberField
+              id="branching-target-page"
               label="Page to skip to"
               placeholder="e.g. 2"
               value={String(branchData?.targetPage + 1) || ""}

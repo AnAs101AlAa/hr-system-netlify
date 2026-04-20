@@ -175,6 +175,7 @@ const EditMemberCateringModal = ({
                   )}
                 </div>
                 <NumberField
+                  id={`quantity-${item.id}`}
                   label="Quantity"
                   min={0}
                   value={String(formData[item.id] !== undefined ? formData[item.id] : item.currentAmount)}
