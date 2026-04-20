@@ -267,6 +267,7 @@ const UserManageModal = ({
 
         <div className="space-y-1">
           <NumberField
+            id="gradYear"
             labelClassName="text-contrast text-[14px] md:text-[14px] lg:text-[15px] mb-1"
             label="Graduation Year"
             value={formData.gradYear.toString()}

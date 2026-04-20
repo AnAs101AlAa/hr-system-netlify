@@ -127,6 +127,7 @@ const AdjustMemberCateringModal = ({
                   )}
                 </div>
                 <NumberField
+                  id="quantity"
                   label={`Quantity (Max: ${item.remainingAmount})`}
                   min={0}
                   max={item.remainingAmount}
