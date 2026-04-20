@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Modal, NumberField, Button } from "tccd-ui";
-import type { AllocatedCateringItem, CateringItem } from "@/shared/types/catering";
+import type { CateringItem } from "@/shared/types/catering";
 import {
   useConsumeCateringItems,
-  useCateringItems,
+  useEventCateringItems,
 } from "@/shared/queries/catering";
 import toast from "react-hot-toast";
 
@@ -13,7 +13,6 @@ interface AdjustMemberCateringModalProps {
   memberId: string;
   memberName: string;
   eventId: string;
-  memberAllocations: AllocatedCateringItem[];
 }
 
 const AdjustMemberCateringModal = ({
@@ -22,21 +21,26 @@ const AdjustMemberCateringModal = ({
   memberId,
   memberName,
   eventId,
-  memberAllocations,
 }: AdjustMemberCateringModalProps) => {
   const consumeCateringMutation = useConsumeCateringItems();
-  const { data: allCateringItems } = useCateringItems();
-  const [displayedCateringItems, setDisplayedCateringItems] = useState<CateringItem[]>([]);
+  const { data: fetchedAllocations, isLoading: isFetchingAllocations } = useEventCateringItems(eventId, memberId, isOpen);
 
+  const memberAllocations = fetchedAllocations || [];
+
+  const [displayedCateringItems, setDisplayedCateringItems] = useState<
+    (CateringItem & { remainingAmount: number })[]
+  >([]);
+
+  
   useEffect(() => {
     if (isOpen && memberAllocations.length > 0) {
         const initialData = memberAllocations.map((allocation) => {
-          const itemDetails = allCateringItems?.find(item => item.id === allocation.cateringItemId);
           return {
             id: allocation.cateringItemId,
-            name: itemDetails?.name || "Unknown Item",
-            description: itemDetails?.description || "",
+            name: allocation.itemName || "Unknown Item",
+            description: "", // Removed fallback via allCateringItems
             quantity: 0,
+            remainingAmount: allocation.remainingAmount || 0,
           };
         }
         );
@@ -45,7 +49,17 @@ const AdjustMemberCateringModal = ({
   }, [isOpen, memberId, memberAllocations]);
 
   const handleQuantityChange = (itemId: string, value: string | number) => {
-    const numValue = Math.max(0, parseInt(String(value)) || 0);
+    const item = displayedCateringItems.find(i => i.id === itemId);
+    const maxVal = item?.remainingAmount || 0;
+    
+    // Safely parse the value
+    let numValue = parseInt(String(value));
+    if (isNaN(numValue)) numValue = 0;
+    
+    // Enforce limits immediately
+    if (numValue > maxVal) numValue = maxVal;
+    if (numValue < 0) numValue = 0;
+
     setDisplayedCateringItems((prev) =>
       prev.map((item) =>
         item.id === itemId ? { ...item, quantity: numValue } : item,
@@ -87,7 +101,11 @@ const AdjustMemberCateringModal = ({
       onClose={handleClose}
     >
       <div className="flex flex-col gap-4 p-1 max-h-96 overflow-y-auto">
-        {memberAllocations.length === 0 ? (
+        {isFetchingAllocations ? (
+          <div className="text-center text-gray-500 py-8">
+            Loading allocations...
+          </div>
+        ) : memberAllocations.length === 0 ? (
           <div className="text-center text-gray-500 dark:text-gray-400 py-8">
             No catering items available
           </div>
@@ -109,8 +127,9 @@ const AdjustMemberCateringModal = ({
                   )}
                 </div>
                 <NumberField
-                  label="Quantity"
+                  label={`Quantity (Max: ${item.remainingAmount})`}
                   min={0}
+                  max={item.remainingAmount}
                   value={String(
                     displayedCateringItems.find((i) => i.id === item.id)
                       ?.quantity || 0,

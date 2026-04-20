@@ -24,6 +24,16 @@ export const useAddCateringItem = () => {
   });
 }
   
+export const useDeleteCateringItem = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (itemId: string) => cateringApiInstance.deleteCateringItem(itemId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: cateringKeys.all });
+    }
+  });
+}
+
 export const useUpdateCateringItem = () => {
   const queryClient = useQueryClient();
   return useMutation({
