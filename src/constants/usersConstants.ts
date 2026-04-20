@@ -15,7 +15,7 @@ export const TEAM_COMMITTEES = [
   { label: "Marketing", value: "Marketing" },
   { label: "Video Editing", value: "VideoEditing" },
   { label: "High Board", value: "HighBoard" },
-  { label: "Outsource", value: "AlumniRelations" },
+  { label: "Outsource", value: "Outsource" },
 ];
 
 export const COMMITTEES_OPTIONS = TEAM_COMMITTEES.filter(
