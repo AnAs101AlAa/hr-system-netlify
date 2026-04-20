@@ -40,7 +40,7 @@ interface ScannerActionsProps {
   onReturnToEvents: () => void;
   onResetScanner: () => void;
   onReasonChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  eventType: string;
+  eventType?: string;
   eventId: string;
 }
 
@@ -62,7 +62,6 @@ const ScannerActions = ({
   onResetScanner,
   attendanceStatus = null,
   leaveExcuse = "",
-  eventType,
   eventId,
 }: ScannerActionsProps) => {
   const vestStatusUpdate = useUpdateVestStatus();
@@ -70,7 +69,6 @@ const ScannerActions = ({
   // const { data: cateringItems } = useEventCateringItems(eventId, memberData?.id, memberData ? true : false);
   // const { data: companyCateringItems } = useEventCompanyCatering(eventId, companyData?.companyId, companyData ? true : false);
 
-  const isNotMeeting = eventType !== "Meeting";
   const [currentVestStatus, setCurrentVestStatus] = useState<string>(vestStatus || "NotReceived");
   const [isMemberCateringModalOpen, setIsMemberCateringModalOpen] = useState(false);
   const [isCompanyCateringModalOpen, setIsCompanyCateringModalOpen] = useState(false);
