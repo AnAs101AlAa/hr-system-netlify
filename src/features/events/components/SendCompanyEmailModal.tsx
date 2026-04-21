@@ -100,6 +100,7 @@ const SendCompanyEmailModal = ({
                 <div className="flex-1">
                   <InputField
                     id={`additional-email-${index}`}
+                    label=""
                     placeholder="email@example.com"
                     value={email}
                     onChange={(e) => handleEmailChange(index, e.target.value)}
