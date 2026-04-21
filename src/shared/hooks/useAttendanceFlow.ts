@@ -107,13 +107,15 @@ export function useAttendanceFlow(eventId: string) {
   };
 
   // Confirm attendance
-  const confirmAttendance = async () => {
+  const confirmAttendance = async (reasonOverride?: string, excuseOverride?: string) => {
     if (!memberData) return;
     setIsConfirming(true);
+    const effectiveLateReason = reasonOverride ?? lateReason;
+    const effectiveLeaveExcuse = excuseOverride ?? leaveExcuse;
     try {
       if (attendanceStatus === 2002) {
         // Late
-        if (!lateReason.trim()) {
+        if (!effectiveLateReason.trim()) {
           setError("Please provide a reason for being late.");
           setIsConfirming(false);
           return;
@@ -121,11 +123,11 @@ export function useAttendanceFlow(eventId: string) {
         await recordLateArrivalExcuse.mutateAsync({
           memberId: memberData.id,
           eventId,
-          excuse: lateReason,
+          excuse: effectiveLateReason,
         });
       } else if (attendanceStatus === 2003) {
         // Early leave
-        if (!leaveExcuse.trim()) {
+        if (!effectiveLeaveExcuse.trim()) {
           setError("Please provide a reason for early leave.");
           setIsConfirming(false);
           return;
@@ -133,7 +135,7 @@ export function useAttendanceFlow(eventId: string) {
         await recordLeaveEarly.mutateAsync({
           memberId: memberData.id,
           eventId,
-          excuse: leaveExcuse,
+          excuse: effectiveLeaveExcuse,
         });
       } else {
         // On time
