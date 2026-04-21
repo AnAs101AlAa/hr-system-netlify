@@ -9,6 +9,8 @@ interface ReasonPopupProps {
   id?: string;
   label?: string;
   initialReason?: string;
+  /** If provided, called on submit. Popup stays open until the promise resolves. */
+  onSubmit?: (reason: string) => Promise<void>;
 }
 
 export default function ReasonPopup({
@@ -19,20 +21,33 @@ export default function ReasonPopup({
   id = "reason-popup-textarea",
   label = "Reason",
   initialReason = "",
+  onSubmit,
 }: ReasonPopupProps) {
   const [reason, setReason] = useState<string>(initialReason);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isOpen) setReason(initialReason || "");
   }, [isOpen, initialReason]);
 
   function handleCancel() {
-    onClose(1); // status.CANCELLED - allow closing without reason
+    if (isSubmitting) return;
+    onClose(1);
   }
 
-  function handleSubmit() {
-    if (reason.trim() === "") return; // Prevent submission if reason is empty
-    onClose(0, reason); // status.SUBMITTED
+  async function handleSubmit() {
+    if (reason.trim() === "") return;
+    if (onSubmit) {
+      setIsSubmitting(true);
+      try {
+        await onSubmit(reason);
+        onClose(0, reason);
+      } finally {
+        setIsSubmitting(false);
+      }
+    } else {
+      onClose(0, reason);
+    }
   }
 
   return (
@@ -51,16 +66,18 @@ export default function ReasonPopup({
         />
 
         <div className="flex justify-between mt-6">
-          <Button 
-            buttonText="Cancel" 
-            onClick={handleCancel} 
+          <Button
+            buttonText="Cancel"
+            onClick={handleCancel}
             type="ghost"
+            disabled={isSubmitting}
           />
           <Button
-            buttonText="Submit"
+            buttonText={isSubmitting ? "Submitting..." : "Submit"}
             onClick={handleSubmit}
             type="primary"
-            disabled={reason.trim() === ""}
+            disabled={reason.trim() === "" || isSubmitting}
+            loading={isSubmitting}
           />
         </div>
       </div>
