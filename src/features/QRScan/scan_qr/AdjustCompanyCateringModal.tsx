@@ -1,7 +1,6 @@
 import { useBulkConsumeCompanyCateringItems, useEventCompanyCatering } from "@/shared/queries/companies";
 import type { CateringItem } from "@/shared/types/catering";
 import type {
-  CompanyCateringAllocation,
   CompanyQRScanResponse,
 } from "@/shared/types/company";
 import { useEffect, useState } from "react";
@@ -127,6 +126,7 @@ const AdjustCompanyCateringModal = ({
                 </div>
                 <NumberField
                   label={`Quantity (Max: ${item.remainingAmount})`}
+                  id={`quantity-${item.id}`}
                   min={0}
                   max={item.remainingAmount}
                   value={String(

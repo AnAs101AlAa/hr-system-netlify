@@ -37,9 +37,11 @@ const EventDetails = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const userRole = user?.roles;
   const isAdmin = userRole?.includes("Admin") || false;
+  const isCateringAccount = userRole?.includes("Catering") || false;
+
   const [activeTab, setActiveTab] = useState<
     "attendance" | "vest" | "catering" | "companies"
-  >("attendance");
+  >(isCateringAccount ? "catering" : "attendance");
 
   const {
     data: event,
@@ -186,12 +188,14 @@ const EventDetails = () => {
     <WithNavbar>
       <div className="min-h-screen bg-background p-4 text-text-body-main">
         <div className="max-w-6xl mx-auto">
-          <EventDetailsHeader 
-            onBack={handleBack} 
-            isAdmin={isAdmin}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
+          {!isCateringAccount && (
+            <EventDetailsHeader 
+              onBack={handleBack} 
+              isAdmin={isAdmin}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+          )}
           <EventInformation
             event={event}
             attendees={attendees || []}

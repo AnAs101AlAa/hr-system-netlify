@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Modal, NumberField, Button } from "tccd-ui";
-import type { AllocatedCateringItem, CateringItem } from "@/shared/types/catering";
+import type { CateringItem } from "@/shared/types/catering";
 import {
   useConsumeCateringItems,
   useEventCateringItems,
@@ -127,6 +127,7 @@ const AdjustMemberCateringModal = ({
                   )}
                 </div>
                 <NumberField
+                  id={`quantity-${item.id}`}
                   label={`Quantity (Max: ${item.remainingAmount})`}
                   min={0}
                   max={item.remainingAmount}

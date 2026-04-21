@@ -260,7 +260,7 @@ const ManageCateringModal = ({ isOpen, onClose, cateringData, eventId, membersDa
         title={"Manage catering items"}
         isOpen={isOpen}
         onClose={handleClose}
-        className="xl:max-w-3/4"
+        className="w-full sm:max-w-full max-w-full xl:max-w-3/4"
       >
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex flex-col gap-4 p-1">
@@ -405,6 +405,7 @@ const ManageCateringModal = ({ isOpen, onClose, cateringData, eventId, membersDa
                                   {editingId === item.id ? (
                                     <div className="flex items-center gap-1">
                                       <NumberField
+                                        id={`quantity-${item.id}`}
                                         className="w-20"
                                         labelClassName="hidden"
                                         label=""

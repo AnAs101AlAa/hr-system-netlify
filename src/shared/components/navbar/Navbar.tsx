@@ -3,11 +3,21 @@ import { NavLink, useLocation } from "react-router-dom";
 import logo from "@/assets/TCCD_logo.svg";
 import { useState } from "react";
 import LogoutModal from "./LogoutModal";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/shared/redux/store/store";
 
 const Navbar = () => {
   const { pathname } = useLocation();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
+  const { user } = useSelector((state: RootState) => state.auth);
+  const userRole = user?.roles;
+  const isCateringAccount = userRole?.includes("Catering") || false;
+
+  const filteredNavItems = isCateringAccount
+    ? NAV_ITEMS.filter(item => !(item.to === "/users" || item.to === "/form-builder" || item.to === '/judging-system/events' || item.to === "/"))
+    : NAV_ITEMS;
+    
   return (
     <header className="w-full flex justify-center px-3 py-3">
       <LogoutModal
@@ -25,7 +35,7 @@ const Navbar = () => {
         "
       >
         {/* Tabs */}
-        {NAV_ITEMS.map(({ to, title }, index) => {
+        {filteredNavItems.map(({ to, title }, index) => {
           const active =
             to === "/" ? pathname === "/" : pathname.startsWith(to);
           return (

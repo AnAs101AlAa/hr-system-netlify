@@ -1,10 +1,10 @@
 import { DashboardPage, LoginPage, EventDetails, PastEventsPage, FormView, FormSubmissionPage, UnauthorizedPage, EvaluationAnalysisPage, AdminJudgePage, FormBuilder, FormEditor, TeamEvaluationPage, JudgingSystemHomePage, EventSelectionPage, EvaluationDetailsPage, AssignedTeamsPage, UsersManagementPage } from "@/features";
 
 const routes: { path: string; Component: React.FC; protected?: boolean; roles?: string[] }[] = [
-  { path: "/", Component: DashboardPage, protected: true, roles: ["HR", "Head", "HighBoard", "Admin", "Vest"]},
+  { path: "/", Component: DashboardPage, protected: true, roles: ["HR", "Head", "HighBoard", "Admin", "Vest", "Catering"] },
   { path: "/login", Component: LoginPage },
-  { path: "/events/:id", Component: EventDetails, protected: true, roles: ["HR", "Head", "HighBoard", "Admin", "Vest"] },
-  { path: "/events", Component: PastEventsPage, protected: true, roles: ["HR", "Head", "HighBoard", "Admin", "Vest"] },
+  { path: "/events/:id", Component: EventDetails, protected: true, roles: ["HR", "Head", "HighBoard", "Admin", "Vest", "Catering"] },
+  { path: "/events", Component: PastEventsPage, protected: true, roles: ["HR", "Head", "HighBoard", "Admin", "Vest", "Catering"] },
   { path: "/form/:formId", Component: FormView },
   { path: "/form/finish", Component: FormSubmissionPage },
   { path: "/unauthorized", Component: UnauthorizedPage },

@@ -7,11 +7,11 @@ import toast from "react-hot-toast";
 import { Button } from "tccd-ui";
 import { useUpdateVestStatus, useVestStatus } from "@/shared/queries/events";
 import type { MemberData } from "@/shared/types/attendance";
-import { useEventCateringItems } from "@/shared/queries/catering";
+//import { useEventCateringItems } from "@/shared/queries/catering";
 import AdjustMemberCateringModal from "./AdjustMemberCateringModal";
 import AdjustCompanyCateringModal from "./AdjustCompanyCateringModal";
 import type { CompanyQRScanResponse } from "@/shared/types/company";
-import { useEventCompanyCatering } from "@/shared/queries/companies";
+//import { useEventCompanyCatering } from "@/shared/queries/companies";
 
 /**
  * Props for ScannerActions.
@@ -40,7 +40,7 @@ interface ScannerActionsProps {
   onReturnToEvents: () => void;
   onResetScanner: () => void;
   onReasonChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  eventType: string;
+  eventType?: string;
   eventId: string;
 }
 
@@ -62,15 +62,13 @@ const ScannerActions = ({
   onResetScanner,
   attendanceStatus = null,
   leaveExcuse = "",
-  eventType,
   eventId,
 }: ScannerActionsProps) => {
   const vestStatusUpdate = useUpdateVestStatus();
   const { data: vestStatus } = useVestStatus(memberData?.id || "", eventId);
-  const { data: cateringItems } = useEventCateringItems(eventId, memberData?.id, memberData ? true : false);
-  const { data: companyCateringItems } = useEventCompanyCatering(eventId, companyData?.companyId, companyData ? true : false);
+  // const { data: cateringItems } = useEventCateringItems(eventId, memberData?.id, memberData ? true : false);
+  // const { data: companyCateringItems } = useEventCompanyCatering(eventId, companyData?.companyId, companyData ? true : false);
 
-  const isNotMeeting = eventType !== "Meeting";
   const [currentVestStatus, setCurrentVestStatus] = useState<string>(vestStatus || "NotReceived");
   const [isMemberCateringModalOpen, setIsMemberCateringModalOpen] = useState(false);
   const [isCompanyCateringModalOpen, setIsCompanyCateringModalOpen] = useState(false);
@@ -166,15 +164,13 @@ const ScannerActions = ({
           disabled={isConfirmDisabled()}
           loading={isConfirming}
         />
-        {isNotMeeting && (
-          <Button
-            buttonText={getVestButtonText()}
-            onClick={handleVestStatus}
-            type="primary"
-            width="full"
-            loading={vestStatusUpdate.isPending}
-          />
-        )}
+        <Button
+          buttonText={getVestButtonText()}
+          onClick={handleVestStatus}
+          type="primary"
+          width="full"
+          loading={vestStatusUpdate.isPending}
+        />
         <Button
           buttonText="Adjust catering items"
           onClick={() => setIsMemberCateringModalOpen(true)}

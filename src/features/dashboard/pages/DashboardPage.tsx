@@ -26,9 +26,7 @@ const Dashboard = () => {
     ["Upcoming", "Running"]
   );
   const upcomingEvents = data?.items ?? [];
-  const totalCount = data?.totalCount ?? 0;
-
-  const totalPages = Math.ceil(totalCount / eventsPerPage);
+  const totalPages = data?.totalPages ?? 1;
 
   useEffect(() => {
     if (isError && error) {
