@@ -185,6 +185,32 @@ export const useBulkDeleteCompanyCateringAllocations = () => {
   });
 }
 
+export const useSendCompanyCateringAllocationsEmail = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      eventId,
+      companyId,
+      additionalEmails = [],
+    }: {
+      eventId: string;
+      companyId: string;
+      additionalEmails?: string[];
+    }) =>
+      companiesApiInstance.sendCompanyCateringAllocationsEmail(
+        eventId,
+        companyId,
+        additionalEmails
+      ),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: companyKeys.eventAllocations(variables.eventId),
+      });
+    },
+  });
+};
+
 export const useBulkSendCompanyCateringAllocationsEmail = () => {
   const queryClient = useQueryClient();
 

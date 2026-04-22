@@ -12,10 +12,11 @@ import type {
 import {
   useCompanyCateringItems,
   useDeleteCompany,
-  useBulkSendCompanyCateringAllocationsEmail,
 } from "@/shared/queries/companies";
 import EditCompanyCateringModal from "./EditCompanyCateringModal";
 import EditCompanyDataModal from "./EditCompanyDataModal";
+import SendCompanyEmailModal from "./SendCompanyEmailModal";
+import SendBulkCompanyEmailModal from "./SendBulkCompanyEmailModal";
 
 interface CompaniesDistributionListProps {
   companies: Company[];
@@ -47,12 +48,14 @@ const CompaniesDistributionList = ({
   const [isEditCompanyDataOpen, setIsEditCompanyDataOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
 
+  const [isSendEmailModalOpen, setIsSendEmailModalOpen] = useState(false);
+  const [isSendBulkEmailModalOpen, setIsSendBulkEmailModalOpen] = useState(false);
+
   const { user } = useSelector((state: RootState) => state.auth);
   const isAdmin = user?.roles.includes("Admin") || false;
 
   const { data: allItems } = useCompanyCateringItems();
   const deleteCompanyMutation = useDeleteCompany();
-  const sendEmailMutation = useBulkSendCompanyCateringAllocationsEmail();
 
   const { rows, itemColumns } = useMemo(() => {
     const itemsMap = new Map<string, { id: string; name: string }>();
@@ -140,21 +143,15 @@ const CompaniesDistributionList = ({
         companyId: company.companyId,
       });
       toast.success("Company deleted successfully");
-    } catch {
-      toast.error("Failed to delete company");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to delete company");
     }
   };
 
-  const handleSendEmail = async (companyId: string) => {
-    try {
-      await sendEmailMutation.mutateAsync({
-        eventId,
-        companyIds: [companyId],
-      });
-      toast.success("Email sent successfully");
-    } catch {
-      toast.error("Failed to send email");
-    }
+  const handleSendEmail = (companyId: string, companyName: string) => {
+    setEditingCompanyId(companyId);
+    setEditingCompanyName(companyName);
+    setIsSendEmailModalOpen(true);
   };
 
   const renderActionButton = (
@@ -201,10 +198,9 @@ const CompaniesDistributionList = ({
         {isAdmin && (
           <Button
             buttonText="Send Email"
-            onClick={() => handleSendEmail(row.companyId)}
+            onClick={() => handleSendEmail(row.companyId, row.companyName)}
             type="primary"
             width="auto"
-            disabled={sendEmailMutation.isPending}
           />
         )}
       </>
@@ -213,15 +209,25 @@ const CompaniesDistributionList = ({
 
   return (
     <div className="bg-white dark:bg-surface-glass-bg rounded-b-lg shadow-sm border border-dashboard-card-border border-t-0 overflow-x-auto -mt-1">
-      <div className="p-4 border-b border-dashboard-border flex md:flex-row flex-col gap-2 md:gap-4 items-center">
-        <h3 className="text-lg font-bold text-text-muted-foreground">
-          Companies {rows.length ? `(${rows.length})` : ""}
-        </h3>
-        <SearchField
-          placeholder="Search companies..."
-          value={searchKey}
-          onChange={(value) => setSearchKey(value)}
-        />
+      <div className="p-4 border-b border-dashboard-border flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div className="flex items-center gap-2 md:gap-4">
+          <h3 className="text-lg font-bold text-text-muted-foreground whitespace-nowrap">
+            Companies {rows.length ? `(${rows.length})` : ""}
+          </h3>
+          <SearchField
+            placeholder="Search companies..."
+            value={searchKey}
+            onChange={(value) => setSearchKey(value)}
+          />
+        </div>
+        {isAdmin && (
+          <Button
+            buttonText="Send Bulk Emails"
+            onClick={() => setIsSendBulkEmailModalOpen(true)}
+            type="primary"
+            width="auto"
+          />
+        )}
       </div>
 
       {displayedRows.length === 0 ? (
@@ -276,6 +282,22 @@ const CompaniesDistributionList = ({
         onClose={() => setIsEditCompanyDataOpen(false)}
         eventId={eventId}
         company={editingCompany}
+      />
+      {editingCompanyId && editingCompanyName && (
+        <SendCompanyEmailModal
+          isOpen={isSendEmailModalOpen}
+          onClose={() => setIsSendEmailModalOpen(false)}
+          companyId={editingCompanyId}
+          companyName={editingCompanyName}
+          eventId={eventId}
+        />
+      )}
+
+      <SendBulkCompanyEmailModal
+        isOpen={isSendBulkEmailModalOpen}
+        onClose={() => setIsSendBulkEmailModalOpen(false)}
+        eventId={eventId}
+        companies={companies}
       />
     </div>
   );
