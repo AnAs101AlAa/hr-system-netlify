@@ -111,14 +111,28 @@ class CompaniesApi {
     });
   }
 
+  async sendCompanyCateringAllocationsEmail(
+    eventId: string,
+    companyId: string,
+    additionalEmails: string[] = []
+  ): Promise<{ requestedCount: number; sentCount: number }> {
+    const response = await systemApi.post<{ success: boolean; statusCode: number; message: string; data: { requestedCount: number; sentCount: number } }>(`${COMPANY_CATERING_API_URL}/allocations/send-email`, {
+      eventId,
+      companyId,
+      additionalEmails
+    });
+    return response.data.data;
+  }
+
   async bulkSendCompanyCateringAllocationsEmail(
     eventId: string,
     companyIds: string[]
-  ): Promise<void> {
-    await systemApi.post(`${COMPANY_CATERING_API_URL}/allocations/send-email/bulk`, {
+  ): Promise<{ requestedCount: number; sentCount: number }> {
+    const response = await systemApi.post<{ success: boolean; statusCode: number; message: string; data: { requestedCount: number; sentCount: number } }>(`${COMPANY_CATERING_API_URL}/allocations/send-email/bulk`, {
       eventId,
       companyIds
     });
+    return response.data.data;
   }
 
   async consumeCompanyCateringItem(
