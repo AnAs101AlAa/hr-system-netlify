@@ -82,7 +82,8 @@ class CompaniesApi {
       eventId,
       cateringItemId,
       amount
-    });
+    }, { timeout: 600000 } // 10 minutes timeout
+    );
   }
 
   async bulkAllocateCompanyCateringItems(
