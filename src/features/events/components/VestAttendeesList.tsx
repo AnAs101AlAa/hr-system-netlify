@@ -101,37 +101,33 @@ const VestAttendeesList = ({
 
   const handleModalConfirm = async () => {
     if (modalState.attendee && modalState.action) {
-      try {
-        await updateEventStatus.mutateAsync({
-          eventId: eventId || "",
-          memberId: modalState.attendee.id || "",
-          action: modalState.action === "assign" ? "Received" : "Returned",
-        });
+      await updateEventStatus.mutateAsync({
+        eventId: eventId || "",
+        memberId: modalState.attendee.id || "",
+        action: modalState.action === "assign" ? "Received" : "Returned",
+      });
 
-        setAttendees(
-          attendees.map((attendee: VestAttendee) => {
-            if (attendee.id === modalState.attendee?.id) {
-              return {
-                ...attendee,
-                status:
-                  modalState.action === "assign" ? "Received" : "Returned",
-              };
-            }
-            return attendee;
-          })
-        );
+      setAttendees(
+        attendees.map((attendee: VestAttendee) => {
+          if (attendee.id === modalState.attendee?.id) {
+            return {
+              ...attendee,
+              status:
+                modalState.action === "assign" ? "Received" : "Returned",
+            };
+          }
+          return attendee;
+        })
+      );
 
-        toast.success(
-          `Vest ${
-            modalState.action === "assign" ? "assigned" : "returned"
-          } successfully.`
-        );
-        setTimeout(() => {
-          setModalState({ isOpen: false, attendee: null, action: null });
-        }, 500);
-      } catch {
-        toast.error("Failed to update vest status. Please try again.");
-      }
+      toast.success(
+        `Vest ${modalState.action === "assign" ? "assigned" : "returned"
+        } successfully.`
+      );
+      setTimeout(() => {
+        setModalState({ isOpen: false, attendee: null, action: null });
+      }, 500);
+
     }
   };
 

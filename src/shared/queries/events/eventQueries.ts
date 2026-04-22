@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { eventsApiInstance } from "./eventApi";
 import toast from "react-hot-toast";
 import type { Event } from "@/shared/types/event";
+import { getErrorMessage } from "@/shared/utils";
 
 export const eventKeys = {
   all: ["events"] as const,
@@ -64,7 +65,10 @@ export const useCheckAttendanceStatus = () => {
       try {
         return await eventsApiInstance.checkAttendanceStatus(memberId, eventId);
       } catch (error) {
-        toast.error("Check attendance status failed. Please try again.");
+        toast.error(
+          getErrorMessage(error) ||
+            "Failed to check attendance status. Please try again.",
+        );
         throw error;
       }
     },
@@ -87,10 +91,13 @@ export const useRecordLateArrivalExcuse = () => {
         return await eventsApiInstance.recordLateArrivalExcuse(
           memberId,
           eventId,
-          excuse
+          excuse,
         );
       } catch (error) {
-        toast.error("Late arrival excuse failed. Please try again.");
+        toast.error(
+          getErrorMessage(error) ||
+            "Late arrival excuse failed. Please try again.",
+        );
         throw error;
       }
     },
@@ -113,10 +120,13 @@ export const useRecordLeaveEarly = () => {
         return await eventsApiInstance.recordLeaveEarly(
           memberId,
           eventId,
-          excuse
+          excuse,
         );
       } catch (error) {
-        toast.error("Leave early excuse failed. Please try again.");
+        toast.error(
+          getErrorMessage(error) ||
+            "Leave early excuse failed. Please try again.",
+        );
         throw error;
       }
     },
@@ -140,12 +150,18 @@ export const useAllEvents = (
   pageSize: number,
   eventType: string,
   title: string,
-  eventStatuses: string[]
+  eventStatuses: string[],
 ) => {
   return useQuery({
     queryKey: [...eventKeys.lists(), page, eventType, title, eventStatuses],
     queryFn: async () => {
-      const data = await eventsApiInstance.fetchAllEvents(page, pageSize, eventType, title, eventStatuses);
+      const data = await eventsApiInstance.fetchAllEvents(
+        page,
+        pageSize,
+        eventType,
+        title,
+        eventStatuses,
+      );
       return data;
     },
   });
@@ -241,8 +257,14 @@ export const useEventAttendees = (eventId: string, enabled: boolean = true) => {
   return useQuery({
     queryKey: eventKeys.eventAttendees(eventId),
     queryFn: async () => {
-      const data = await eventsApiInstance.fetchEventAttendees(eventId);
-      return data;
+      try {
+        const data = await eventsApiInstance.fetchEventAttendees(eventId);
+        return data;
+      } catch (error) {
+        toast.error(getErrorMessage(error) || "Failed to fetch attendees. Please try again.");
+        throw error;
+      }
+     
     },
     enabled: !!eventId && enabled,
   });
@@ -259,7 +281,15 @@ export const useUpdateVestStatus = () => {
       memberId: string;
       action: "Returned" | "Received";
     }) => {
-      await eventsApiInstance.updateVestStatus(memberId, eventId, action);
+      try {
+        await eventsApiInstance.updateVestStatus(memberId, eventId, action);
+      } catch (error) {
+        toast.error(
+          getErrorMessage(error) ||
+            "Failed to update vest status. Please try again.",
+        );
+        throw error;
+      }
     },
   });
 };
@@ -269,8 +299,17 @@ export const useVestTimeline = (memberId: string, eventId: string) => {
   return useQuery({
     queryKey: eventKeys.vestTimeline(eventId, memberId),
     queryFn: async () => {
-      const data = await eventsApiInstance.fetchVestTimeline(memberId, eventId);
-      return data;
+      try {
+        const data = await eventsApiInstance.fetchVestTimeline(memberId, eventId);
+        return data;
+      }
+      catch (error) {
+        toast.error(
+          getErrorMessage(error) ||
+            "Failed to fetch vest timeline. Please try again.",
+        );
+        throw error;
+      }
     },
     enabled: !!memberId && !!eventId,
   });
@@ -280,19 +319,38 @@ export const useVestStatus = (memberId: string, eventId: string) => {
   return useQuery({
     queryKey: eventKeys.checkAttendanceStatus(eventId, memberId),
     queryFn: async () => {
-      const data = await eventsApiInstance.fetchVestStatus(memberId, eventId);
-      return data;
+      try {
+        const data = await eventsApiInstance.fetchVestStatus(memberId, eventId);
+        return data;
+      } catch (error) {
+        toast.error(
+          getErrorMessage(error) ||
+            "Failed to fetch vest status. Please try again.",
+        );
+        throw error;
+      }
     },
     enabled: !!memberId && !!eventId,
   });
 };
 
-export const useVestEventAttendees = (eventId: string, enabled: boolean = true) => {
+export const useVestEventAttendees = (
+  eventId: string,
+  enabled: boolean = true,
+) => {
   return useQuery({
     queryKey: [...eventKeys.eventAttendees(eventId), "vest"],
     queryFn: async () => {
-      const data = await eventsApiInstance.fetchVestEventAttendees(eventId);
-      return data;
+      try {
+        const data = await eventsApiInstance.fetchVestEventAttendees(eventId);
+        return data;
+      } catch (error) {
+        toast.error(
+          getErrorMessage(error) ||
+            "Failed to fetch vest event attendees. Please try again.",
+        );
+        throw error;
+      }
     },
     enabled: !!eventId && enabled,
   });
