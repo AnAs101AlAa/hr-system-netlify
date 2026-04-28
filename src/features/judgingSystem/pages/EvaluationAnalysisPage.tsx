@@ -38,6 +38,8 @@ export default function EvaluationAnalysisPage() {
 
   const isEvaluated = (teamId: string, judgeId: string): boolean => {
     try {
+      console.log(searchData?.evaluations);
+
       const evaluation = searchData?.evaluations.find(
         (evaluation) =>
           evaluation.teamId === teamId && evaluation.judgeId === judgeId,
@@ -82,8 +84,9 @@ export default function EvaluationAnalysisPage() {
         try {
           const teamEvaluations = await getAllTeamEvaluations(team.id);
           if (teamEvaluations && Array.isArray(teamEvaluations)) {
+            console.log(`Evaluations for team ${team.name}:`, teamEvaluations);
             teamEvaluations.forEach((evaluation) => {
-              const judgeId = evaluation.judgeId || "";
+              const judgeId = evaluation.judgeName || "";
               evaluatedJudgeIds.add(judgeId);
               allEvaluations.push({
                 teamId: team.id,
@@ -128,7 +131,7 @@ export default function EvaluationAnalysisPage() {
         </p>
         <div className="max-w-md mx-auto mb-6 flex justify-center gap-2">
           <SearchField
-            placeholder="Search by team or judge name"
+            placeholder="Search by team code..."
             value={searchTerm}
             onChange={(value) => setSearchTerm(value)}
           />
