@@ -22,32 +22,32 @@ export async function getEventTeams(
   statusKey: string,
   mode: string,
 ): Promise<any> {
-  if (mode === "admin") {
-    let SortBy: string | undefined = undefined;
-    let Order: string | undefined = undefined;
+  let SortBy: string | undefined = undefined;
+  let Order: string | undefined = undefined;
 
-    if (sortBy) {
-      if (sortBy === "nameAsc" || sortBy === "nameDesc") {
-        SortBy = "Name";
-        Order = sortBy === "nameAsc" ? "Asc" : "Desc";
-      } else {
-        SortBy = "Score";
-        Order = sortBy === "scoreAsc" ? "Asc" : "Desc";
-      }
+  if (sortBy) {
+    if (sortBy === "nameAsc" || sortBy === "nameDesc") {
+      SortBy = "Name";
+      Order = sortBy === "nameAsc" ? "Asc" : "Desc";
+    } else {
+      SortBy = "Score";
+      Order = sortBy === "scoreAsc" ? "Asc" : "Desc";
     }
+  }
 
-    const params: Record<string, any> = {
-      page,
-      count,
-    };
+  const params: Record<string, any> = {
+    page,
+    count,
+  };
 
-    if (SortBy) params.OrderBy = SortBy;
-    if (Order) params.SortingDirection = Order;
-    if (nameKey) params.Name = nameKey;
-    if (codeKey) params.Code = codeKey;
-    if (courseKey) params.Course = courseKey;
-    if (departmentKey) params.Department = departmentKey;
-    if (statusKey) params.Status = statusKey;
+  if (SortBy) params.OrderBy = SortBy;
+  if (Order) params.SortingDirection = Order;
+  if (nameKey) params.Name = nameKey;
+  if (codeKey) params.Code = codeKey;
+  if (courseKey) params.Course = courseKey;
+  if (departmentKey) params.Department = departmentKey;
+  if (statusKey) params.Status = statusKey;
+  if (mode === "admin") {
 
     const response = await systemApi.get(
       `${JUDGING_API_URL}/Team/event/${eventId}`,
@@ -55,12 +55,7 @@ export async function getEventTeams(
     );
     return { total: response.data.data.total, teams: response.data.data.data };
   } else {
-    const params: Record<string, any> = {
-      PageNumber: page,
-      PageSize: count,
-      eventId: eventId,
-    };
-
+    
     const response = await systemApi.get(`${JUDGING_API_URL}/Judge/teams`, {
       params,
     });

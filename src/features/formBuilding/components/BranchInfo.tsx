@@ -69,7 +69,7 @@ const BranchInfo = forwardRef<FormBranchHandle, BranchInfoProps>(
           Page Branching
         </p>
         <p className="text-[13px] md:text-[14px] lg:text-[15px] text-inactive-tab-text dark:text-text-muted-foreground">
-          Select the <strong className="text-black dark:text-white">(IN PAGE)</strong> question number to base the branching on, the
+          Select the <strong className="text-black dark:text-white">(TOTAL)</strong> question number to base the branching on, the
           answer to trigger or exclude from triggering the branch based on the
           selected mode, and the page to skip to.
         </p>

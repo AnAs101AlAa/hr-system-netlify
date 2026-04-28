@@ -126,10 +126,9 @@ export default function FormView() {
     } else if (formData && currentPage < formData.pages.length - 1) {
       const branches = formData.pages[currentPage].toBranch;
       if (branches && branches.length > 0) {
-        const prevQuestionsCount = formData.pages.slice(0, currentPage).map((p) => p.questions.length).reduce((a, b) => a + b, 0);
 
         const currentAnswer = answerArray.find((a) =>
-          branches.some((b) => b.questionNumber === (a.qid - prevQuestionsCount)),
+          branches.some((b) => b.questionNumber === a.qid),
         );
         const selectedBranch: formBranch = branches.filter((b) => {
           return (

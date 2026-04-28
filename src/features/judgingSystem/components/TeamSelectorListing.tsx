@@ -16,6 +16,7 @@ import { FaFilter } from "react-icons/fa";
 import type { FilterSearchParams } from "../types";
 import FilterModal from "./FiltersModal";
 import TeamStatusBadge from "./TeamStatusBadge";
+import DEPARTMENT_LIST from "@/constants/departments";
 
 const TeamSelectorListing = () => {
   const { eventId, judgeId } = useParams<{
@@ -83,7 +84,10 @@ const TeamSelectorListing = () => {
           columns={[
             { key: "name", label: "Team Name", width: "w-1/3" },
             { key: "code", label: "Team Code", width: "w-1/4" },
-            { key: "department", label: "Department", width: "w-1/4" },
+            { key: "department", label: "Department", width: "w-1/4", formatter: (value: any) => {
+              return DEPARTMENT_LIST.find((dept) => dept.value === value)?.label;
+              }
+            },
             { key: "course", label: "Course", width: "w-1/6" },
             {
               key: "status",
@@ -124,7 +128,10 @@ const TeamSelectorListing = () => {
           )}
           renderedFields={[
             { key: "code", label: "Team Code" },
-            { key: "department", label: "Department" },
+            { key: "department", label: "Department", formatter: (value: any) => {
+              return DEPARTMENT_LIST.find((dept) => dept.value === value)?.label || value;
+              }
+            },
             { key: "course", label: "Course" },
             {
               key: "status",
