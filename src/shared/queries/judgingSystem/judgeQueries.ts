@@ -56,7 +56,7 @@ const judgeKeys = {
     [...judgeKeys.all, "evaluations", teamId] as const,
 };
 
-export const useResearchTeams = (
+export const  useResearchTeams = (
   eventId: string,
   page: number,
   count: number,
@@ -67,6 +67,7 @@ export const useResearchTeams = (
   departmentKey: string,
   statusKey: string,
   mode: string,
+  enableAutoFetch = true,
 ): UseQueryResult<{ teams: Team[]; total: number }, Error> => {
   return useQuery({
     queryKey: judgeKeys.getTeams(
@@ -102,6 +103,7 @@ export const useResearchTeams = (
 
       return { teams: formattedTeams, total: teams.total };
     },
+    enabled: enableAutoFetch,
   });
 };
 
