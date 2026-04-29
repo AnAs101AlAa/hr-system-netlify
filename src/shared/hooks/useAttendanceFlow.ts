@@ -70,7 +70,6 @@ export function useAttendanceFlow(eventId: string) {
       setIsScanning(false);
       try {
         const parsedData = JSON.parse(detectedCodes[0].rawValue);
-        console.log(parsedData);
 
         if (parsedData && typeof parsedData.UserId === "string") {
           await fetchMemberData(parsedData.UserId);

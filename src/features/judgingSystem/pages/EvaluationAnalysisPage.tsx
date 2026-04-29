@@ -17,13 +17,11 @@ interface SearchData {
 
 export default function EvaluationAnalysisPage() {
   const { eventId } = useParams<{ eventId: string }>();
-  const [searchTerm, setSearchTerm] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
   const [searchData, setSearchData] = useState<SearchData | null>(null);
 
   const getJudgesMutation = useGetAssignedJudgesForTeam();
-  const { refetch: refetchTeams } = useResearchTeams(
+  const { refetch: refetchTeams, isLoading: isSearching } = useResearchTeams(
     eventId || "",
     1,
     100,
@@ -34,12 +32,11 @@ export default function EvaluationAnalysisPage() {
     "",
     "",
     "admin",
+    false,
   );
 
   const isEvaluated = (teamId: string, judgeId: string): boolean => {
     try {
-      console.log(searchData?.evaluations);
-
       const evaluation = searchData?.evaluations.find(
         (evaluation) =>
           evaluation.teamId === teamId && evaluation.judgeId === judgeId,
@@ -51,17 +48,13 @@ export default function EvaluationAnalysisPage() {
   };
 
   const handleSearch = async () => {
-    if (!searchTerm.trim()) return;
-
-    setIsSearching(true);
-    setSearchQuery(searchTerm);
+    if (!searchQuery.trim()) return;
 
     try {
       const { data: teams } = await refetchTeams();
 
       if (!teams?.teams || teams.teams.length === 0) {
         setSearchData({ teams: [], judges: [], evaluations: [] });
-        setIsSearching(false);
         return;
       }
 
@@ -84,9 +77,8 @@ export default function EvaluationAnalysisPage() {
         try {
           const teamEvaluations = await getAllTeamEvaluations(team.id);
           if (teamEvaluations && Array.isArray(teamEvaluations)) {
-            console.log(`Evaluations for team ${team.name}:`, teamEvaluations);
             teamEvaluations.forEach((evaluation) => {
-              const judgeId = evaluation.judgeName || "";
+              const judgeId = evaluation.judgeId || "";
               evaluatedJudgeIds.add(judgeId);
               allEvaluations.push({
                 teamId: team.id,
@@ -115,8 +107,6 @@ export default function EvaluationAnalysisPage() {
       });
     } catch (error) {
       console.error("Error during search:", error);
-    } finally {
-      setIsSearching(false);
     }
   };
 
@@ -132,15 +122,15 @@ export default function EvaluationAnalysisPage() {
         <div className="max-w-md mx-auto mb-6 flex justify-center gap-2">
           <SearchField
             placeholder="Search by team code..."
-            value={searchTerm}
-            onChange={(value) => setSearchTerm(value)}
+            value={searchQuery}
+            onChange={(value) => setSearchQuery(value)}
           />
           <Button
             buttonText={isSearching ? "Searching..." : "Search"}
             type="primary"
             onClick={handleSearch}
             width="fit"
-            disabled={isSearching || !searchTerm.trim()}
+            disabled={isSearching || !searchQuery.trim()}
           />
         </div>
         <hr className="border-surface-glass-border/10 mb-4" />
