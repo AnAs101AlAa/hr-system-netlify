@@ -64,11 +64,11 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
             const courseIndex = headers.findIndex((h: string) => h.toLowerCase().includes("course"));
             const codeIndex = headers.findIndex((h: string) => h.toLowerCase().includes("code"));
             const departmentIndex = headers.findIndex((h: string) => h.toLowerCase().includes("department"));
-            const membersIndex = headers.findIndex((h: string) => h.toLowerCase().includes("member") || h.toLowerCase().includes("members"));
+            const membersIndex = headers.findIndex((h: string) => h.toLowerCase().includes("member") || h.toLowerCase().includes("members") || h.toLowerCase().includes("team members"));
             const isEvaluatedIndex = headers.findIndex((h: string) => h.toLowerCase().includes("evaluated"));
 
             // Validate required columns exist
-            if (nameIndex === -1 || courseIndex === -1 || codeIndex === -1 || departmentIndex === -1 || membersIndex === -1 || isEvaluatedIndex === -1) {
+            if (nameIndex === -1 || courseIndex === -1 || codeIndex === -1 || departmentIndex === -1 || membersIndex === -1) {
                 setUploadError("Missing required columns. Please ensure your Excel has: Team Name, Course, Code, Department, and Team Members columns.");
                 setIsProcessingFile(false);
                 return;
@@ -95,7 +95,7 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
                 const departmentLabel = String(row[departmentIndex] || "").trim();
                 const membersStr = String(row[membersIndex] || "").trim();
                 const evaluatedStr = String(row[isEvaluatedIndex] || "").trim();
-                const evaluated = evaluatedStr.toLowerCase() === "yes" || evaluatedStr.toLowerCase() === "true";
+                const evaluated = evaluatedStr ? evaluatedStr.toLowerCase() === "yes" || evaluatedStr.toLowerCase() === "true" : false;
 
                 // Skip rows with empty required fields
                 if (!teamName || !course || !code || !departmentLabel) continue;
