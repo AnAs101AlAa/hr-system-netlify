@@ -291,12 +291,11 @@ export const useGetJudgesForEvent = (
   page: number,
   count: number,
   nameKey: string,
-): UseQueryResult<Judge[], Error> => {
+): UseQueryResult<{ total: number; hasNextPage: boolean; hasPreviousPage: boolean; data: Judge[] }, Error> => {
   return useQuery({
     queryKey: ["judgingSystem", "judges", page, count, nameKey],
     queryFn: async () => {
-      const judges = await JudgeAPI.getJudgesForEvent(page, count, nameKey);
-      return judges;
+      return await JudgeAPI.getJudgesForEvent(page, count, nameKey);
     },
   });
 };
@@ -451,7 +450,7 @@ export const useGetJudgeEvaluationProgress = (
   judgeId: string,
   eventId: string,
 ): UseQueryResult<
-  { teamId: string; teamName: string; isScored: boolean }[],
+  { teamId: string; teamName: string; teamCode: string, isScored: boolean }[],
   Error
 > => {
   return useQuery({

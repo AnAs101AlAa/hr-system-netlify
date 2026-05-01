@@ -197,7 +197,7 @@ export async function getJudgesForEvent(
   pagNumber: number,
   pageSize: number,
   nameKey: string,
-): Promise<Judge[]> {
+): Promise<{total: number, hasNextPage: boolean, hasPreviousPage: boolean, data: Judge[]}> {
   const params: Record<string, any> = {
     PageNumber: pagNumber,
     PageSize: pageSize,
@@ -207,7 +207,7 @@ export async function getJudgesForEvent(
   const response = await systemApi.get(`${JUDGING_API_URL}/Admin/judges`, {
     params,
   });
-  return response.data.data.data;
+  return response.data.data;
 }
 
 export async function createJudge(judgeData: Judge): Promise<void> {
@@ -347,7 +347,7 @@ export async function exportEvaluationsToExcel(eventId: string): Promise<Blob> {
 export async function getJudgeEvaluationProgress(
   judgeId: string,
   eventId: string,
-): Promise<{ teamId: string; teamName: string; isScored: boolean }[]> {
+): Promise<{ teamId: string; teamName: string; teamCode: string; isScored: boolean }[]> {
   const response = await systemApi.get(
     `${JUDGING_API_URL}/Admin/research-attendance/judges/${judgeId}/events/${eventId}/teams/status`,
   );

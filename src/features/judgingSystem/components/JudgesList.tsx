@@ -5,7 +5,7 @@ import {
   useGetJudgesForEvent,
   useExportEvaluationsToExcel,
 } from "@/shared/queries/judgingSystem/judgeQueries";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TbListDetails } from "react-icons/tb";
 import { HiOutlineDocumentDownload } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
@@ -19,12 +19,16 @@ const JudgesList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [judgeName, setJudgeName] = useState("");
   const {
-    data: judges,
+    data: judgesData,
     isLoading,
     isError,
   } = useGetJudgesForEvent(currentPage, 10, judgeName);
   const { mutate: exportEvaluations, isPending: isExporting } =
     useExportEvaluationsToExcel();
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [judgeName]);
 
   const handleExport = () => {
     if (!eventId) return;
@@ -58,7 +62,7 @@ const JudgesList = () => {
       <div className="p-4 border-b border-surface-glass-border/10 space-y-2">
         <div className="flex items-center justify-between mb-4">
           <p className="text-md md:text-lg lg:text-xl font-bold text-text-muted-foreground">
-            Judges {judges ? `(${judges.length})` : ""}
+            Judges {judgesData ? `(${judgesData.total})` : ""}
           </p>
           <div className="flex gap-2 items-center justify-center">
             <FaChevronLeft
@@ -78,12 +82,12 @@ const JudgesList = () => {
             </span>
             <FaChevronRight
               className={`cursor-pointer size-4 ${
-                judges && judges.length < 10
-                  ? "text-text-muted-foreground/50 cursor-not-allowed"
-                  : "text-text-body-main hover:text-primary"
+                judgesData && judgesData.hasNextPage
+                  ? "text-text-body-main hover:text-primary"
+                  : "text-text-muted-foreground/50 cursor-not-allowed"
               }`}
               onClick={() => {
-                if (judges && judges.length === 10) {
+                if (judgesData && judgesData.hasNextPage) {
                   setCurrentPage(currentPage + 1);
                 }
               }}
@@ -134,7 +138,7 @@ const JudgesList = () => {
         <>
           {/* Desktop Table View */}
           <Table
-            items={judges || []}
+            items={judgesData?.data || []}
             columns={[
               { key: "name", label: "Name", width: "w-1/2" },
               { key: "email", label: "Email", width: "w-1/2" },
@@ -166,7 +170,7 @@ const JudgesList = () => {
             )}
           />
           <CardView
-            items={judges || []}
+            items={judgesData?.data || []}
             titleKey="name"
             renderedFields={[{ key: "email", label: "Email" }]}
             modalTitle="Confirm Action"
