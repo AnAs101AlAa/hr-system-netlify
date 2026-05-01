@@ -14,7 +14,15 @@ export default function useManageJudgeModalUtils () {
 
         if(!judgeDataState?.firstName || judgeDataState.firstName.trim() === "") errors.push({attr: "firstName", value: "Judge first name is required."});
         if(!judgeDataState?.lastName || judgeDataState.lastName.trim() === "") errors.push({attr: "lastName", value: "Judge last name is required."});
-        if(!judgeDataState?.password || judgeDataState.password.trim() === "") errors.push({attr: "password", value: "Judge password is required."});
+        if(!judgeDataState?.password || judgeDataState.password.trim() === "") {
+            errors.push({attr: "password", value: "Judge password is required."});
+        } else {
+            const pwd = judgeDataState.password.trim();
+            const strongPwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
+            if(!strongPwdRegex.test(pwd)) {
+                errors.push({attr: "password", value: "Password must include uppercase, lowercase, number, and special character."});
+            }
+        }
         return errors;
     }
 

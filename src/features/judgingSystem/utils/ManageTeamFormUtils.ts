@@ -60,12 +60,12 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
             const headers = jsonData[0].map((h: any) => String(h).toLowerCase().trim());
             
             // Find column indices
-            const nameIndex = headers.findIndex((h: string) => h.includes("team name") || h.includes("name"));
-            const courseIndex = headers.findIndex((h: string) => h.includes("course"));
-            const codeIndex = headers.findIndex((h: string) => h.includes("code"));
-            const departmentIndex = headers.findIndex((h: string) => h.includes("department"));
-            const membersIndex = headers.findIndex((h: string) => h.includes("member") || h.includes("members"));
-            const isEvaluatedIndex = headers.findIndex((h: string) => h.includes("evaluated"));
+            const nameIndex = headers.findIndex((h: string) => h.toLowerCase().includes("team name") || h.toLowerCase().includes("name"));
+            const courseIndex = headers.findIndex((h: string) => h.toLowerCase().includes("course"));
+            const codeIndex = headers.findIndex((h: string) => h.toLowerCase().includes("code"));
+            const departmentIndex = headers.findIndex((h: string) => h.toLowerCase().includes("department"));
+            const membersIndex = headers.findIndex((h: string) => h.toLowerCase().includes("member") || h.toLowerCase().includes("members"));
+            const isEvaluatedIndex = headers.findIndex((h: string) => h.toLowerCase().includes("evaluated"));
 
             // Validate required columns exist
             if (nameIndex === -1 || courseIndex === -1 || codeIndex === -1 || departmentIndex === -1 || membersIndex === -1 || isEvaluatedIndex === -1) {

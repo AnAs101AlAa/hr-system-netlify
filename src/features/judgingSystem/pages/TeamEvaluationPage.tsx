@@ -145,7 +145,10 @@ export default function TeamEvaluationPage() {
                   <div className="flex gap-1 items-center">
                     <input
                       placeholder="0"
-                      type="text"
+                      type="number"
+                      min="0"
+                      max="10"
+                      step="0.1"
                       className="shadow-md bg-surface-glass-bg rounded-lg text-center focus:border-primary border-surface-glass-border/20 border transition-colors duration-200 outline-none text-text-body-main w-16 h-[27px] px-2"
                       value={
                         assessmentScores[question.id] === -1
