@@ -77,7 +77,7 @@ export async function uploadSubmissionMedia(formId: string, media: File) {
     formData,
     {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': undefined,
       },
       maxBodyLength: Infinity,
       maxContentLength: Infinity,
