@@ -9,11 +9,22 @@ export const systemApi = axios.create({
   },
 });
 
-// Request interceptor to handle FormData
-systemApi.interceptors.request.use((config) => {
-  // If data is FormData, remove the Content-Type header to let the browser set it with the boundary
-  if (config.data instanceof FormData) {
-    delete config.headers["Content-Type"];
-  }
-  return config;
+export const anonymousApi = axios.create({
+  baseURL: "https://test-prod.runasp.net/api",
+  timeout: 10000,
+  withCredentials: false,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Interceptor to handle FormData for both APIs
+[systemApi, anonymousApi].forEach((api) => {
+  api.interceptors.request.use((config) => {
+    if (config.data instanceof FormData) {
+      // Remove Content-Type header so browser sets it with proper boundary
+      delete config.headers["Content-Type"];
+    }
+    return config;
+  });
 });

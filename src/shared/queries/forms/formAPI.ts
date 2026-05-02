@@ -1,5 +1,5 @@
 import type { Answer } from "@/shared/types/question";
-import { systemApi } from "../axiosInstance";
+import { systemApi, anonymousApi } from "../axiosInstance";
 import type { serverRequestForm } from "@/shared/types/form";
 
 const FORMS_API_URL = "/v1/Form";
@@ -72,7 +72,7 @@ export async function uploadSubmissionMedia(formId: string, media: File) {
   const formData = new FormData();
   formData.append("file", media);
 
-  const response = await systemApi.post(
+  const response = await anonymousApi.post(
     `${FORMS_API_URL}/${formId}/upload`,
     formData,
     {
