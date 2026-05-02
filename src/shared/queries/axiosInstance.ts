@@ -18,11 +18,9 @@ export const anonymousApi = axios.create({
   },
 });
 
-// Interceptor to handle FormData for both APIs
 [systemApi, anonymousApi].forEach((api) => {
   api.interceptors.request.use((config) => {
     if (config.data instanceof FormData) {
-      // Remove Content-Type header so browser sets it with proper boundary
       delete config.headers["Content-Type"];
     }
     return config;
