@@ -36,8 +36,8 @@ export async function getEventTeams(
   }
 
   const params: Record<string, any> = {
-    page,
-    count,
+    pageNumber: page,
+    pageSize: count,
   };
 
   if (SortBy) params.OrderBy = SortBy;
@@ -53,7 +53,7 @@ export async function getEventTeams(
       `${JUDGING_API_URL}/Team/event/${eventId}`,
       { params },
     );
-    return { total: response.data.data.total, teams: response.data.data.data };
+    return { total: response.data.data.total, teams: response.data.data.data, hasNextPage: response.data.data.hasNextPage, hasPreviousPage: response.data.data.hasPreviousPage };
   } else {
     
     const response = await systemApi.get(`${JUDGING_API_URL}/Judge/teams`, {
@@ -62,6 +62,8 @@ export async function getEventTeams(
     return {
       total: response.data.data.teams.length,
       teams: response.data.data.teams,
+      hasNextPage: response.data.data.hasNextPage,
+      hasPreviousPage: response.data.data.hasPreviousPage,
     };
   }
 }
@@ -255,8 +257,8 @@ export async function getUnassignedTeamsForJudge(
   }
 
   const params: Record<string, any> = {
-    page,
-    count,
+    pageNumber: page,
+    pageSize: count,
     eventId,
   };
 

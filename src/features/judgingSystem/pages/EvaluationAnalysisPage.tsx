@@ -8,6 +8,7 @@ import {
 import { useParams } from "react-router-dom";
 import { getAllTeamEvaluations } from "@/shared/queries/judgingSystem/judgeAPI";
 import type { Team, Judge } from "@/shared/types/judgingSystem";
+import { FaChevronLeft } from "react-icons/fa";
 
 interface SearchData {
   teams: Team[];
@@ -112,7 +113,17 @@ export default function EvaluationAnalysisPage() {
 
   return (
     <WithNavbar>
-      <div className="bg-surface-glass-bg shadow-lg rounded-lg border-surface-glass-border/10 p-4 w-[96%] md:w-[94%] lg:w-[84%] xl:w-[73%] mx-auto border mt-6">
+      <div className="w-[96%] md:[94%] lg:w-[84%] xl:w-[73%] mx-auto mt-6">
+        <div className="flex gap-2 items-center cursor-pointer group" onClick={() => window.history.back()}>
+          <FaChevronLeft
+            className="size-4 cursor-pointer text-text-body-main group-hover:text-primary transition-colors duration-150"
+          />
+          <p className="text-md md:text-lg font-bold text-text-title group-hover:text-primary transition-colors duration-150">
+            Back
+          </p>
+        </div>
+      </div>
+      <div className="bg-surface-glass-bg shadow-lg rounded-lg border-surface-glass-border/10 p-4 w-[96%] md:w-[94%] lg:w-[84%] xl:w-[73%] mx-auto border mt-3xl">
         <p className="text-center text-[22px] md:text-[24px] lg:text-[26px] font-bold text-text-title">
           Evaluation Analysis
         </p>

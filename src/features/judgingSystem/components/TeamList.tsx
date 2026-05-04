@@ -90,7 +90,7 @@ const TeamList = ({
     debouncedStatusKey,
     isJudge ? "judge" : "admin",
   );
-
+  
   const teamData = teams?.teams || [];
 
   return (
@@ -108,7 +108,7 @@ const TeamList = ({
           <div className="flex gap-2 items-center justify-center">
             <FaChevronLeft
               className={`cursor-pointer size-4 ${
-                currentPage === 1
+                !(teams && teams.hasPreviousPage)
                   ? "text-text-muted-foreground/50 cursor-not-allowed"
                   : "text-text-body-main hover:text-primary"
               }`}
@@ -123,12 +123,12 @@ const TeamList = ({
             </span>
             <FaChevronRight
               className={`cursor-pointer size-4 ${
-                teams && teams.teams.length < 20
+                !(teams && teams.hasNextPage)
                   ? "text-text-muted-foreground/50 cursor-not-allowed"
                   : "text-text-body-main hover:text-primary"
               }`}
               onClick={() => {
-                if (teams && teams.teams.length === 20) {
+                if (teams && teams.hasNextPage) {
                   setCurrentPage(currentPage + 1);
                 }
               }}

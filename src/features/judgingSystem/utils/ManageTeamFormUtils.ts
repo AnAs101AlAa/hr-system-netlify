@@ -10,6 +10,8 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
     const [formErrors, setFormErrors] = useState<{attr: string, value:string}[]>([]);
     const [isProcessingFile, setIsProcessingFile] = useState(false);
     const [uploadError, setUploadError] = useState<string>("");
+    const [uploadedTeams, setUploadedTeams] = useState<Team[]>([]);
+    const [currentUploadIndex, setCurrentUploadIndex] = useState<number>(0);
     
     const createTeamMutation = useCreateTeam();
     const updateTeamMutation = useUpdateTeam();
@@ -142,49 +144,12 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
                 return;
             }
 
-            // Upload teams sequentially
-            let successCount = 0;
-            const failedTeams: string[] = [];
-
-            for (const team of teams) {
-                try {
-                    await new Promise((resolve, reject) => {
-                        createTeamMutation.mutate(
-                            { eventId: eventId, teamData: team },
-                            {
-                                onSuccess: () => {
-                                    successCount++;
-                                    resolve(true);
-                                },
-                                onError: (error) => {
-                                    failedTeams.push(team.name);
-                                    reject(error);
-                                }
-                            }
-                        );
-                    });
-                } catch (error) {
-                    // Error already handled in onError callback
-                    console.error(`Failed to upload team: ${team.name}`, error);
-                }
-            }
-
-            // Show results
-            if (successCount === teams.length) {
-                toast.success(`Successfully uploaded all ${teams.length} team(s)!`);
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } else if (successCount > 0) {
-                toast.success(`Uploaded ${successCount} out of ${teams.length} team(s).`);
-                if (failedTeams.length > 0) {
-                    toast.error(`Failed to upload: ${failedTeams.join(", ")}`);
-                }
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            } else {
-                toast.error("Failed to upload any teams. Please try again.");
+            // Store uploaded teams in state and load the first one into the form
+            setUploadedTeams(teams);
+            setCurrentUploadIndex(0);
+            if (teams.length > 0) {
+                setTeamDataState(teams[0]);
+                toast.success(`Loaded ${teams.length} team(s) from file. Click Submit to create them.`);
             }
             
             // Reset file input
@@ -199,29 +164,52 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
     };
 
     const submitTeam = () => {
-        setTeamDataState((prev : Team | undefined) => {
-            if (!prev) return prev;
-            return {id: prev.id, name: prev.name.trim(), code: prev.code.trim(), course: prev.course.trim(), department: prev.department.trim(), teamMembers: prev.teamMembers.map(mem => {return {...mem, name: mem.name.trim()}}), evaluated: prev.evaluated};
-        });
+        if (!teamDataState) return;
+        
+        // Create trimmed team data with properly mapped department
+        const trimmedTeamData: Team = {
+            id: teamDataState.id,
+            name: teamDataState.name.trim(),
+            code: teamDataState.code.trim(),
+            course: teamDataState.course.trim(),
+            department: teamDataState.department.trim(),
+            teamMembers: teamDataState.teamMembers.map(mem => ({ ...mem, name: mem.name.trim() })),
+            evaluated: teamDataState.evaluated
+        };
+
+        // Update state with trimmed data
+        setTeamDataState(trimmedTeamData);
+        
+        // Validate with trimmed data
         const errors = validateTeamData();
         if(errors.length > 0) {
             setFormErrors(errors);
             return;
         }
+        
         if(mode === 1) {
-            createTeamMutation.mutate({eventId: eventId, teamData: teamDataState as Team }, {
+            createTeamMutation.mutate({eventId: eventId, teamData: trimmedTeamData }, {
                 onSuccess: () => {
-                    toast.success("Team created successfully.");
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    // Check if there are more uploaded teams to process
+                    if (uploadedTeams.length > 0 && currentUploadIndex < uploadedTeams.length - 1) {
+                        const nextIndex = currentUploadIndex + 1;
+                        setCurrentUploadIndex(nextIndex);
+                        setTeamDataState(uploadedTeams[nextIndex]);
+                        setFormErrors([]);
+                        toast.success(`Team created successfully. Loading next team (${nextIndex + 1}/${uploadedTeams.length})...`);
+                    } else {
+                        toast.success("Team created successfully.");
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
                 },
                 onError: () => {
                     toast.error("Failed to create team, please try again later.")
                 }
             });
         } else if (mode === 2) {
-            updateTeamMutation.mutate({teamData: teamDataState as Team, oldTeamData: teamData as Team}, {
+            updateTeamMutation.mutate({teamData: trimmedTeamData, oldTeamData: teamData as Team}, {
                 onSuccess: () => {
                     toast.success("Team updated successfully.");
                     setTimeout(() => {
@@ -236,6 +224,7 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
     }
 
     const handleChangeTeamData = (attr: keyof Team, value: string) => {
+        console.log(`Changing team data: ${attr} = ${value}`);
         setTeamDataState((prev : Team | undefined) => prev ? {...prev, [attr]: value} : prev);
     }
 
@@ -271,6 +260,8 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
         isLoading,
         handleFileUpload,
         isProcessingFile,
-        uploadError
+        uploadError,
+        uploadedTeams,
+        currentUploadIndex
     }
 }
