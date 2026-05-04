@@ -96,9 +96,11 @@ export default function ManageTeamModal({
       )}
 
       <div className="space-y-3 md:mb-8 mb-6">
-        <p className="text-[16px] md:text-[17px] lg:text-[18px] font-semibold text-text-title">
-          Team Information
-        </p>
+        <div className="flex justify-between items-center">
+          <p className="text-[16px] md:text-[17px] lg:text-[18px] font-semibold text-text-title">
+            Team Information
+          </p>
+        </div>
         <div className="space-y-0.5">
           <InputField
             id="teamName"

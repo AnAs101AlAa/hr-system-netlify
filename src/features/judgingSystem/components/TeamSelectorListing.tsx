@@ -47,7 +47,7 @@ const TeamSelectorListing = () => {
     judgeId!,
     eventId!,
     1,
-    9999,
+    1000,
     sortOption,
     debouncedTeamName,
     debouncedTeamCode,
@@ -76,7 +76,7 @@ const TeamSelectorListing = () => {
     setStatusKey: setDebouncedStatusKey,
   };
 
-  const renderDataSections = (items: Team[], mode: number) => {
+  const renderDataSections = (items: Team[], mode: number) => {    
     return (
       <>
         <Table
@@ -85,7 +85,7 @@ const TeamSelectorListing = () => {
             { key: "name", label: "Team Name", width: "w-1/3" },
             { key: "code", label: "Team Code", width: "w-1/4" },
             { key: "department", label: "Department", width: "w-1/4", formatter: (value: any) => {
-              return DEPARTMENT_LIST.find((dept) => dept.value === value)?.label;
+              return DEPARTMENT_LIST.find((dept) => dept.value === value)?.label || value;
               }
             },
             { key: "course", label: "Course", width: "w-1/6" },
@@ -149,19 +149,20 @@ const TeamSelectorListing = () => {
 
   const handleAdjustTeam = (team: Team, op: boolean) => {
     if (op) {
+      // Add to assigned teams
       setAvailableTeams((prevState) => {
         const updatedTeams = prevState.teams.filter((t) => t.id !== team.id);
-        return { teams: updatedTeams, total: updatedTeams.length };
+        return { teams: updatedTeams, total: prevState.total - 1 };
       });
       setAssignedTeams((prevState) => [...prevState, team]);
     } else {
+      // Remove from assigned teams
       setAssignedTeams((prevState) => {
         const updatedTeams = prevState.filter((t) => t.id !== team.id);
         return updatedTeams;
       });
       setAvailableTeams((prevState) => {
-        const updatedTeams = [...prevState.teams, team];
-        return { teams: updatedTeams, total: updatedTeams.length };
+        return { teams: prevState.teams, total: prevState.total + 1 };
       });
     }
   };
@@ -210,6 +211,7 @@ const TeamSelectorListing = () => {
       setAvailableTeams({ teams: teams.teams, total: teams.total });
     }
   }, [teams, assignedTeamsData]);
+
 
   const isLoading = isTeamsLoading || isAssignedTeamsLoading;
   const isError = isTeamsError || isAssignedTeamsError;

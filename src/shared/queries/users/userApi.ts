@@ -49,8 +49,8 @@ export class UserApi {
     position?: string;
   }) {
     const queryParams: Record<string, string | number> = {
-      Page: params.page,
-      Count: params.count,
+      pageNumber: params.page,
+      pageSize: params.count,
     };
     if (params.name) queryParams.Name = params.name;
     if (params.committee && params.committee !== "All")

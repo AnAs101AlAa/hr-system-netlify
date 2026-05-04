@@ -19,8 +19,8 @@ export async function getForms(page: number, count: number, createdAfter: string
   }
 
   const params: Record<string, string | number> = {
-    page,
-    count,
+    pageNumber: page,
+    pageSize: count,
   };
 
   if (searchKey) params.Title = searchKey;
@@ -87,8 +87,8 @@ export async function uploadSubmissionMedia(formId: string, media: File) {
 
 export async function getFormAccessList(formId: string, nameKey: string, page: number, count: number) {
   const params: Record<string, string | number> = {
-    page,
-    count
+    pageNumber: page,
+    pageSize: count
   };
 
   if (nameKey) params.Name = nameKey;

@@ -68,7 +68,7 @@ export const  useResearchTeams = (
   statusKey: string,
   mode: string,
   enableAutoFetch = true,
-): UseQueryResult<{ teams: Team[]; total: number }, Error> => {
+): UseQueryResult<{ teams: Team[]; total: number, hasNextPage: boolean, hasPreviousPage: boolean }, Error> => {
   return useQuery({
     queryKey: judgeKeys.getTeams(
       page,
@@ -101,7 +101,7 @@ export const  useResearchTeams = (
         return { ...team, department: departmentName };
       });
 
-      return { teams: formattedTeams, total: teams.total };
+      return { teams: formattedTeams, total: teams.total, hasNextPage: teams.hasNextPage, hasPreviousPage: teams.hasPreviousPage };
     },
     enabled: enableAutoFetch,
   });
