@@ -31,8 +31,6 @@ export default function ManageTeamModal({
     handleFileUpload,
     isProcessingFile,
     uploadError,
-    uploadedTeams,
-    currentUploadIndex,
   } = useManageTeamModalUtils(eventId, mode, teamData);
 
   return (

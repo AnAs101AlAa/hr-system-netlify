@@ -55,6 +55,7 @@ export async function getEventTeams(
     );
     return { total: response.data.data.total, teams: response.data.data.data, hasNextPage: response.data.data.hasNextPage, hasPreviousPage: response.data.data.hasPreviousPage };
   } else {
+    params.EventId = eventId;
     
     const response = await systemApi.get(`${JUDGING_API_URL}/Judge/teams`, {
       params,
