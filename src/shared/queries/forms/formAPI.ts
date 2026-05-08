@@ -19,8 +19,8 @@ export async function getForms(page: number, count: number, createdAfter: string
   }
 
   const params: Record<string, string | number> = {
-    pageNumber: page,
-    pageSize: count,
+    page,
+    count,
   };
 
   if (searchKey) params.Title = searchKey;

@@ -88,7 +88,7 @@ export default function FormBuilder() {
                     onChange={(value) => setFormSearchTerm(value)}
                   />
                   <div className="max-h-[400px] overflow-y-auto mt-4 overflow-x-auto">
-                    {Forms?.length === 0 ? (
+                    {Forms?.data.length === 0 ? (
                       <p className="text-center text-inactive-tab-text mt-10">
                         No forms found.
                       </p>
@@ -106,7 +106,7 @@ export default function FormBuilder() {
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-200">
-                            {Forms?.map((form) => (
+                            {Forms?.data?.map((form) => (
                               <tr
                                 key={form.id}
                                 className={`text-[12px] md:text-[14px] lg:text-[16px] whitespace-nowrap rounded-lg cursor-pointer dark:text-text-body-main ${
@@ -143,12 +143,12 @@ export default function FormBuilder() {
                     </span>
                     <FaChevronRight
                       className={`cursor-pointer size-4 ${
-                        Forms && Forms.length < 15
+                        Forms && !Forms.hasNextPage
                           ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
                           : "text-contrast dark:text-text-title hover:text-primary"
                       }`}
                       onClick={() => {
-                        if (Forms && Forms.length === 15 && !isLoading) {
+                        if (Forms && Forms.hasNextPage && !isLoading) {
                           setCurrentPage(currentPage + 1);
                         }
                       }}
