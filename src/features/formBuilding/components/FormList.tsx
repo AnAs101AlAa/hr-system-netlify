@@ -35,7 +35,7 @@ const FormList = () => {
     filterType,
     sortOption,
   );
-
+  
   if (isError) {
     return (
       <ErrorScreen
@@ -50,7 +50,7 @@ const FormList = () => {
       <div className="p-4 border-b border-dashboard-border space-y-2">
         <div className="flex items-center justify-between mb-4">
           <p className="text-md md:text-lg lg:text-xl font-bold text-text-muted-foreground">
-            Forms {Forms ? `(${Forms.length})` : ""}
+            Forms {Forms ? `(${Forms.total})` : ""}
           </p>
           <div className="flex gap-2 items-center justify-center">
             <FaChevronLeft
@@ -65,9 +65,9 @@ const FormList = () => {
               Page {currentPage}
             </span>
             <FaChevronRight
-              className={`cursor-pointer size-4 ${Forms && Forms.length < 15 ? "text-gray-300 dark:text-gray-600 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
+              className={`cursor-pointer size-4 ${Forms && !Forms.hasNextPage ? "text-gray-300 dark:text-gray-600 cursor-not-allowed" : "text-contrast hover:text-primary"}`}
               onClick={() => {
-                if (Forms && Forms.length === 15) {
+                if (Forms && Forms.hasNextPage) {
                   setCurrentPage(currentPage + 1);
                 }
               }}
@@ -144,10 +144,10 @@ const FormList = () => {
       ) : (
         <>
           {/* Desktop Table View */}
-          <FormTable forms={Forms || []} />
+          <FormTable forms={Forms.data || []} />
 
           {/* Mobile Card View */}
-          <FormCardView forms={Forms || []} />
+          <FormCardView forms={Forms.data || []} />
         </>
       )}
     </div>

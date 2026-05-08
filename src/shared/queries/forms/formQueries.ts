@@ -17,13 +17,13 @@ const formKeys = {
     getFormAccessList: (formId: string, nameKey: string, page: number, count: number) => [...formKeys.getForm(formId), "accessList", { nameKey, page, count }] as const,
 }
 
-export const useForms = (page: number, count: number, createdAfter: string, searchKey: string, selectedType: string, sortBy: string): UseQueryResult<form[], Error> => {
+export const useForms = (page: number, count: number, createdAfter: string, searchKey: string, selectedType: string, sortBy: string) => {
     return useQuery({
         queryKey: formKeys.getForms(page, count, createdAfter, searchKey, selectedType, sortBy),
         queryFn: async () => {
             const data = await formAPI.getForms(page, count, createdAfter, searchKey, selectedType, sortBy);
             const mappedForms = data.data.data.map((form : serverResponseForm) => formResponseMapper(form, false));
-            return mappedForms;
+            return {...data.data, data: mappedForms};
         },
     })
 }
