@@ -35,10 +35,7 @@ export async function getEventTeams(
     }
   }
 
-  const params: Record<string, any> = {
-    pageNumber: page,
-    pageSize: count,
-  };
+  const params: Record<string, any> = {};
 
   if (SortBy) params.OrderBy = SortBy;
   if (Order) params.SortingDirection = Order;
@@ -47,14 +44,19 @@ export async function getEventTeams(
   if (courseKey) params.Course = courseKey;
   if (departmentKey) params.Department = departmentKey;
   if (statusKey) params.Status = statusKey;
-  if (mode === "admin") {
 
+  if (mode === "admin") {
+    params.page = page;
+    params.count = count;
+    
     const response = await systemApi.get(
       `${JUDGING_API_URL}/Team/event/${eventId}`,
       { params },
     );
     return { total: response.data.data.total, teams: response.data.data.data, hasNextPage: response.data.data.hasNextPage, hasPreviousPage: response.data.data.hasPreviousPage };
   } else {
+    params.pageNumber = page;
+    params.pageSize = count;
     params.EventId = eventId;
     
     const response = await systemApi.get(`${JUDGING_API_URL}/Judge/teams`, {
@@ -224,12 +226,12 @@ export async function deleteJudge(judgeId: string): Promise<void> {
 export async function getAssignedTeamsForJudge(
   judgeId: string,
   eventId: string,
-): Promise<Team[]> {
+): Promise<{judgeName: string, assignedTeams: Team[]}> {
   const response = await systemApi.get(
     `${JUDGING_API_URL}/Admin/judges/${judgeId}/teams`,
     { params: { eventId } },
   );
-  return response.data.data.assignedTeams;
+  return {judgeName: response.data.data.judgeName, assignedTeams: response.data.data.assignedTeams};
 }
 
 export async function getUnassignedTeamsForJudge(

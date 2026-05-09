@@ -303,7 +303,7 @@ export const useGetJudgesForEvent = (
 export const useGetAssignedTeamsForJudge = (
   judgeId: string,
   eventId: string,
-): UseQueryResult<Team[], Error> => {
+): UseQueryResult<{judgeName: string, assignedTeams: Team[]}, Error> => {
   return useQuery({
     queryKey: ["judgingSystem", "assignedTeams", judgeId, eventId],
     queryFn: async () => {

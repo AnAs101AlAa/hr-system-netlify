@@ -99,7 +99,7 @@ export default function JudgingSystemHomePage() {
                 activeTab === "certificates"
                   ? "bg-muted-primary/10"
                   : "bg-transparent"
-              } transition-colors duration-200 ease-in-out shadow-lg flex items-center justify-center p-2 cursor-pointe r`}
+              } transition-colors duration-200 ease-in-out shadow-lg flex items-center justify-center p-2 cursor-pointer`}
             >
               <div className="text-text-body-main font-bold text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] leading-[10px] md:leading-[14px] font-inter text-center">
                 Certificates
