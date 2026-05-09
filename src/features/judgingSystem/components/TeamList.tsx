@@ -216,13 +216,6 @@ const TeamList = ({
                       width: "w-1/6",
                     }
                   : undefined,
-                !isJudge
-                  ? {
-                      key: "finalScore" as keyof Team,
-                      label: "Final Score",
-                      width: "w-1/6",
-                    }
-                  : undefined,
               ].filter(Boolean) as {
                 key: keyof Team;
                 label: string;
@@ -248,7 +241,7 @@ const TeamList = ({
                   <>
                     <Button
                       type="tertiary"
-                      buttonText="View Details"
+                      buttonText="Details"
                       onClick={() => {
                         navigate(`/judging-system/team/${item.id}`);
                       }}
@@ -339,9 +332,6 @@ const TeamList = ({
                 },
                 !isJudge
                   ? { key: "totalScore", label: "Total Score" }
-                  : undefined,
-                !isJudge
-                  ? { key: "finalScore", label: "Final Score" }
                   : undefined,
               ].filter(Boolean) as any
             }
