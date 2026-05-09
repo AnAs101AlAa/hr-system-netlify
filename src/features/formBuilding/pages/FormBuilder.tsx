@@ -6,6 +6,7 @@ import { FaPlus, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { ImInsertTemplate } from "react-icons/im";
 import { VscEmptyWindow } from "react-icons/vsc";
 import { useForms } from "@/shared/queries/forms/formQueries";
+import type { form } from "@/shared/types/form";
 
 export default function FormBuilder() {
   const [modalOpen, setModalOpen] = useState(0);
@@ -106,7 +107,7 @@ export default function FormBuilder() {
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-200">
-                            {Forms?.data?.map((form) => (
+                            {Forms?.data?.map((form: form) => (
                               <tr
                                 key={form.id}
                                 className={`text-[12px] md:text-[14px] lg:text-[16px] whitespace-nowrap rounded-lg cursor-pointer dark:text-text-body-main ${
