@@ -1,39 +1,56 @@
 import WithNavbar from "@/shared/components/hoc/WithNavbar";
 import { useParams } from "react-router-dom";
 import { LoadingPage, ErrorScreen } from "tccd-ui";
-import { useGetJudgeEvaluationProgress } from "@/shared/queries/judgingSystem/judgeQueries";
+import { useGetAssignedTeamsForJudge, useGetJudgeEvaluationProgress } from "@/shared/queries/judgingSystem/judgeQueries";
 import { useMemo } from "react";
 import { FaChevronLeft } from "react-icons/fa";
 
 export default function AdminJudgePage() {
   const { judgeId, eventId } = useParams();
   const {
-    data: teams,
+    data: teamsData,
     isLoading,
     isError,
+  } = useGetAssignedTeamsForJudge(judgeId!, eventId!);
+
+  const {
+    data: evaluationProgress,
+    isLoading: evaluationProgressIsLoading,
+    isError: evaluationProgressIsError,
   } = useGetJudgeEvaluationProgress(judgeId!, eventId!);
 
-  const sortedTeams =useMemo(() => {
-    return teams
+  const sortedTeams = useMemo(() => {
+    let teams = teamsData?.assignedTeams || [];
+    teams = teams
       ? [...teams].sort((a, b) => {
-          if (a.teamCode && b.teamCode) {
-            return a.teamCode.localeCompare(b.teamCode);
-          } else if (a.teamCode) {
+          if (a.code && b.code) {
+            return a.code.localeCompare(b.code);
+          } else if (a.code) {
             return -1;
-          } else if (b.teamCode) {
+          } else if (b.code) {
             return 1;
           } else {
             return 0;
           }
         })
       : [];
-  }, [teams]);
 
-  if (isLoading) {
+    teams = teams.map((team) => {
+      const evaluation = evaluationProgress?.find((e) => e.teamId === team.id);
+      return {
+        ...team,
+        evaluated: evaluation?.isScored || false,
+      };
+    });
+
+    return teams;
+  }, [teamsData?.assignedTeams, evaluationProgress]);
+
+  if (isLoading || evaluationProgressIsLoading) {
     return <LoadingPage />;
   }
 
-  if (isError || !teams) {
+  if (isError || evaluationProgressIsError) {
     return (
       <ErrorScreen
         message="Failed to load judge data, please try again later."
@@ -56,7 +73,7 @@ export default function AdminJudgePage() {
       </div>
       <div className="bg-surface-glass-bg shadow-lg rounded-lg border-surface-glass-border/10 p-4 w-[96%] md:w-[94%] lg:w-[84%] xl:w-[73%] mx-auto border mt-3">
         <p className="text-center text-[22px] md:text-[24px] lg:text-[26px] font-bold text-text-title">
-          Judge Team Evaluations
+          {teamsData?.judgeName}'s Evaluations
         </p>
         <p className="text-center mb-4 md:mb-6 lg:text-[16px] md:text-[15px] text-[14px] text-text-muted-foreground">
           A detailed listing of all of the judge's evaluations
@@ -69,22 +86,27 @@ export default function AdminJudgePage() {
           ) : null}
           {sortedTeams.map((team) => (
             <div
-              key={team.teamId}
+              key={team.id}
               className="border border-surface-glass-border/10 rounded-xl p-3 px-5"
             >
               <div className="flex justify-between items-center">
                 <p className="w-[40%] text-sm md:text-[16px] font-semibold text-text-body-main">
-                  {team.teamName}
+                  {team.name}
                 </p>
-                <p className="w-[40%] text-sm md:text-[16px] font-semibold text-text-body-main">
-                  {team.teamCode || "N/A"}
+                <p className="w-[30%] text-sm md:text-[16px] font-semibold text-text-body-main">
+                  {team.code || "N/A"}
+                </p>
+                <p className="w-[10%] text-sm md:text-[15px] font-medium">
+                  {
+                    team.totalScore || "N/A"
+                  }
                 </p>
                 <p
                   className={`w-[20%] text-end text-sm md:text-[15px] font-medium ${
-                    team.isScored ? "text-green-500" : "text-primary"
+                    team.evaluated ? "text-green-500" : "text-primary"
                   }`}
                 >
-                  {team.isScored ? "Evaluated" : "Not evaluated"}
+                  {team.evaluated ? "Evaluated" : "Not evaluated"}
                 </p>
               </div>
             </div>

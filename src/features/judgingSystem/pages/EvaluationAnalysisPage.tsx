@@ -20,6 +20,7 @@ export default function EvaluationAnalysisPage() {
   const { eventId } = useParams<{ eventId: string }>();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchData, setSearchData] = useState<SearchData | null>(null);
+  const [isGatheringData, setIsGatheringData] = useState(false);
 
   const getJudgesMutation = useGetAssignedJudgesForTeam();
   const { refetch: refetchTeams, isLoading: isSearching } = useResearchTeams(
@@ -51,6 +52,7 @@ export default function EvaluationAnalysisPage() {
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
 
+    setIsGatheringData(true);
     try {
       const { data: teams } = await refetchTeams();
 
@@ -108,6 +110,8 @@ export default function EvaluationAnalysisPage() {
       });
     } catch (error) {
       console.error("Error during search:", error);
+    } finally {
+      setIsGatheringData(false);
     }
   };
 
@@ -123,7 +127,7 @@ export default function EvaluationAnalysisPage() {
           </p>
         </div>
       </div>
-      <div className="bg-surface-glass-bg shadow-lg rounded-lg border-surface-glass-border/10 p-4 w-[96%] md:w-[94%] lg:w-[84%] xl:w-[73%] mx-auto border mt-3xl">
+      <div className="bg-surface-glass-bg shadow-lg rounded-lg border-surface-glass-border/10 p-4 w-[96%] md:w-[94%] lg:w-[84%] xl:w-[73%] mx-auto border mt-3">
         <p className="text-center text-[22px] md:text-[24px] lg:text-[26px] font-bold text-text-title">
           Evaluation Analysis
         </p>
@@ -137,17 +141,17 @@ export default function EvaluationAnalysisPage() {
             onChange={(value) => setSearchQuery(value)}
           />
           <Button
-            buttonText={isSearching ? "Searching..." : "Search"}
+            buttonText={isSearching || isGatheringData ? "Searching..." : "Search"}
             type="primary"
             onClick={handleSearch}
             width="fit"
-            disabled={isSearching || !searchQuery.trim()}
+            disabled={isSearching || isGatheringData}
           />
         </div>
         <hr className="border-surface-glass-border/10 mb-4" />
 
         {/* Display search results */}
-        {isSearching ? (
+        {(isSearching || isGatheringData || getJudgesMutation.isPending) ? (
           <div className="text-center text-text-muted-foreground">
             Searching and gathering evaluation data...
           </div>
@@ -173,7 +177,7 @@ export default function EvaluationAnalysisPage() {
               </div>
               <div className="shadow-md border-b-8 border-primary p-4 rounded-lg bg-surface-glass-border/5">
                 <h3 className="font-medium text-text-muted-foreground text-md mb-2">
-                  Total Evaluations
+                  Pending Evaluations
                 </h3>
                 <p className="text-2xl font-bold text-text-body-main">
                   {searchData.evaluations.length}

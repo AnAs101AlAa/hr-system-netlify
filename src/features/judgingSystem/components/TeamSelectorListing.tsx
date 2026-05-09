@@ -1,5 +1,5 @@
 import { Button, DropdownMenu } from "tccd-ui";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   useGetUnassignedTeamsForJudge,
@@ -56,10 +56,15 @@ const TeamSelectorListing = () => {
     debouncedStatusKey,
   );
   const {
-    data: assignedTeamsData,
+    data: assignedTeamsResult,
     isLoading: isAssignedTeamsLoading,
     isError: isAssignedTeamsError,
   } = useGetAssignedTeamsForJudge(judgeId!, eventId!);
+
+  const assignedTeamsData = useMemo(() => {
+    return assignedTeamsResult?.assignedTeams;
+  }, [assignedTeamsResult]);
+
   const assignTeamsToJudgeMutation = useAssignTeamsToJudge();
   const removeTeamFromJudgeMutation = useRemoveTeamFromJudge();
 
