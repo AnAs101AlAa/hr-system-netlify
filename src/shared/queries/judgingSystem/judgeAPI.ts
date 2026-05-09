@@ -198,6 +198,18 @@ export async function getAllTeamEvaluations(
   return response.data.data;
 }
 
+export async function finalizeTeamScores(
+  eventId: string,
+  departments: string[],
+  maxScore: number,
+): Promise<void> {
+  await systemApi.post(`${JUDGING_API_URL}/Evaluation/normalize`, {
+    eventId,
+    departments,
+    maxScore,
+  });
+}
+
 export async function getJudgesForEvent(
   pagNumber: number,
   pageSize: number,
@@ -221,6 +233,10 @@ export async function createJudge(judgeData: Judge): Promise<void> {
 
 export async function deleteJudge(judgeId: string): Promise<void> {
   await systemApi.delete(`${JUDGING_API_URL}/Judge/${judgeId}`);
+}
+
+export async function resetJudgePassword (judgeId: string, password: string): Promise<void> {
+  await systemApi.patch(`${JUDGING_API_URL}/Admin/Users/${judgeId}/password`, {password: password});
 }
 
 export async function getAssignedTeamsForJudge(

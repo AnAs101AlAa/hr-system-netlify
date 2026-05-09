@@ -54,6 +54,16 @@ const judgeKeys = {
   getEvaluation: (teamId: string) => [...judgeKeys.all, teamId] as const,
   getAllEvaluations: (teamId: string) =>
     [...judgeKeys.all, "evaluations", teamId] as const,
+  resetJudgePassword: () => [...judgeKeys.all, "resetPassword"] as const,
+  assignTeamsToJudge: () => [...judgeKeys.all, "assignTeams"] as const,
+  removeTeamFromJudge: () => [...judgeKeys.all, "removeTeam"] as const,
+  addTeamAttendance: () => [...judgeKeys.all, "addAttendance"] as const,
+  getTeamAttendance: (teamId: string) =>
+    [...judgeKeys.all, "teamAttendance", teamId] as const,
+  updateTeamAttendance: () => [...judgeKeys.all, "updateAttendance"] as const,
+  getTeamAttendancesByJudge: (judgeId: string) =>
+    [...judgeKeys.all, "teamAttendances", judgeId] as const,
+  updateTeamScores: () => [...judgeKeys.all, "updateScores"] as const,
 };
 
 export const  useResearchTeams = (
@@ -286,6 +296,19 @@ export const useGetAllTeamEvaluations = (teamId: string) => {
   });
 };
 
+export const useFinalizeTeamScores = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["judgingSystem", "finalizeTeamScores"],
+    mutationFn: async (payload: { eventId: string; departments: string[]; maxScore: number }) => {
+      await JudgeAPI.finalizeTeamScores(payload.eventId, payload.departments, payload.maxScore);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: judgeKeys.all });
+    },
+  });
+};
 
 export const useGetJudgesForEvent = (
   page: number,
@@ -370,6 +393,19 @@ export const useCreateJudge = () => {
     mutationKey: ["judgingSystem", "createJudge"],
     mutationFn: async (judgeData: Judge) => {
       await JudgeAPI.createJudge(judgeData);
+    },
+  });
+};
+
+export const useResetJudgePassword = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["judgingSystem", "resetJudgePassword"],
+    mutationFn: async (payload: { judgeId: string; password: string }) => {
+      await JudgeAPI.resetJudgePassword(payload.judgeId, payload.password);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: judgeKeys.all });
     },
   });
 };

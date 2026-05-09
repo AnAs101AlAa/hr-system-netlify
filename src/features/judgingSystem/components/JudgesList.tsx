@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import CardView from "@/shared/components/table/CardView";
 import Table from "@/shared/components/table/Table";
+import ResetPasswordModal from "./ResetPasswordModal";
+import { RiLockPasswordLine } from "react-icons/ri";
 
 const JudgesList = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -25,6 +27,8 @@ const JudgesList = () => {
   } = useGetJudgesForEvent(currentPage, 10, judgeName);
   const { mutate: exportEvaluations, isPending: isExporting } =
     useExportEvaluationsToExcel();
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [selectedJudge, setSelectedJudge] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -59,6 +63,17 @@ const JudgesList = () => {
 
   return (
     <div className="bg-surface-glass-bg rounded-lg shadow-sm border border-surface-glass-border/10 overflow-hidden">
+      {selectedJudge && (
+        <ResetPasswordModal
+          isOpen={isResetModalOpen}
+          onClose={() => {
+            setIsResetModalOpen(false);
+            setSelectedJudge(null);
+          }}
+          judgeId={selectedJudge.id}
+          judgeName={selectedJudge.name}
+        />
+      )}
       <div className="p-4 border-b border-surface-glass-border/10 space-y-2">
         <div className="flex items-center justify-between mb-4">
           <p className="text-md md:text-lg lg:text-xl font-bold text-text-muted-foreground">
@@ -166,6 +181,15 @@ const JudgesList = () => {
                   }
                   width="auto"
                 />
+                <Button
+                  buttonText="Reset Password"
+                  type="ghost"
+                  onClick={() => {
+                    setSelectedJudge({ id: item.id, name: item.name });
+                    setIsResetModalOpen(true);
+                  }}
+                  width="auto"
+                />
               </>
             )}
           />
@@ -197,6 +221,15 @@ const JudgesList = () => {
                       `/judging-system/assigned-teams/${item.id}/${eventId}`
                     )
                   }
+                  width="auto"
+                />
+                <Button
+                  buttonIcon={<RiLockPasswordLine className="size-4" />}
+                  type="ghost"
+                  onClick={() => {
+                    setSelectedJudge({ id: item.id, name: item.name });
+                    setIsResetModalOpen(true);
+                  }}
                   width="auto"
                 />
               </>

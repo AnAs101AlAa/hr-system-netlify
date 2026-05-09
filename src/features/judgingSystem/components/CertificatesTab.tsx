@@ -12,7 +12,9 @@ import Table from "@/shared/components/table/Table";
 import CardView from "@/shared/components/table/CardView";
 import { FaCertificate, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaFilter } from "react-icons/fa6";
+import { TiChartBar } from "react-icons/ti";
 import FilterModal from "./FiltersModal";
+import FinalizeScoresModal from "./FinalizeScoresModal";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
@@ -20,6 +22,8 @@ const CertificatesTab = () => {
   const { eventId } = useParams();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
+  const [isFinalizeModalOpen, setIsFinalizeModalOpen] =
+    useState<boolean>(false);
   const [debouncedTeamName, setDebouncedTeamName] = useState<string>("");
   const [debouncedTeamCode, setDebouncedTeamCode] = useState<string>("");
   const [debouncedDepartmentKey, setDebouncedDepartmentKey] =
@@ -116,6 +120,10 @@ const CertificatesTab = () => {
         onClose={() => setIsFilterModalOpen(false)}
         searchParams={searchParams}
       />
+      <FinalizeScoresModal
+        isOpen={isFinalizeModalOpen}
+        onClose={() => setIsFinalizeModalOpen(false)}
+      />
       <div className="p-4 border-b border-surface-glass-border/10 space-y-2">
         <div className="flex items-center justify-between mb-4">
           <p className="text-md md:text-lg lg:text-xl font-bold text-text-muted-foreground">
@@ -167,12 +175,19 @@ const CertificatesTab = () => {
             </p>
             <div />
           </div>
-          <div className="flex-grow md:max-w-72">
+          <div className="flex-grow md:max-w-98 flex items-center gap-2">
             <DropdownMenu
               options={TEAM_SORTING_OPTIONS}
               value={sortOption}
               onChange={(val) => setSortOption(val)}
               placeholder="Sort By"
+            />
+            <Button
+              type="secondary"
+              buttonText="Finalize Scores"
+              buttonIcon={<TiChartBar size={18} />}
+              onClick={() => setIsFinalizeModalOpen(true)}
+              width="fit"
             />
           </div>
         </div>
