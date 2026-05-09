@@ -52,7 +52,6 @@ export default function ResetPasswordModal({
           placeholder="Enter password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full"
         />
         <div className="flex justify-end gap-3 mt-6">
           <Button type="secondary" onClick={onClose} buttonText="Cancel" />
