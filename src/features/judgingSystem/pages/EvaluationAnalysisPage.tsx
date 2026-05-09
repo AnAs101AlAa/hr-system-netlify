@@ -6,7 +6,7 @@ import {
   useResearchTeams,
 } from "@/shared/queries/judgingSystem/judgeQueries";
 import { useParams } from "react-router-dom";
-import { getAllTeamEvaluations } from "@/shared/queries/judgingSystem/judgeAPI";
+import { getAllTeamEvaluations, getJudgesAssignedToTeam } from "@/shared/queries/judgingSystem/judgeAPI";
 import type { Team, Judge } from "@/shared/types/judgingSystem";
 import { FaChevronLeft } from "react-icons/fa";
 
@@ -37,15 +37,19 @@ export default function EvaluationAnalysisPage() {
     false,
   );
 
-  const isEvaluated = (teamId: string, judgeId: string): boolean => {
+  const getEvaluationStatus = (
+    teamId: string,
+    judgeId: string,
+  ): "evaluated" | "pending" | "not-assigned" => {
     try {
       const evaluation = searchData?.evaluations.find(
         (evaluation) =>
           evaluation.teamId === teamId && evaluation.judgeId === judgeId,
       );
-      return evaluation?.isEvaluated ?? false;
+      if (!evaluation) return "not-assigned";
+      return evaluation.isEvaluated ? "evaluated" : "pending";
     } catch {
-      return false;
+      return "not-assigned";
     }
   };
 
@@ -54,9 +58,10 @@ export default function EvaluationAnalysisPage() {
 
     setIsGatheringData(true);
     try {
-      const { data: teams } = await refetchTeams();
+      const { data: teamsData } = await refetchTeams();
+      const teams = teamsData?.teams || [];
 
-      if (!teams?.teams || teams.teams.length === 0) {
+      if (teams.length === 0) {
         setSearchData({ teams: [], judges: [], evaluations: [] });
         return;
       }
@@ -67,44 +72,57 @@ export default function EvaluationAnalysisPage() {
         judgeId: string;
         isEvaluated: boolean;
       }[] = [];
-      const judges = await getJudgesMutation.mutateAsync(teams.teams[0].id);
-      if (judges && Array.isArray(judges)) {
-        judges.forEach((judge) => {
-          judgesMap.set(judge.id, judge);
-        });
-      }
 
-      for (const team of teams.teams) {
-        const evaluatedJudgeIds = new Set<string>();
+      // Fetch assignments and evaluations for each team
+      await Promise.all(
+        teams.map(async (team) => {
+          try {
+            const [teamEvaluations, assignedJudges] = await Promise.all([
+              getAllTeamEvaluations(team.id).catch(() => []),
+              getJudgesAssignedToTeam(team.id).catch(() => []),
+            ]);
 
-        try {
-          const teamEvaluations = await getAllTeamEvaluations(team.id);
-          if (teamEvaluations && Array.isArray(teamEvaluations)) {
-            teamEvaluations.forEach((evaluation) => {
-              const judgeId = evaluation.judgeId || "";
-              evaluatedJudgeIds.add(judgeId);
-              allEvaluations.push({
-                teamId: team.id,
-                judgeId: judgeId,
-                isEvaluated: true,
-              });
-            });
-          }
-        } catch {
-          judgesMap.forEach((judge) => {
-            if (!evaluatedJudgeIds.has(judge.id)) {
-              allEvaluations.push({
-                teamId: team.id,
-                judgeId: judge.id,
-                isEvaluated: false,
+            const evaluatedJudgeIds = new Set<string>();
+
+            // Record evaluations
+            if (Array.isArray(teamEvaluations)) {
+              teamEvaluations.forEach((evaluation) => {
+                const judgeId = evaluation.judgeId || "";
+                if (judgeId) {
+                  evaluatedJudgeIds.add(judgeId);
+                  allEvaluations.push({
+                    teamId: team.id,
+                    judgeId: judgeId,
+                    isEvaluated: true,
+                  });
+                }
               });
             }
-          });
-        }
-      }
+
+            // Record assignments (for pending status)
+            if (Array.isArray(assignedJudges)) {
+              assignedJudges.forEach((judge) => {
+                if (!judgesMap.has(judge.id)) {
+                  judgesMap.set(judge.id, judge);
+                }
+
+                if (!evaluatedJudgeIds.has(judge.id)) {
+                  allEvaluations.push({
+                    teamId: team.id,
+                    judgeId: judge.id,
+                    isEvaluated: false,
+                  });
+                }
+              });
+            }
+          } catch (err) {
+            console.error(`Error gathering data for team ${team.id}:`, err);
+          }
+        }),
+      );
 
       setSearchData({
-        teams: teams.teams,
+        teams: teams,
         judges: Array.from(judgesMap.values()),
         evaluations: allEvaluations,
       });
@@ -180,7 +198,11 @@ export default function EvaluationAnalysisPage() {
                   Pending Evaluations
                 </h3>
                 <p className="text-2xl font-bold text-text-body-main">
-                  {searchData.evaluations.length}
+                  {
+                    searchData.evaluations.filter(
+                      (evaluation) => !evaluation.isEvaluated,
+                    ).length
+                  }
                 </p>
               </div>
               <div className="shadow-md border-b-8 border-primary p-4 rounded-lg bg-surface-glass-border/5">
@@ -237,20 +259,29 @@ export default function EvaluationAnalysisPage() {
                             </p>
                           </div>
                         </td>
-                        {searchData.judges.map((judge) => (
-                          <td
-                            key={judge.id}
-                            className="border border-surface-glass-border/10 p-2 md:p-3 text-center"
-                          >
-                            <div className="flex justify-center items-center text-text-body-main">
-                              <Checkbox
-                                label=""
-                                checked={isEvaluated(team.id, judge.id)}
-                                onChange={() => {}}
-                              />
-                            </div>
-                          </td>
-                        ))}
+                        {searchData.judges.map((judge) => {
+                          const status = getEvaluationStatus(team.id, judge.id);
+                          return (
+                            <td
+                              key={judge.id}
+                              className="border border-surface-glass-border/10 p-2 md:p-3 text-center"
+                            >
+                              <div className="flex justify-center items-center text-text-body-main">
+                                {status === "not-assigned" ? (
+                                  <span className="text-[12px] md:text-[13px] text-text-muted-foreground/60 italic font-medium">
+                                    Not Assigned
+                                  </span>
+                                ) : (
+                                  <Checkbox
+                                    label=""
+                                    checked={status === "evaluated"}
+                                    onChange={() => {}}
+                                  />
+                                )}
+                              </div>
+                            </td>
+                          );
+                        })}
                       </tr>
                     ))}
                   </tbody>
