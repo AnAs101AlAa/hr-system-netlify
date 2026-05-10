@@ -6,7 +6,7 @@ import {
   Checkbox,
 } from "tccd-ui";
 import UseTeamEvaluationUtils from "../utils/TeamEvaluationUtils";
-import { HTMLText } from "@/shared/components/HTMLText";
+import { HTMLFormattedText } from "@/shared/components/HTMLFormattedText";
 
 export default function TeamEvaluationPage() {
   const {
@@ -136,7 +136,7 @@ export default function TeamEvaluationPage() {
                   </p>
                 </div>
                 <p className="text-text-body-main md:text-[15px] text-[14px] mt-1">
-                  <HTMLText content={question.description} />
+                  <HTMLFormattedText content={question.description} />
                 </p>
                 <div className="flex gap-2 mt-2 items-center">
                   <p className="text-text-body-main lg:text-[17px] md:text-[16px] text-[15px]">
