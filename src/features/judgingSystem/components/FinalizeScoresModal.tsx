@@ -1,24 +1,27 @@
 import { Modal, Button, Checkbox } from "tccd-ui";
 import { useState } from "react";
 import DEPARTMENT_LIST from "@/constants/departments";
-import { useFinalizeTeamScores } from "@/shared/queries/judgingSystem/judgeQueries";
-import * as JudgeAPI from "@/shared/queries/judgingSystem/judgeAPI";
+import { useFinalizeTeamScores, useGetAssignedJudgesForTeam } from "@/shared/queries/judgingSystem/judgeQueries";
+import { getEventQuestions } from "@/shared/queries/judgingSystem/judgeAPI";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
 interface FinalizeScoresModalProps {
   isOpen: boolean;
   onClose: () => void;
+  teamId: string;
 }
 
 export default function FinalizeScoresModal({
   isOpen,
   onClose,
+  teamId,
 }: FinalizeScoresModalProps) {
   const { eventId } = useParams();
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const finalizeMutation = useFinalizeTeamScores();
+  const getAssignedJudgesMutation = useGetAssignedJudgesForTeam();
 
   const toggleDepartment = (value: string) => {
     setSelectedDepartments((prev) =>
@@ -34,32 +37,17 @@ export default function FinalizeScoresModal({
     const toastId = toast.loading("Finalizing scores...");
 
     try {
-      for (const deptKey of selectedDepartments) {
-        const teamsData = await JudgeAPI.getEventTeams(
-          eventId,
-          1,
-          1000,
-          "",
-          "",
-          "",
-          "",
-          deptKey,
-          "",
-          "admin",
-        );
+      const questionData = await getEventQuestions(
+        eventId,
+      );
+      const teamJudges = await getAssignedJudgesMutation.mutateAsync(teamId);
 
-        const teams = teamsData.teams || [];
-        if (teams.length > 0) {
-          const scores = teams.map((t: any) => t.totalScore || 0);
-          const maxScore = Math.max(...scores);
-
-          await finalizeMutation.mutateAsync({
+      const maxScore = questionData.length * 10 * teamJudges.length;
+      await finalizeMutation.mutateAsync({
             eventId,
-            departments: [deptKey],
+            departments: selectedDepartments,
             maxScore,
           });
-        }
-      }
       toast.success("Scores finalized successfully!", { id: toastId });
       onClose();
     } catch (error) {

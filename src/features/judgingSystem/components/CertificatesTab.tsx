@@ -123,6 +123,7 @@ const CertificatesTab = () => {
       <FinalizeScoresModal
         isOpen={isFinalizeModalOpen}
         onClose={() => setIsFinalizeModalOpen(false)}
+        teamId={finishedTeams?.[0]?.id || ""}
       />
       <div className="p-4 border-b border-surface-glass-border/10 space-y-2">
         <div className="flex items-center justify-between mb-4">

@@ -224,7 +224,6 @@ export default function useManageTeamModalUtils (eventId: string, mode: number, 
     }
 
     const handleChangeTeamData = (attr: keyof Team, value: string) => {
-        console.log(`Changing team data: ${attr} = ${value}`);
         setTeamDataState((prev : Team | undefined) => prev ? {...prev, [attr]: value} : prev);
     }
 
