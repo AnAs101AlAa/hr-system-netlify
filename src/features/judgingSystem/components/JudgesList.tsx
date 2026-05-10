@@ -29,7 +29,7 @@ const JudgesList = () => {
     useExportEvaluationsToExcel();
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [selectedJudge, setSelectedJudge] = useState<{ id: string; name: string } | null>(null);
-
+  
   useEffect(() => {
     setCurrentPage(1);
   }, [judgeName]);
