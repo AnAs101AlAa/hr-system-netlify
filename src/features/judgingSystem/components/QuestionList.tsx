@@ -1,5 +1,3 @@
-"use client";
-
 import type { JudgeQuestion } from "@/shared/types/judgingSystem";
 import type { Event } from "@/shared/types/event";
 import QuestionDeleteModal from "./QuestionDeleteModal";
@@ -10,7 +8,8 @@ import { HiOutlineTrash } from "react-icons/hi2";
 import { MdOutlineEdit } from "react-icons/md";
 import { Button, TextDisplayEdit } from "tccd-ui";
 import useManageQuestionUtils from "../utils/QuestionManageUtils";
-import { HTMLText } from "@/shared/components/HTMLText";
+import { RichTextEditor } from "@/shared/components/RichTextEditor";
+import { HTMLFormattedText } from "@/shared/components/HTMLFormattedText";
 
 export default function QuestionList({ event }: { event: Event | undefined }) {
   const {
@@ -82,7 +81,7 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
           </div>
         ) : (
           <div className="relative">
-            <div className="bg-gradient-to-r from-muted-primary/5 to-surface-glass-bg px-6 py-8 border-b border-surface-glass-border/10">
+            <div className="bg-linear-to-r from-muted-primary/5 to-surface-glass-bg px-6 py-8 border-b border-surface-glass-border/10">
               <h2 className="text-center font-bold text-2xl md:text-3xl text-text-title text-balance">
                 {event?.title}'s Evaluation Paper
               </h2>
@@ -194,7 +193,7 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                           })
                         }
                       />
-                      <TextDisplayEdit
+                      <RichTextEditor
                         label=""
                         placeholder="Enter detailed description for this question..."
                         value={editQuestionState.description}
@@ -217,7 +216,7 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                         {question.name}
                       </p>
                       <p className="text-sm text-text-muted-foreground">
-                        <HTMLText
+                        <HTMLFormattedText
                           content={question.description}
                           className="text-sm text-text-muted-foreground"
                         />
@@ -291,16 +290,16 @@ export default function QuestionList({ event }: { event: Event | undefined }) {
                     })
                   }
                 />
-                <TextDisplayEdit
-                  label="Detailed Description"
-                  placeholder="Enter detailed description for this question..."
-                  value={newQuestionState.description}
-                  onChange={(val) =>
-                    setNewQuestionState((prev) => {
-                      if (!prev) return null;
-                      return { ...prev, description: val };
-                    })
-                  }
+                <RichTextEditor
+                label="Detailed Description"
+                placeholder="Enter detailed description for this question..."
+                value={newQuestionState.description}
+                onChange={(val) =>
+                  setNewQuestionState((prev) => {
+                    if (!prev) return null;
+                    return { ...prev, description: val };
+                  })
+                }
                 />
                 {newQuestionErrors.name && (
                   <p className="text-red-600 text-sm font-medium bg-red-50 border border-red-200 rounded-md px-3 py-2">
