@@ -13,7 +13,6 @@ import CardView from "@/shared/components/table/CardView";
 import { FaCertificate, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaFilter } from "react-icons/fa6";
 import FilterModal from "./FiltersModal";
-import FinalizeScoresModal from "./FinalizeScoresModal";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
