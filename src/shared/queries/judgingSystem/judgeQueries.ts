@@ -301,8 +301,8 @@ export const useFinalizeTeamScores = () => {
 
   return useMutation({
     mutationKey: ["judgingSystem", "finalizeTeamScores"],
-    mutationFn: async (payload: { eventId: string; departments: string[]; maxScore: number }) => {
-      await JudgeAPI.finalizeTeamScores(payload.eventId, payload.departments, payload.maxScore);
+    mutationFn: async (payload: { eventId: string; department: string; judgeId: string; maxScore: number }) => {
+      await JudgeAPI.finalizeTeamScores(payload.eventId, payload.department, payload.judgeId, payload.maxScore);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: judgeKeys.all });

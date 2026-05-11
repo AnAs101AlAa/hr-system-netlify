@@ -8,6 +8,8 @@ export default function ConfirmActionModal<T>({
   subtitle,
   onSubmit,
   isSubmitting,
+  buttonText,
+  buttonType,
 }: {
   item: T;
   isOpen: boolean;
@@ -16,6 +18,8 @@ export default function ConfirmActionModal<T>({
   subtitle: string;
   onSubmit: (item: T) => void;
   isSubmitting: boolean;
+  buttonText?: string;
+  buttonType?: ButtonTypes;
 }) {
   return (
     <>
@@ -31,10 +35,10 @@ export default function ConfirmActionModal<T>({
                 disabled={isSubmitting}
               />
               <Button
-                type={ButtonTypes.DANGER}
+                type={buttonType || ButtonTypes.DANGER}
                 onClick={() => onSubmit(item)}
                 loading={isSubmitting}
-                buttonText="Delete"
+                buttonText={buttonText || "Delete"}
               />
             </div>
           </div>
