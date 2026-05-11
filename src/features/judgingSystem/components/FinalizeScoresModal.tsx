@@ -1,98 +1,60 @@
-import { Modal, Button, Checkbox } from "tccd-ui";
-import { useState } from "react";
-import DEPARTMENT_LIST from "@/constants/departments";
-import { useFinalizeTeamScores, useGetAssignedJudgesForTeam } from "@/shared/queries/judgingSystem/judgeQueries";
+import { useFinalizeTeamScores } from "@/shared/queries/judgingSystem/judgeQueries";
 import { getEventQuestions } from "@/shared/queries/judgingSystem/judgeAPI";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import ConfirmActionModal from "./ConfirmActionModal";
 
 interface FinalizeScoresModalProps {
   isOpen: boolean;
   onClose: () => void;
-  teamId: string;
+  judgeId: string;
+  department: string;
 }
 
 export default function FinalizeScoresModal({
   isOpen,
   onClose,
-  teamId,
+  judgeId,
+  department,
 }: FinalizeScoresModalProps) {
   const { eventId } = useParams();
-  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const finalizeMutation = useFinalizeTeamScores();
-  const getAssignedJudgesMutation = useGetAssignedJudgesForTeam();
-
-  const toggleDepartment = (value: string) => {
-    setSelectedDepartments((prev) =>
-      prev.includes(value)
-        ? prev.filter((item) => item !== value)
-        : [...prev, value],
-    );
-  };
 
   const handleSubmit = async () => {
     if (!eventId) return;
-    setIsSubmitting(true);
     const toastId = toast.loading("Finalizing scores...");
-
     try {
       const questionData = await getEventQuestions(
         eventId,
       );
-      const teamJudges = await getAssignedJudgesMutation.mutateAsync(teamId);
 
-      const maxScore = questionData.length * 10 * teamJudges.length;
+      const maxScore = questionData.length * 10;
       await finalizeMutation.mutateAsync({
             eventId,
-            departments: selectedDepartments,
+            department,
+            judgeId,
             maxScore,
           });
       toast.success("Scores finalized successfully!", { id: toastId });
       onClose();
-    } catch (error) {
-      console.error("Error finalizing scores:", error);
+    } catch {
       toast.error("Failed to finalize scores. Please try again.", {
         id: toastId,
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Finalize Scores">
-      <div className="space-y-4 mt-2 w-full">
-        <p className="text-[14px] md:text-[15px] lg:text-[16px] text-text-muted-foreground">
-          Select the departments you want to finalize scores for:
-        </p>
-        <div className="max-h-[300px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
-          {DEPARTMENT_LIST.map((dept) => (
-            <div className="w-full" key={dept.value}>
-              <Checkbox
-                label={dept.label}
-                checked={selectedDepartments.includes(dept.value)}
-                onChange={() => toggleDepartment(dept.value)}
-              />
-            </div>
-          ))}
-        </div>
-        <div className="flex justify-end gap-3 mt-6">
-          <Button
-            type="secondary"
-            onClick={onClose}
-            buttonText="Cancel"
-            disabled={isSubmitting}
-          />
-          <Button
-            type="primary"
-            onClick={handleSubmit}
-            buttonText="Submit"
-            disabled={selectedDepartments.length === 0 || isSubmitting}
-            loading={isSubmitting}
-          />
-        </div>
-      </div>
-    </Modal>
+    <ConfirmActionModal
+      item={undefined}
+      isOpen={isOpen}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      isSubmitting={finalizeMutation.isPending}
+      title="Confirm to Finalize Scores"
+      subtitle={`Are you sure you want to finalize the scores for ${department} department?`}
+      buttonText="Finalize"
+      buttonType="primary"
+    />
   );
 }

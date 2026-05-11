@@ -200,12 +200,14 @@ export async function getAllTeamEvaluations(
 
 export async function finalizeTeamScores(
   eventId: string,
-  departments: string[],
+  department: string,
+  judgeId: string,
   maxScore: number,
 ): Promise<void> {
   await systemApi.post(`${JUDGING_API_URL}/Evaluation/normalize`, {
     eventId,
-    departments,
+    department,
+    judgeId,
     maxScore,
   });
 }
