@@ -314,7 +314,9 @@ export default function useFormEditorHandlers(formDataState: form, setFormDataSt
                     };
                 }
 
-                if (branchData.questionNumber !== undefined && (branchData.questionNumber > page.questions.length || branchData.questionNumber <= 0)) {
+                const questionExistsOnPage = branchData.questionNumber !== undefined &&
+                    page.questions.some(q => q.questionNumber === branchData!.questionNumber);
+                if (branchData.questionNumber !== undefined && !questionExistsOnPage) {
                     currentBranchErrors[branchSection.formBranch.id] = {
                         ...(currentBranchErrors[branchSection.formBranch.id] || {}),
                         questionNumber: "Question Number for branching is out of the page's bounds.",
