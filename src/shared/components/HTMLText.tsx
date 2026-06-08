@@ -40,6 +40,15 @@ export function HTMLText({ content, className }: RenderHtmlProps) {
     replace: (domNode) => {
       if (domNode instanceof Element && domNode.name === "a") {
         const props = domNode.attribs || {};
+        
+        let childContent = null;
+        if (domNode.children && domNode.children.length === 1 && domNode.children[0].type === "text") {
+           const textData = (domNode.children[0] as any).data;
+           if (textData && textData.length > 40) {
+               childContent = textData.substring(0, 40) + "...";
+           }
+        }
+
         return (
           <a
             href={props.href}
@@ -49,11 +58,48 @@ export function HTMLText({ content, className }: RenderHtmlProps) {
               className || "underline text-primary font-semibold"
             }`}
           >
-            {domToReact(
+            {childContent ? childContent : domToReact(
               domNode.children as import("html-react-parser").DOMNode[]
             )}
           </a>
         );
+      }
+
+      if (domNode.type === "text") {
+        const textNode = domNode as any;
+        const text = textNode.data;
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        
+        if (text && urlRegex.test(text)) {
+          const parts = text.split(urlRegex);
+          return (
+            <>
+              {parts.map((part: string, i: number) => {
+                if (part.match(/^https?:\/\//)) {
+                  const maxLength = 40;
+                  const display =
+                    part.length > maxLength
+                      ? part.substring(0, maxLength) + "..."
+                      : part;
+                  return (
+                    <a
+                      key={i}
+                      href={part}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={` ${
+                        className || "underline text-primary font-semibold"
+                      }`}
+                    >
+                      {display}
+                    </a>
+                  );
+                }
+                return part;
+              })}
+            </>
+          );
+        }
       }
       return undefined;
     },
