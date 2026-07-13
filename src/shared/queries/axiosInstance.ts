@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "https://test-prod.runasp.net/api";
+
 export const systemApi = axios.create({
-  baseURL: "/api",
+  baseURL: API_BASE_URL,
   timeout: 10000,
   withCredentials: true,
   headers: {
@@ -10,7 +13,7 @@ export const systemApi = axios.create({
 });
 
 export const anonymousApi = axios.create({
-  baseURL: "https://test-prod.runasp.net/api",
+  baseURL: API_BASE_URL,
   timeout: 10000,
   withCredentials: false,
   headers: {
